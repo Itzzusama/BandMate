@@ -1,4 +1,4 @@
-package com.move.app
+package com.bandmate.app
 
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext

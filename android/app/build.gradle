@@ -28,9 +28,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.move.app"
+    namespace "com.bandmate.app"
     defaultConfig {
-        applicationId "com.move.app"
+        applicationId "com.bandmate.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

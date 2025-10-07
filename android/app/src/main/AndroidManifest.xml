@@ -69,27 +69,27 @@
            <category android:name="android.intent.category.BROWSABLE" />
            <data android:scheme="http" />
            <data android:scheme="https" />
-           <data android:host="patient-android.Move.uk" />
+           <data android:host="patient-android.BandMate.uk" />
         </intent-filter>
 
         <intent-filter android:autoVerify="true">
             <action android:name="android.intent.action.VIEW"/>
             <category android:name="android.intent.category.DEFAULT"/>
             <category android:name="android.intent.category.BROWSABLE"/>
-            <data android:scheme="Move"/>
+            <data android:scheme="BandMate"/>
         </intent-filter>
       </activity>
 
       <!-- Add location service for background service -->
       <service 
-          android:name="com.move.app.LocationService" 
+          android:name="com.bandmate.app.LocationService" 
           android:enabled="true"
           android:exported="false"
           android:foregroundServiceType="location" />
 
       <!-- Add boot receiver for background service -->
       <receiver
-          android:name="com.move.app.BootReceiver"
+          android:name="com.bandmate.app.BootReceiver"
           android:enabled="true"
           android:exported="true">
           <intent-filter>

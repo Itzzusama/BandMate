@@ -1,4 +1,4 @@
-package com.move.app
+package com.bandmate.app
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

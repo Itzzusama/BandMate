@@ -1,4 +1,4 @@
-package com.move.app
+package com.bandmate.app
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -11,8 +11,8 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
-import com.move.app.LocationPackage // Add this import for background service
-import com.move.app.GetCurrentLocationPackage // Add this import for get current location
+import com.bandmate.app.LocationPackage // Add this import for background service
+import com.bandmate.app.GetCurrentLocationPackage // Add this import for get current location
 
 class MainApplication : Application(), ReactApplication {
 

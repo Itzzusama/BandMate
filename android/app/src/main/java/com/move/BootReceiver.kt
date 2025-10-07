@@ -1,4 +1,4 @@
-package com.move.app
+package com.bandmate.app
 
 import android.content.BroadcastReceiver
 import android.content.Context
