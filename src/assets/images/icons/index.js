@@ -191,4 +191,6 @@ export const PNGIcons = {
   heartFill: require("./heartFill.png"),
   flag: require("./flag.png"),
   Geneva: require("./Geneva.png"),
+  sola: require("./sola.png"),
+  logo: require("./logo.png"),
 };

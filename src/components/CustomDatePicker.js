@@ -111,8 +111,8 @@ const CustomDatePicker = ({
                   : showSuccessColor
                   ? "#64CD75"
                   : value
-                  ? COLORS.black
-                  : "#1212127A"
+                  ? COLORS.white
+                  : "#FFFFFF7A"
               }
             />
           </View>

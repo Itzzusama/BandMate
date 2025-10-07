@@ -168,15 +168,14 @@ const Email = forwardRef(
                 fontSize={14}
                 fontFamily={item == isType ? fonts.medium : fonts.regular}
                 onPress={() => setType(item)}
-                backgroundColor={item == isType ? COLORS.black : "#1212120A"}
-                color={item == isType ? COLORS.white : COLORS.gray1}
-                marginTop={20}
+                backgroundColor={item == isType ? COLORS.white : COLORS.inputBg}
+                color={item == isType ? COLORS.black : COLORS.white2}
               />
             ))}
           </View>
           <CustomText
             label={`${
-              state?.nameDisplayPreference === "first" ? "Hi" : "Hello"
+              state?.nameDisplayPreference === "first" ? "Hi " : "Hello "
             }${
               state?.nameDisplayPreference === "sur"
                 ? state?.gender === "FEMALE"
@@ -199,19 +198,16 @@ const Email = forwardRef(
                 ? "What is your phone number?"
                 : "What is your email?"
             }
-            fontFamily={fonts.semiBold}
+            fontFamily={fonts.abril}
             fontSize={24}
             lineHeight={24 * 1.4}
             marginBottom={6}
-            color={COLORS.black}
+            color={COLORS.white}
           />
           {isType == "Phone Number" ? (
             <>
               <CustomPhoneInput
                 value={phone}
-                rightIcon
-                rightIconSource={PNGIcons.phoneInputBg}
-                rightIconStyle={{ height: 32, width: 32 }}
                 setValue={(text) => {
                   setPhone(text);
                   if (phoneError) {
@@ -266,7 +262,7 @@ const Email = forwardRef(
               <View
                 style={{
                   borderTopWidth: 1,
-                  borderColor: COLORS.lightGray,
+                  borderColor: COLORS.inputBg,
                   marginBottom: 16,
                   marginTop: 18,
                 }}
@@ -309,7 +305,7 @@ const Email = forwardRef(
                       }
                       size={28}
                       color={
-                        verifyVia == "sms" ? COLORS.darkPurple : COLORS.gray2
+                        verifyVia == "sms" ? COLORS.btnColor : COLORS.white3
                       }
                     />
                   </View>
@@ -356,8 +352,8 @@ const Email = forwardRef(
                       size={28}
                       color={
                         verifyVia == "whatsapp"
-                          ? COLORS.darkPurple
-                          : COLORS.gray2
+                          ? COLORS.btnColor
+                          : COLORS.white3
                       }
                     />
                   </View>
@@ -422,7 +418,7 @@ const Email = forwardRef(
               <View
                 style={{
                   borderTopWidth: 1,
-                  borderColor: COLORS.lightGray,
+                  borderColor: COLORS.inputBg,
                   marginBottom: 16,
                   marginTop: 18,
                 }}
@@ -451,7 +447,7 @@ const Email = forwardRef(
                     family="MaterialCommunityIcons"
                     name={selected ? "check-circle" : "radiobox-blank"}
                     size={28}
-                    color={selected ? COLORS.darkPurple : COLORS.gray2}
+                    color={selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
               </TouchableOpacity>
@@ -479,7 +475,7 @@ const Email = forwardRef(
                     family="MaterialCommunityIcons"
                     name={!selected ? "check-circle" : "radiobox-blank"}
                     size={28}
-                    color={!selected ? COLORS.darkPurple : COLORS.gray2}
+                    color={!selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
               </TouchableOpacity>
@@ -495,10 +491,9 @@ export default Email;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.white,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#1212120A",
+    borderColor: COLORS.inputBg,
     paddingHorizontal: 14,
     paddingVertical: 10,
     flexDirection: "row",
@@ -508,11 +503,15 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: COLORS.inputBg,
+    marginTop: 20,
+    padding: 4,
+    borderRadius: 999,
   },
   icon: {
     width: 14,
     height: 14,
     marginRight: 6,
-    tintColor: COLORS.black,
+    tintColor: COLORS.white,
   },
 });

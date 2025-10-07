@@ -27,7 +27,7 @@ const AuthHeader = ({
             fontFamily={fonts.regular}
             fontSize={14}
             lineHeight={22}
-            color={COLORS.gray1}
+            color={COLORS.white2}
           />
         </View>
         <View style={styles.right}>
@@ -43,7 +43,7 @@ const AuthHeader = ({
               family="MaterialIcons"
               name="info-outline"
               size={24}
-              color={COLORS.black}
+              color={COLORS.white}
             />
           </View>
         </View>
@@ -58,7 +58,7 @@ export default AuthHeader;
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
     paddingTop: 24,
     paddingBottom: 8,
   },
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 99,
-    backgroundColor: "#12121214",
+    backgroundColor: COLORS.inputBg,
     alignItems: "center",
     justifyContent: "center",
   },

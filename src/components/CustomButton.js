@@ -13,6 +13,7 @@ import ImageFast from "./ImageFast";
 import { Images } from "../assets/images";
 import { COLORS } from "../utils/COLORS";
 import fonts from "../assets/fonts";
+import { PNGIcons } from "../assets/images/icons";
 
 const CustomButton = ({
   onPress,
@@ -52,6 +53,7 @@ const CustomButton = ({
   secondText,
   iconColor,
   textTransform,
+  leftView,
 }) => {
   const [animation] = useState(new Animated.Value(1));
 
@@ -87,9 +89,8 @@ const CustomButton = ({
         isBoarder
           ? {
               borderWidth: 1,
-              borderColor: secondBorderColor || "#1212127A",
+              borderColor: borderColor || "#1212127A",
               borderRadius: 100,
-              padding: 4,
             }
           : {},
       ]}
@@ -105,10 +106,10 @@ const CustomButton = ({
               ? "transparent"
               : backgroundColor
               ? backgroundColor
-              : COLORS.black,
+              : COLORS.btnColor,
             marginTop,
             width: "100%",
-            height: isBoarder ? 44 : height,
+            height: height,
             borderRadius,
             flexDirection,
             alignItems,
@@ -138,7 +139,7 @@ const CustomButton = ({
         {loading && (
           <ActivityIndicator
             size={loadingSize || 25}
-            color={indicatorColor || COLORS.white}
+            color={indicatorColor || COLORS.black}
           />
         )}
         {icon && (
@@ -155,11 +156,22 @@ const CustomButton = ({
         )}
 
         {!loading && (
-          <View style={{ alignItems: "center" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {leftView && (
+              <Image
+                source={PNGIcons.sola}
+                style={{
+                  width: 24,
+                  height: 24,
+                  resizeMode: "contain",
+                  marginRight: 5,
+                }}
+              />
+            )}
             <CustomText
               textStyle={customText}
               label={title}
-              color={color || COLORS.white}
+              color={color || COLORS.black}
               fontFamily={fontFamily || fonts.medium}
               fontSize={fontSize}
               lineHeight={fontSize * 1.4}

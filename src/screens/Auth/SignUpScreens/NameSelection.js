@@ -33,10 +33,10 @@ const NameSelection = forwardRef(
         <View>
           <CustomText
             label="How Would You Like To Be Addressed?"
-            fontFamily={fonts.semiBold}
+            fontFamily={fonts.abril}
             fontSize={24}
             lineHeight={24 * 1.4}
-            color={COLORS.black}
+            color={COLORS.white}
             marginTop={20}
             marginBottom={20}
           />
@@ -68,9 +68,7 @@ const NameSelection = forwardRef(
                     selected === "first" ? "radiobox-marked" : "radiobox-blank"
                   }
                   size={28}
-                  color={
-                    selected === "first" ? COLORS.darkPurple : COLORS.gray2
-                  }
+                  color={selected === "first" ? COLORS.btnColor : COLORS.gray2}
                   style={{ marginTop: 10 }}
                 />
               </View>
@@ -102,7 +100,7 @@ const NameSelection = forwardRef(
                     selected === "sur" ? "radiobox-marked" : "radiobox-blank"
                   }
                   size={28}
-                  color={selected === "sur" ? COLORS.darkPurple : COLORS.gray2}
+                  color={selected === "sur" ? COLORS.btnColor : COLORS.gray2}
                   style={{ marginTop: 10 }}
                 />
               </View>
@@ -122,10 +120,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    backgroundColor: COLORS.white,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#1212120A",
+    borderColor: COLORS.inputBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
     flexDirection: "row",

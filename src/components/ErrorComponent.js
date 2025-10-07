@@ -31,7 +31,7 @@ const ErrorComponent = ({
           }
           size={12}
           marginRight={4}
-          color={color || "#121212A3"}
+          color={color || COLORS.white2}
           marginTop={infoTop || 3}
         />
       )}
@@ -40,7 +40,7 @@ const ErrorComponent = ({
         label={errorTitle}
         fontSize={12}
         numberOfLines={numberOfLines}
-        color={color || COLORS.gray1}
+        color={color || COLORS.white2}
         lineHeight={12 * 1.4}
         width={TextWidth}
         textTransform="none"

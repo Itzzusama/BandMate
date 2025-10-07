@@ -7,18 +7,7 @@ const AuthSlider = ({ min, max, marginTop, marginBottom }) => {
       style={[styles.container, { marginTop: marginTop || 20, marginBottom }]}
     >
       <View style={styles.sliderTrack}>
-        {Array.from({ length: max }).map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.block,
-              {
-                backgroundColor:
-                  index < min ? COLORS.authHeader : COLORS.lightGray,
-              },
-            ]}
-          />
-        ))}
+        <View style={[styles.block]} />
       </View>
     </View>
   );
@@ -33,14 +22,15 @@ const styles = StyleSheet.create({
   },
   sliderTrack: {
     width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderRadius: 99,
+    height: 4,
+    backgroundColor: COLORS.inputBg,
+    borderRadius: 1,
     overflow: "hidden",
   },
   block: {
-    flex: 1,
-    height: 6,
-    marginLeft: -1,
+    width: 87.85,
+    height: 4,
+    backgroundColor: COLORS.white,
+    borderRadius: 1,
   },
 });

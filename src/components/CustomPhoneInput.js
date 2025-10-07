@@ -51,7 +51,7 @@ const CustomPhoneInput = ({
   isIcon,
   rightIcon,
   rightIconSource,
-  rightIconStyle
+  rightIconStyle,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showSuccessColor, setShowSuccessColor] = useState(false);
@@ -298,7 +298,7 @@ const CustomPhoneInput = ({
                 ? "#EE1045CC"
                 : showSuccessColor
                 ? "#64CD75"
-                : COLORS.subtitle)
+                : COLORS.white2)
             }
             fontFamily={fonts.medium}
             fontSize={12}
@@ -325,7 +325,7 @@ const CustomPhoneInput = ({
               lineHeight={16 * 1.4}
               fontFamily={fonts.medium}
               color={
-                error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.black
+                error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.white
               }
               marginLeft={6}
               marginRight={6}
@@ -341,19 +341,26 @@ const CustomPhoneInput = ({
                   ? "#EE1045"
                   : showSuccessColor
                   ? "#64CD75"
-                  : COLORS.black,
+                  : COLORS.white,
               },
             ]}
             value={phoneNumber}
             onChangeText={handlePhoneChange}
             placeholder={placeholder}
-            placeholderTextColor={COLORS.gray}
+            placeholderTextColor={COLORS.white2}
             keyboardType="phone-pad"
             onFocus={handleFocus}
             onBlur={handleBlur}
             maxLength={15}
           />
-
+          {showSuccessColor && (
+            <Icons
+              family="MaterialCommunityIcons"
+              name={"check-circle"}
+              size={28}
+              color={"#64CD75"}
+            />
+          )}
           {rightIcon && (
             <View
               style={[styles.rightIconBg, { backgroundColor: rightIcon.color }]}

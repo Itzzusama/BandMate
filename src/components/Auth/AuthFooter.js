@@ -49,16 +49,12 @@ const AuthFooter = ({
               ? onBackPress
               : () => navigation.canGoBack() && navigation.goBack()
           }
-          style={[
-            styles.backButton,
-            {
-              backgroundColor: iconBackgroundColor || COLORS.lightGray,
-            },
-          ]}
+          style={[styles.backButton, { backgroundColor: COLORS.inputBg }]}
         >
           <Image
             source={backImage || PNGIcons.ovalBack}
             style={{ height: 48, width: 48 }}
+            resizeMode="contain"
           />
         </TouchableOpacity>
         <CustomButton
@@ -121,10 +117,10 @@ const AuthFooter = ({
               lineHeight: 20,
             }}
           >
-            By pressing
-            <Text style={styles.darkText}> “Continue” </Text>
-            you agree with
-            <Text style={[styles.darkText]}> move </Text>
+            {`By pressing "`}
+            <Text style={styles.darkText}> Continue</Text>
+            {`" you agree with`}
+            <Text style={[styles.darkText]}> BandMate </Text>
             <Text
               style={[styles.darkText, { textDecorationLine: "underline" }]}
             >
@@ -163,6 +159,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 99,
     marginRight: 8,
+    backgroundColor: COLORS.inputBg,
   },
   darkText: {
     fontSize: 12,

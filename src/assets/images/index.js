@@ -214,4 +214,6 @@ export const Images = {
   homeSheetImg5: require("./homeSheetImg5.png"),
   store: require("./store.png"),
   refugeBadge: require("./refugeBadge.png"),
+  startBg: require("./startBg.png"),
+  userPics: require("./User-pics.png"),
 };

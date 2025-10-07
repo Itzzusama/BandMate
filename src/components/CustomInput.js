@@ -18,7 +18,7 @@ const CustomInput = ({
   keyboardType,
   multiline,
   maxLength,
-  placeholderTextColor = COLORS.gray2,
+  placeholderTextColor = COLORS.white3,
   editable,
   textAlignVertical,
   marginBottom,
@@ -136,7 +136,7 @@ const CustomInput = ({
                   ? "#EE1045"
                   : showSuccessColor
                   ? "#64CD75"
-                  : COLORS.black,
+                  : COLORS.white,
               },
             ]}
             secureTextEntry={

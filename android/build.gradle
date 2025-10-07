@@ -7,6 +7,7 @@ buildscript {
         // ndkVersion = "28.0.13004108"
         // ndkVersion = "25.1.8937393"
         ndkVersion = "26.1.10909125"
+        // ndkVersion = "29.0.14033849"
         googlePlayServicesVersion = "18.2.0"
         androidMapsUtilsVersion = "3.4.0"
         // add this 2 lines for background service

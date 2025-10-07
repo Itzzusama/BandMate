@@ -2,6 +2,10 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "src/assets/fonts/AbrilFatface-Regular.ttf",
+      "sha1": "545553bf8733c6edc2846ba1b420f19e4a6ff2de"
+    },
+    {
       "path": "src/assets/fonts/Poppins-Black.ttf",
       "sha1": "645e04c53c6b5b35bce654a811ebce16af8aa721"
     },
@@ -39,7 +43,7 @@
     },
     {
       "path": "src/assets/fonts/index.js",
-      "sha1": "c2f452f3e45ebcd880a1b0f773bce89c96b0b2d5"
+      "sha1": "fc07a86890b4c83a606faafea3e55b3714a6830c"
     }
   ]
 }

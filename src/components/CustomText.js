@@ -53,7 +53,7 @@ const CustomText = ({
         style={[
           {
             fontSize: defaultFontSize,
-            color: color || COLORS.primaryColor,
+            color: color || COLORS.white,
             marginTop: marginTop || 0,
             marginBottom: marginBottom || 0,
             marginLeft: marginLeft || 0,

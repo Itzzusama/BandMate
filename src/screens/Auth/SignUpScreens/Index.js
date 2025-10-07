@@ -93,7 +93,7 @@ const SignUpScreens = () => {
         );
       case 5:
         return (
-          <NameSelection
+          <Gender
             ref={stepRef}
             currentIndex={currentIndex}
             setCurrentIndex={setCurrentIndex}
@@ -103,7 +103,7 @@ const SignUpScreens = () => {
         );
       case 6:
         return (
-          <Gender
+          <NameSelection
             ref={stepRef}
             currentIndex={currentIndex}
             setCurrentIndex={setCurrentIndex}
@@ -160,13 +160,13 @@ const SignUpScreens = () => {
     <ScreenWrapper
       paddingBottom={12}
       scrollEnabled
-      footerUnScrollable={() =>
-          <AuthFooter
+      footerUnScrollable={() => (
+        <AuthFooter
           paddingHorizontal={12}
-            onPress={() => stepRef.current?.submit?.()}
-            onBackPress={() => stepRef.current?.back?.()}
-          />
-      }
+          onPress={() => stepRef.current?.submit?.()}
+          onBackPress={() => stepRef.current?.back?.()}
+        />
+      )}
     >
       <AuthHeader
         step={currentIndex}
@@ -181,9 +181,9 @@ const SignUpScreens = () => {
             : currentIndex === 4
             ? "Surname"
             : currentIndex === 5
-            ? "Addressing"
-            : currentIndex === 6
             ? "Gender"
+            : currentIndex === 6
+            ? "Addressing"
             : currentIndex === 7
             ? "Email"
             : currentIndex === 8

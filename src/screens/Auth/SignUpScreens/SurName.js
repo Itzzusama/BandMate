@@ -51,7 +51,7 @@ const SurName = forwardRef(
         <View>
           <CustomText
             label="What's your surname?"
-            fontFamily={fonts.semiBold}
+            fontFamily={fonts.abril}
             fontSize={24}
             lineHeight={24 * 1.4}
             marginTop={12}
@@ -71,10 +71,7 @@ const SurName = forwardRef(
             }}
             error={error}
           />
-          <ErrorComponent
-            errorTitle="This will appear on your profile."
-            marginBottom={2}
-          />
+
           <ErrorComponent errorTitle="Inappropriate names are forbidded." />
         </View>
       </View>

@@ -151,14 +151,14 @@ const CustomDropdown = ({
           label={itemText || ""}
           fontSize={16}
           fontFamily={fonts.medium}
-          color={isSelected ? COLORS.darkPurple : COLORS.black}
+          color={isSelected ? COLORS.btnColor : COLORS.white3}
           style={{ flex: 1 }}
         />
         <Icons
           family="MaterialCommunityIcons"
           name={isSelected ? "radiobox-marked" : "radiobox-blank"}
           size={24}
-          color={isSelected ? COLORS.darkPurple : COLORS.gray2}
+          color={isSelected ? COLORS.btnColor : COLORS.white3}
         />
       </TouchableOpacity>
     );
@@ -229,7 +229,7 @@ const CustomDropdown = ({
                     : showSuccessColor
                     ? "#64CD75"
                     : value
-                    ? COLORS.black
+                    ? COLORS.white
                     : COLORS.gray2
                 }
                 fontFamily={fonts.regular}
@@ -251,7 +251,7 @@ const CustomDropdown = ({
           </View>
           {!showIcon ? (
             <Icons
-              style={{ color: COLORS.gray1, fontSize: 20 }}
+              style={{ color: COLORS.white3, fontSize: 20 }}
               family="Entypo"
               name="chevron-down"
             />
@@ -299,10 +299,11 @@ const CustomDropdown = ({
                 onPress={closeModal}
                 activeOpacity={0.6}
               >
-                <ImageFast
-                  source={PNGIcons.cross}
-                  style={styles.cross}
-                  resizeMode="contain"
+                <Icons
+                  family="Entypo"
+                  name={"cross"}
+                  size={24}
+                  color={COLORS.white3}
                 />
               </TouchableOpacity>
             </View>
@@ -390,7 +391,7 @@ const styles = StyleSheet.create({
     marginTop: -2,
   },
   modalContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
     padding: 12,
     borderRadius: 20,
   },
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
   },
   crossContainer: {
     borderRadius: 100,
-    backgroundColor: "rgba(18, 18, 18, 0.04)",
+    backgroundColor: COLORS.inputBg,
     width: 32,
     height: 32,
     justifyContent: "center",
@@ -412,6 +413,7 @@ const styles = StyleSheet.create({
   cross: {
     width: 16,
     height: 16,
+    tintColor: COLORS.white,
   },
   modalItem: {
     flexDirection: "row",
@@ -424,7 +426,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   selectedItem: {
-    backgroundColor: "rgba(106, 90, 224, 0.1)",
+    backgroundColor: COLORS.inputBg,
   },
   searchInput: {
     height: 45,

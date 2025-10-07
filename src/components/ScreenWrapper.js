@@ -16,7 +16,7 @@ const FocusAwareStatusBar = (props) => {
     <StatusBar
       hidden
       barStyle="dark-content"
-      backgroundColor={COLORS.white}
+      backgroundColor={COLORS.black}
       {...props}
     />
   ) : null;
@@ -24,11 +24,11 @@ const FocusAwareStatusBar = (props) => {
 
 const ScreenWrapper = ({
   children,
-  statusBarColor = COLORS.white,
+  statusBarColor = COLORS.black,
   translucent = false,
   scrollEnabled = false,
   backgroundImage,
-  backgroundColor = COLORS.white,
+  backgroundColor = COLORS.black,
   headerUnScrollable = () => null,
   footerUnScrollable = () => null,
   barStyle = "dark-content",
@@ -52,7 +52,7 @@ const ScreenWrapper = ({
           flex: 1,
           backgroundColor: backgroundImage ? "transparent" : backgroundColor,
           paddingTop: translucent ? 0 : insets.top,
-          paddingBottom: paddingBottom 
+          paddingBottom: paddingBottom,
         }}
       >
         <FocusAwareStatusBar
