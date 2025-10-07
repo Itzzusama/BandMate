@@ -5,6 +5,7 @@ import { usersSlice } from "./usersSlice";
 import { chatSlice } from "./ChatSlice";
 import appSliceReducer from "./appSlice";
 import bottomSheetSliceReducer from "./bottomSheetSlice";
+import { themeSlice } from "./themeSlice";
 
 export const rootReducer = combineReducers({
   users: usersSlice.reducer,
@@ -12,4 +13,5 @@ export const rootReducer = combineReducers({
   chat: chatSlice.reducer,
   navApp: appSliceReducer,
   navBottomSheet: bottomSheetSliceReducer,
+  theme: themeSlice,
 });

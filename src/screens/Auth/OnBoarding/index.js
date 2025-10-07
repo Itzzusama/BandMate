@@ -51,17 +51,17 @@ const OnBoarding = () => {
               fontSize={30}
               fontFamily={fonts.medium}
               color={COLORS.white}
-              lineHeight={27 * 1.4}
-              marginBottom={48}
+              lineHeight={30 * 1.4}
               alignSelf={"center"}
               textAlign={"center"}
+              marginBottom={28}
             />
 
             <CustomButton
               title="Continue With Sola"
               backgroundColor={COLORS.white}
               color={COLORS.black}
-              marginBottom={10}
+              marginBottom={8}
               leftView
             />
 
@@ -105,6 +105,6 @@ const styles = StyleSheet.create({
     width: 44,
     resizeMode: "contain",
     alignSelf: "center",
-    marginBottom: 18,
+    marginBottom: 12,
   },
 });

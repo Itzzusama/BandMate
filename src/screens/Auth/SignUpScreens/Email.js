@@ -503,10 +503,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.inputBg,
-    marginTop: 20,
-    padding: 4,
-    borderRadius: 999,
   },
   icon: {
     width: 14,

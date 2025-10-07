@@ -27,6 +27,7 @@ import { COLORS } from "../../../utils/COLORS";
 import Divider from "../../../components/Divider";
 import TipCard from "./molecules/TipCard";
 import BetterPlaceCard from "./molecules/BetterPlaceCard";
+import GenevaCard from "./molecules/GenevaCard";
 
 const conditionArray = [
   {
@@ -198,16 +199,14 @@ const BookingConfirmation = () => {
           isChange
         />
 
-
-<GenevaCard/>
+        <GenevaCard />
 
         <Divider thickness={4} marginVertical={16} />
-
 
         <BuyingProtectionCard />
 
         <Divider thickness={4} marginVertical={16} />
-        <ApplyPromoCard  isBorder={false}/>
+        <ApplyPromoCard isBorder={false} />
         <Divider thickness={4} marginVertical={16} />
 
         <BetterPlaceCard
