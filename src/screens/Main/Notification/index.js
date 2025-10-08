@@ -1,19 +1,15 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
-import Header from "../../../components/Header";
-import TopTabWithBG from "../../../components/TopTabWithBG";
-import CustomText from "../../../components/CustomText";
-import CustomButton from "../../../components/CustomButton";
-import CustomCheckBox from "../../../components/CustomCheckBox";
-import ImageFast from "../../../components/ImageFast";
-import Icons from "../../../components/Icons";
-import { COLORS } from "../../../utils/COLORS";
-import { Images } from "../../../assets/images";
-import NotificationCard from "./NotificationCard";
+import { useState } from "react";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import fonts from "../../../assets/fonts";
+import { Images } from "../../../assets/images";
+import CustomText from "../../../components/CustomText";
+import Divider from "../../../components/Divider";
+import Icons from "../../../components/Icons";
+import ImageFast from "../../../components/ImageFast";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import TopTab from "../../../components/TopTab";
-import Divider from "../../../components/Divider";
+import { COLORS } from "../../../utils/COLORS";
+import NotificationCard from "./NotificationCard";
 
 const NOTIFICATIONS = {
   today: [
@@ -94,8 +90,8 @@ const Notification = ({ navigation }) => {
             <CustomText
               label="Notifications"
               fontFamily={fonts.semiBold}
-              fontSize={22}
-              lineHeight={22 * 1.4}
+              fontSize={20}
+              lineHeight={20 * 1.4}
               textStyle={{ marginLeft: 4 }}
             />
           </View>
@@ -123,7 +119,7 @@ const Notification = ({ navigation }) => {
         rounded
         scrollViewPaddingHorizontal={12}
       />
-      <Divider thickness={5} marginVertical={8} />
+      <Divider thickness={4} marginVertical={8} />
       <View style={styles.dateRow}>
         <Image
           source={Images.calender}
@@ -149,9 +145,8 @@ const Notification = ({ navigation }) => {
         <CustomText
           label="All Good!"
           fontSize={18}
-          color={COLORS.white}
-          fontFamily={fonts.semiBold}
-          style={styles.allGoodTitle}
+          color={COLORS.black}
+          fontFamily={fonts.medium}
           marginBottom={6}
         />
         <View style={styles.allGoodContent}>
@@ -181,9 +176,15 @@ const Notification = ({ navigation }) => {
           fontFamily={fonts.medium}
           style={styles.sectionTitle}
         />
-        {NOTIFICATIONS.today.map((item) => (
-          <NotificationCard key={item.id} {...item} />
+        {NOTIFICATIONS.today.map((item, index) => (
+          <NotificationCard
+            onPress={() => navigation.navigate("AddSocials")}
+            key={item.id}
+            {...item}
+          />
         ))}
+        <Divider thickness={5} marginBottom={16} marginTop={10} />
+
         <CustomText
           label="Yesterday"
           fontFamily={fonts.medium}
@@ -195,6 +196,8 @@ const Notification = ({ navigation }) => {
         {NOTIFICATIONS.yesterday.map((item) => (
           <NotificationCard key={item.id} {...item} />
         ))}
+        <Divider thickness={5} marginBottom={16} marginTop={10} />
+
         <CustomText
           label="More Than 3 Days Ago"
           fontFamily={fonts.medium}
@@ -251,20 +254,17 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.darkPurple,
     marginBottom: 16,
     padding: 12,
+    paddingTop: 6,
     borderTopColor: COLORS.lightGray,
     borderBottomColor: COLORS.lightGray,
   },
-  allGoodTitle: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 4,
-  },
+
   allGoodContent: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
     borderRadius: 12,
-    marginBottom: 12,
+    // marginBottom: 12,
     padding: 12,
     gap: 12,
   },

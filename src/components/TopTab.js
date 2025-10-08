@@ -27,7 +27,7 @@ const TopTab = ({
   fontFamily = fonts.semiBold,
   scrollViewPaddingHorizontal = 0,
   activeColor,
-  imgMarginRight
+  imgMarginRight,
 }) => {
   return (
     <>
@@ -49,9 +49,7 @@ const TopTab = ({
                 styles.roundedContainer,
                 {
                   backgroundColor:
-                    tab == index
-                      ? activeColor || COLORS.primaryColor
-                      : "transparent",
+                    tab == index ? activeColor || "#FFFFFF14" : "transparent",
                   height: height || 34,
                   paddingVertical: paddingVertical,
                   paddingHorizontal: paddingHorizontal,
@@ -68,7 +66,7 @@ const TopTab = ({
                   style={{
                     height: 14,
                     width: 14,
-                    marginRight:imgMarginRight,
+                    marginRight: imgMarginRight,
                     tintColor:
                       tab == index ? COLORS.white : COLORS.primaryColor,
                   }}
@@ -79,7 +77,7 @@ const TopTab = ({
                 lineHeight={14 * 1.4}
                 fontFamily={fontFamily}
                 textTransform="capitalize"
-                color={rounded && tab == index ? COLORS.white : COLORS.black}
+                color={rounded && tab == index ? COLORS.white : COLORS.white2}
               />
               {tab === index && !rounded && <View style={styles.indicator} />}
             </TouchableOpacity>
@@ -117,8 +115,8 @@ const styles = StyleSheet.create({
   },
   roundedContainer: {
     marginRight: 8,
-    borderWidth: 1.2,
-    borderColor: COLORS.lightGray,
+    // borderWidth: 1.2,
+    // borderColor: COLORS.lightGray,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

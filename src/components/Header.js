@@ -31,6 +31,7 @@ const Header = ({
   paddingTop,
   secondText,
   btnTitle,
+  secondFont,
   btn,
 }) => {
   const navigation = useNavigation();
@@ -110,25 +111,27 @@ const Header = ({
           lineHeight={24 * 1.4}
         />
 
-        <View
-          style={{
-            backgroundColor: COLORS.btnColor,
-            height: 20,
-            width: 20,
-            alignItems: "center",
-            justifyContent: "center",
-            marginLeft: 6,
-            borderRadius: 99,
-          }}
-        >
-          <CustomText
-            label={secondText}
-            color={COLORS.black}
-            fontFamily={fonts.medium}
-            textAlign={textAlign}
-            lineHeight={14 * 1.4}
-          />
-        </View>
+        {secondText && (
+          <View
+            style={{
+              backgroundColor: COLORS.btnColor,
+              height: 20,
+              width: 20,
+              alignItems: "center",
+              justifyContent: "center",
+              marginLeft: 6,
+              borderRadius: 99,
+            }}
+          >
+            <CustomText
+              label={secondText}
+              color={COLORS.black}
+              fontFamily={secondFont || fonts.medium}
+              textAlign={textAlign}
+              lineHeight={14 * 1.4}
+            />
+          </View>
+        )}
       </View>
       <View style={styles.row}>
         {onHelpPress ? (
@@ -166,7 +169,7 @@ const Header = ({
               style={{ width: 20, height: 20 }}
             />
           </TouchableOpacity>
-        ) :null}
+        ) : null}
         {isClear ? (
           <TouchableOpacity
             activeOpacity={0.9}
@@ -174,7 +177,7 @@ const Header = ({
             style={styles.clear}
           >
             <CustomText
-              label={btnTitle||"Clear All"}
+              label={btnTitle || "Clear All"}
               color={COLORS.btnColor}
               fontFamily={fonts.medium}
               fontSize={14}
