@@ -357,8 +357,9 @@ const CustomPhoneInput = ({
             <Icons
               family="MaterialCommunityIcons"
               name={"check-circle"}
-              size={28}
+              size={20}
               color={"#64CD75"}
+              style={{ bottom: 10 }}
             />
           )}
           {rightIcon && (

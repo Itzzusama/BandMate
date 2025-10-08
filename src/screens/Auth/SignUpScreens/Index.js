@@ -3,6 +3,7 @@ import { Text } from "react-native";
 
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import AuthHeader from "../../../components/Auth/AuthHeader";
+import AuthFooter from "../../../components/Auth/AuthFooter";
 
 import NameSelection from "./NameSelection";
 import ResetPassword from "./ResetPassword";
@@ -14,14 +15,21 @@ import OtpCode from "./OtpCode";
 import Gender from "./Gender";
 import Email from "./Email";
 import DOB from "./DOB";
-import AuthFooter from "../../../components/Auth/AuthFooter";
-
+import BandName from "./BandName";
+import BandMembers from "./BandMembers";
+import AgeRange from "./AgeRange";
+import Instruments from "./Instruments";
+import Level from "./Level";
+import Genres from "./Genres";
+import Artists from "./Artists";
 const SignUpScreens = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const stepRef = useRef(null);
   const steps = [
     "DOB",
     "UserType",
+    "BandName",
+    "BandMembers",
     "FirstName",
     "SurName",
     "NameSelection",
@@ -43,9 +51,12 @@ const SignUpScreens = () => {
     allowdMarketingEmails: false, // true, false
     notificationPreferences: { email: false, push: false, sms: false }, // { email: true || false, push: true || false, sms: true || false }
     gender: "", // ["MALE", "FEMALE", "OTHER", "UNISEX", "PREFER_NOT_TO_SAY"]
-    role: "", // ["user", "admin","professional", "moderator", "business", "support"]
+    role: "", // ["artist","band"]
     phone: "", // 10 digits
     verifyVia: "sms", // ["sms", "whatsapp"]
+    bandName: "",
+    bandMembers: "",
+    membersAge: "",
   };
   const [state, setState] = useState(init);
 
@@ -53,7 +64,7 @@ const SignUpScreens = () => {
     switch (currentIndex) {
       case 1:
         return (
-          <DOB
+          <Genres
             ref={stepRef}
             currentIndex={currentIndex}
             setCurrentIndex={setCurrentIndex}

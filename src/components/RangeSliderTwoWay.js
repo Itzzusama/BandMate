@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import fonts from "../assets/fonts";
 import { COLORS } from "../utils/COLORS";
 import CustomText from "./CustomText";
-
-const SLIDER_WIDTH = 350;
-const MIN_VALUE = 1;
-const MAX_VALUE = 100;
+const { width } = Dimensions.get("window");
+const SLIDER_WIDTH = width - 40;
+const MIN_VALUE = 18;
+const MAX_VALUE = 99;
 
 const MultiRangeSlider = ({
   color,
@@ -74,8 +74,8 @@ const MultiRangeSlider = ({
         max={MAX_VALUE}
         step={1}
         selectedStyle={{ backgroundColor: color ? color : COLORS.primaryColor }}
-        unselectedStyle={{ backgroundColor: "#414141" }}
-        trackStyle={{ height: 4, borderRadius: 3 }}
+        unselectedStyle={{ backgroundColor: "rgba(255, 255, 255, 0.20)" }}
+        trackStyle={{ height: 4, borderRadius: 2 }}
         markerStyle={{
           height: height || 12,
           width: width || 12,
@@ -109,12 +109,14 @@ export default MultiRangeSlider;
 const styles = StyleSheet.create({
   wrapper: {
     alignItems: "center",
+    marginTop: -4,
+    marginBottom: 10,
   },
   labelContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: SLIDER_WIDTH,
-    marginTop: -10,
+    marginTop: -12,
   },
   valueContainer: {
     padding: 12,

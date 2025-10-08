@@ -98,10 +98,10 @@ const SearchInput = ({
           onPress={onPress}
         >
           <Icons
-            family="Feather"
+            family="Fontisto"
             name="search"
-            color={isChange ? "#fff" : COLORS.primaryColor}
-            size={20}
+            color={isChange ? "#fff" : COLORS.white3}
+            size={18}
           />
         </TouchableOpacity>
 
@@ -115,7 +115,7 @@ const SearchInput = ({
           value={value}
           onChangeText={onChangeText}
           maxLength={maxLength}
-          placeholderTextColor={COLORS.gray2}
+          placeholderTextColor={COLORS.white3}
           autoFocus={autoFocus}
           editable={editable}
         />
@@ -158,10 +158,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
-    height: 46,
-    borderRadius: 99,
-    borderWidth: 1,
-    borderColor: COLORS.gray1,
+    paddingVertical: 8,
+    height: 48,
+    borderRadius: 12,
+
     flex: 1,
   },
   input: {
@@ -169,9 +169,10 @@ const styles = StyleSheet.create({
     height: "100%",
     padding: 0,
     margin: 0,
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: 16,
     color: COLORS.primaryColor,
+    marginLeft: 5,
   },
   searchIcon: {
     width: 32,

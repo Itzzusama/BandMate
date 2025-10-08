@@ -86,7 +86,7 @@ const AuthFooter = ({
       <View
         style={[
           styles.row,
-          { alignSelf: "center", marginVertical: 10, marginTop: 6 },
+          { alignSelf: "center", marginVertical: 10, marginBottom: 17 },
         ]}
       >
         {!isMain && (
@@ -114,7 +114,7 @@ const AuthFooter = ({
               fontSize: 12,
               fontFamily: fonts.regular,
               color: COLORS.gray2,
-              lineHeight: 20,
+              lineHeight: 12 * 1.4,
             }}
           >
             {`By pressing "`}

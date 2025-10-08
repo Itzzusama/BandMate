@@ -61,14 +61,14 @@ const UserType = forwardRef(
 
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => handleRoleSelection("user")}
+            onPress={() => handleRoleSelection("artist")}
             style={[
               styles.box,
               {
                 backgroundColor: COLORS.darkGreen,
                 borderWidth: 3,
                 borderColor:
-                  selectedRole === "user" ? COLORS.white : "transparent",
+                  selectedRole === "artist" ? COLORS.white : "transparent",
               },
             ]}
           >
@@ -83,16 +83,14 @@ const UserType = forwardRef(
 
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => handleRoleSelection("professional")}
+            onPress={() => handleRoleSelection("band")}
             style={[
               styles.box,
               {
                 backgroundColor: COLORS.pink,
                 borderWidth: 3,
                 borderColor:
-                  selectedRole === "professional"
-                    ? COLORS.white
-                    : "transparent",
+                  selectedRole === "band" ? COLORS.white : "transparent",
               },
             ]}
           >

@@ -103,13 +103,14 @@ const CustomInput = ({
                 ? "#EE1045CC"
                 : showSuccessColor
                 ? "#64CD75"
-                : COLORS.subtitle)
+                : COLORS.white2)
             }
             fontFamily={fonts.medium}
             fontSize={12}
             textTransform={"uppercase"}
             marginTop={4}
             lineHeight={12 * 1.4}
+            marginBottom={-4}
           />
         )}
         <View style={[styles.mainContainer]}>
