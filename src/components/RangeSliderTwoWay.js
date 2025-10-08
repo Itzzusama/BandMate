@@ -1,43 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import fonts from "../assets/fonts";
 import { COLORS } from "../utils/COLORS";
 import CustomText from "./CustomText";
+
 const { width } = Dimensions.get("window");
-const SLIDER_WIDTH = width - 40;
-const MIN_VALUE = 18;
-const MAX_VALUE = 99;
+const SLIDER_WIDTH = width - 30;
 
 const MultiRangeSlider = ({
   color,
   height,
-  width,
+  width: thumbWidth,
   showValue = true,
   leftTitle,
   rightTitle,
+  min = 18,
+  max = 99,
+  step = 1,
+  initialLowValue = 18,
+  initialHighValue = 50,
+  onValuesChange = () => {},
 }) => {
-  const [range, setRange] = useState([MIN_VALUE, MAX_VALUE]);
+  const [range, setRange] = useState([initialLowValue, initialHighValue]);
 
-  const onValuesChange = (values) => {
+  // keep internal state synced if props change
+  useEffect(() => {
+    setRange([initialLowValue, initialHighValue]);
+  }, [initialLowValue, initialHighValue]);
+
+  const handleValuesChange = (values) => {
     setRange(values);
+    onValuesChange(values[0], values[1]); // send values to parent
   };
 
   return (
     <View style={styles.wrapper}>
       {!showValue && (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 8,
-            marginVertical: 12,
-          }}
-        >
+        <View style={styles.valuesRow}>
           <View style={styles.valueContainer}>
             <CustomText
-              label={"Mininum (kW)"}
+              label={"Minimum age"}
               fontSize={12}
               color={COLORS.gray2}
               lineHeight={1.4 * 12}
@@ -46,12 +49,13 @@ const MultiRangeSlider = ({
               fontFamily={fonts.medium}
               fontSize={16}
               lineHeight={1.4 * 16}
-              label={`$ ${range[0]}`}
+              label={`${range[0]} yrs`}
             />
           </View>
+
           <View style={styles.valueContainer}>
             <CustomText
-              label={"Mininum (kW)"}
+              label={"Maximum age"}
               fontSize={12}
               color={COLORS.gray2}
               lineHeight={1.4 * 12}
@@ -60,7 +64,7 @@ const MultiRangeSlider = ({
               fontFamily={fonts.medium}
               fontSize={16}
               lineHeight={1.4 * 16}
-              label={`$ ${range[1]}`}
+              label={`${range[1]} yrs`}
             />
           </View>
         </View>
@@ -69,34 +73,35 @@ const MultiRangeSlider = ({
       <MultiSlider
         values={range}
         sliderLength={SLIDER_WIDTH}
-        onValuesChange={onValuesChange}
-        min={MIN_VALUE}
-        max={MAX_VALUE}
-        step={1}
-        selectedStyle={{ backgroundColor: color ? color : COLORS.primaryColor }}
+        onValuesChange={handleValuesChange}
+        min={min}
+        max={max}
+        step={step}
+        selectedStyle={{ backgroundColor: color || COLORS.primaryColor }}
         unselectedStyle={{ backgroundColor: "rgba(255, 255, 255, 0.20)" }}
         trackStyle={{ height: 4, borderRadius: 2 }}
         markerStyle={{
-          height: height || 12,
-          width: width || 12,
+          height: height || 14,
+          width: thumbWidth || 14,
           borderRadius: 99,
-          backgroundColor: color ? color : COLORS.primaryColor,
+          backgroundColor: color || COLORS.primaryColor,
           top: 2,
         }}
       />
+
       {showValue && (
         <View style={styles.labelContainer}>
           <CustomText
             fontFamily={fonts.medium}
             color={"#848484"}
             fontSize={12}
-            label={leftTitle || `$ ${range[0]}`}
+            label={leftTitle || `${range[0]} yrs`}
           />
           <CustomText
             fontFamily={fonts.medium}
             color={"#848484"}
             fontSize={12}
-            label={rightTitle || `$ ${range[1]}`}
+            label={rightTitle || `${range[1]} yrs`}
           />
         </View>
       )}
@@ -118,11 +123,17 @@ const styles = StyleSheet.create({
     width: SLIDER_WIDTH,
     marginTop: -12,
   },
+  valuesRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    marginVertical: 12,
+  },
   valueContainer: {
     padding: 12,
     borderRadius: 12,
     width: "48%",
-    // alignItems: "center",
     backgroundColor: COLORS.lightGray,
   },
 });

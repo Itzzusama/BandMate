@@ -6,16 +6,19 @@ import Icons from "../../../components/Icons";
 
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const NameSelection = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const onboardingCount = useSelector(count);
     const [selected, setSelected] = useState(
       state?.nameDisplayPreference || "first"
     );
 
     const submit = () => {
       setState({ ...state, nameDisplayPreference: selected });
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };

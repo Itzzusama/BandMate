@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import { Text } from "react-native";
 
 import ScreenWrapper from "../../../components/ScreenWrapper";
@@ -22,49 +22,80 @@ import Instruments from "./Instruments";
 import Level from "./Level";
 import Genres from "./Genres";
 import Artists from "./Artists";
+
 const SignUpScreens = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const stepRef = useRef(null);
-  const steps = [
-    "DOB",
-    "UserType",
-    "BandName",
-    "BandMembers",
-    "FirstName",
-    "SurName",
-    "NameSelection",
-    "Gender",
-    "Email",
-    "OtpCode",
-    "Password",
-    "ConfirmPassword",
-  ];
+
   const init = {
-    email: "", // email@example.com
-    password: "", // 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
-    dob: "", // 1990-01-01
-    pin: "", // 4 digit pin
-    first_name: "", // only alphabets
-    sur_name: "", // only alphabets
-    nameDisplayPreference: "", // ["first", "sur"]
-    allowdPersonalizedAds: false, // true, false
-    allowdMarketingEmails: false, // true, false
-    notificationPreferences: { email: false, push: false, sms: false }, // { email: true || false, push: true || false, sms: true || false }
-    gender: "", // ["MALE", "FEMALE", "OTHER", "UNISEX", "PREFER_NOT_TO_SAY"]
+    email: "",
+    password: "",
+    dob: "",
+    pin: "",
+    first_name: "",
+    sur_name: "",
+    nameDisplayPreference: "",
+    allowdPersonalizedAds: false,
+    allowdMarketingEmails: false,
+    notificationPreferences: { email: false, push: false, sms: false },
+    gender: "",
     role: "", // ["artist","band"]
-    phone: "", // 10 digits
-    verifyVia: "sms", // ["sms", "whatsapp"]
+    phone: "",
+    verifyVia: "sms",
     bandName: "",
     bandMembers: "",
     membersAge: "",
   };
+
   const [state, setState] = useState(init);
 
-  const StepView = ({ currentIndex }) => {
-    switch (currentIndex) {
-      case 1:
+  // 👇 define dynamic steps depending on role
+  const steps = useMemo(() => {
+    if (state.role === "band") {
+      return [
+        "DOB",
+        "UserType",
+        "BandName",
+        "BandMembers",
+        "AgeRange",
+        "Instruments",
+        "Level",
+        "Genres",
+        "Artists",
+        "FirstName",
+        "SurName",
+        "Gender",
+        "NameSelection",
+        "Email",
+        "OtpCode",
+        "Password",
+        "ConfirmPassword",
+      ];
+    } else {
+      // default: artist flow
+      return [
+        "DOB",
+        "UserType",
+        "FirstName",
+        "SurName",
+        "Gender",
+        "NameSelection",
+        "Email",
+        "OtpCode",
+        "Password",
+        "ConfirmPassword",
+      ];
+    }
+  }, [state.role]);
+
+  const totalSteps = steps.length;
+
+  // 🧩 Step Renderer
+  const StepView = ({ stepName }) => {
+    switch (stepName) {
+      case "DOB":
         return (
-          <Genres
+          <DOB
             ref={stepRef}
             currentIndex={currentIndex}
             setCurrentIndex={setCurrentIndex}
@@ -72,7 +103,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 2:
+
+      case "UserType":
         return (
           <UserType
             ref={stepRef}
@@ -82,7 +114,83 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 3:
+
+      case "BandName":
+        return (
+          <BandName
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+
+      case "BandMembers":
+        return (
+          <BandMembers
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+
+      case "AgeRange":
+        return (
+          <AgeRange
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+
+      case "Instruments":
+        return (
+          <Instruments
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+
+      case "Level":
+        return (
+          <Level
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+      case "Genres":
+        return (
+          <Genres
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+      case "Artists":
+        return (
+          <Artists
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+
+      case "FirstName":
         return (
           <FirstName
             ref={stepRef}
@@ -92,7 +200,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 4:
+
+      case "SurName":
         return (
           <SurName
             ref={stepRef}
@@ -102,7 +211,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 5:
+
+      case "Gender":
         return (
           <Gender
             ref={stepRef}
@@ -112,7 +222,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 6:
+
+      case "NameSelection":
         return (
           <NameSelection
             ref={stepRef}
@@ -122,7 +233,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 7:
+
+      case "Email":
         return (
           <Email
             ref={stepRef}
@@ -132,7 +244,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 8:
+
+      case "OtpCode":
         return (
           <OtpCode
             ref={stepRef}
@@ -142,7 +255,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 9:
+
+      case "Password":
         return (
           <Password
             ref={stepRef}
@@ -152,7 +266,8 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-      case 10:
+
+      case "ConfirmPassword":
         return (
           <ResetPassword
             ref={stepRef}
@@ -162,6 +277,7 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
+
       default:
         return <Text>No View</Text>;
     }
@@ -181,30 +297,10 @@ const SignUpScreens = () => {
     >
       <AuthHeader
         step={currentIndex}
-        totalSteps={steps?.length}
-        subtitle={
-          currentIndex === 1
-            ? "Date of Birth"
-            : currentIndex === 2
-            ? "Choose your user type"
-            : currentIndex === 3
-            ? "Firstname"
-            : currentIndex === 4
-            ? "Surname"
-            : currentIndex === 5
-            ? "Gender"
-            : currentIndex === 6
-            ? "Addressing"
-            : currentIndex === 7
-            ? "Email"
-            : currentIndex === 8
-            ? "Verifying your email"
-            : currentIndex === 9
-            ? "Creating a strong password"
-            : "Confirming password"
-        }
+        totalSteps={totalSteps}
+        subtitle={steps[currentIndex - 1]}
       />
-      <StepView currentIndex={currentIndex} />
+      <StepView stepName={steps[currentIndex - 1]} />
     </ScreenWrapper>
   );
 };

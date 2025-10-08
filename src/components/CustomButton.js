@@ -199,6 +199,7 @@ const CustomButton = ({
               height: rightIconHeight || 18,
               resizeMode: "contain",
               marginLeft: 5,
+              tintColor: COLORS.white,
             }}
           />
         )}

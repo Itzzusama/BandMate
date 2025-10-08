@@ -7,16 +7,18 @@ import CustomText from "../../../components/CustomText";
 
 import fonts from "../../../assets/fonts";
 import { COLORS } from "../../../utils/COLORS";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const StepOne = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const onboardingCount = useSelector(count);
     const [dob, setDob] = useState(state?.dob || "");
     const [error, setError] = useState("");
-
     const validateDOB = (value) => {
       let newError = "";
       if (!value) {
-        newError = "You must be at least 16 years old to use ";
+        newError = "Please enter your date of birth.";
       } else {
         const birthDate = new Date(value);
         const today = new Date();
@@ -49,7 +51,7 @@ const StepOne = forwardRef(
       if (!isValid) return;
 
       setState({ ...state, dob: moment(dob).format("YYYY-MM-DD") }); // 1990-01-01
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };

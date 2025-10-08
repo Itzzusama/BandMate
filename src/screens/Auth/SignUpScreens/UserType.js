@@ -7,11 +7,14 @@ import ErrorComponent from "../../../components/ErrorComponent";
 
 import fonts from "../../../assets/fonts";
 import { COLORS } from "../../../utils/COLORS";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const UserType = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const [error, setError] = useState(false);
     const [selectedRole, setSelectedRole] = useState(state?.role || null);
+    const onboardingCount = useSelector(count);
     const [showSuccessColor, setShowSuccessColor] = useState(false);
 
     const handleRoleSelection = (role) => {
@@ -32,7 +35,7 @@ const UserType = forwardRef(
         return;
       }
       setState({ ...state, role: selectedRole });
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };

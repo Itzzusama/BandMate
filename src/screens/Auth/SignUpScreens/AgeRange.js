@@ -1,37 +1,40 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import CustomInput from "../../../components/CustomInput";
 import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
-
 import fonts from "../../../assets/fonts";
 import MultiRangeSlider from "../../../components/RangeSliderTwoWay";
+import { count } from "../../../store/reducer/appSlice";
+import { useSelector } from "react-redux";
 
 const AgeRange = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
-    const [firstName, setFirstName] = useState(state?.first_name || "");
+    const onboardingCount = useSelector(count);
+    const [ageRange, setAgeRange] = useState({
+      min: state?.ageRange?.min || 18,
+      max: state?.ageRange?.max || 50,
+    });
+
     const [error, setError] = useState("");
 
-    const errorCheck = (val) => {
-      setFirstName(val);
-      let newErrors = "";
-
-      if (!val.trim()) {
-        newErrors = "Please enter your band name";
+    const errorCheck = () => {
+      let newError = "";
+      if (ageRange.min < 16) {
+        newError = "You must be at least 16 years old to use this app.";
       }
-      return newErrors;
+      return newError;
     };
 
     const submit = () => {
-      const err = errorCheck(firstName);
+      const err = errorCheck();
       if (err) {
         setError(err);
         return;
       }
       setError("");
-      setState({ ...state, first_name: firstName.trim() });
-      if (currentIndex < 10) {
+      setState({ ...state, ageRange });
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };
@@ -53,10 +56,23 @@ const AgeRange = forwardRef(
             fontSize={24}
             lineHeight={24 * 1.4}
             marginTop={12}
+            marginBottom={16}
           />
-          <MultiRangeSlider />
 
-          <ErrorComponent errorTitle="Only permanent members." />
+          <MultiRangeSlider
+            min={16}
+            max={80}
+            step={1}
+            initialLowValue={ageRange.min}
+            initialHighValue={ageRange.max}
+            onValuesChange={(low, high) => setAgeRange({ min: low, max: high })}
+          />
+
+          {error ? (
+            <ErrorComponent errorTitle={error} />
+          ) : (
+            <ErrorComponent errorTitle="Only permanent members." />
+          )}
         </View>
       </View>
     );

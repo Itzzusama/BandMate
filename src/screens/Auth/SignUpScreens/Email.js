@@ -1,6 +1,6 @@
 import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import CustomPhoneInput from "../../../components/CustomPhoneInput";
 import ErrorComponent from "../../../components/ErrorComponent";
@@ -14,9 +14,11 @@ import { PNGIcons } from "../../../assets/images/icons";
 import { post } from "../../../services/ApiRequest";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { count } from "../../../store/reducer/appSlice";
 
 const Email = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const onboardingCount = useSelector(count);
     const dispatch = useDispatch();
     const [selected, setSelected] = useState(true);
     const [email, setEmail] = useState(state?.email || "");
@@ -126,7 +128,7 @@ const Email = forwardRef(
             ]
           );
 
-          if (currentIndex < 10) {
+          if (currentIndex < onboardingCount) {
             setCurrentIndex(currentIndex + 1);
           }
           if (isType == "Phone Number") {

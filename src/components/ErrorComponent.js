@@ -40,7 +40,7 @@ const ErrorComponent = ({
         label={errorTitle}
         fontSize={12}
         numberOfLines={numberOfLines}
-        color={color || COLORS.white2}
+        color={COLORS.white2}
         lineHeight={12 * 1.4}
         width={TextWidth}
         textTransform="none"
@@ -48,7 +48,7 @@ const ErrorComponent = ({
       <CustomText
         label={secondTitle}
         fontSize={12}
-        color={color1 || COLORS.black}
+        color={COLORS.white2}
         fontFamily={fonts.medium}
         lineHeight={12 * 1.4}
       />

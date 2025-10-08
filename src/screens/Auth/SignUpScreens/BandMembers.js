@@ -6,9 +6,12 @@ import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
 
 import fonts from "../../../assets/fonts";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const BandStep2 = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const onboardingCount = useSelector(count);
     const [bandMembers, setBandMembers] = useState(state?.bandMembers || "");
     const [error, setError] = useState("");
 
@@ -41,7 +44,7 @@ const BandStep2 = forwardRef(
       }
       setError("");
       setState({ ...state, bandMembers: bandMembers.trim() });
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };

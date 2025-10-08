@@ -6,12 +6,14 @@ import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
 
 import fonts from "../../../assets/fonts";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const BandStep1 = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const [bandName, setBandName] = useState(state?.bandName || "");
     const [error, setError] = useState("");
-
+    const onboardingCount = useSelector(count);
     const errorCheck = (val) => {
       setBandName(val);
       let newErrors = "";
@@ -30,7 +32,7 @@ const BandStep1 = forwardRef(
       }
       setError("");
       setState({ ...state, bandName: bandName.trim() });
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };
