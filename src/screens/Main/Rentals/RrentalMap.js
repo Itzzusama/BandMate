@@ -1,19 +1,18 @@
+import { memo, useCallback, useRef, useState } from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import { memo, useCallback, useMemo, useRef, useState, useEffect } from "react";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { ScrollView } from "react-native-gesture-handler";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
-import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
 import BottomSheetComponent from "../../../components/BottomSheetComponent";
 import CustomMarketPlace from "../../../components/CustomMarketPlace";
+import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
+import CustomText from "../../../components/CustomText";
 import LocationHeader from "../../../components/LocationHeader";
 import ScreenWrapper from "../../../components/ScreenWrapper";
-import CustomText from "../../../components/CustomText";
 
-import Card from "../MarketplaceMap/molecules/Card";
 
-import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { COLORS } from "../../../utils/COLORS";
 
 const { width } = Dimensions.get("window");
 
@@ -265,7 +264,7 @@ const RrentalMap = ({ navigation }) => {
               onPress={() => handleCardPress(i)}
               activeOpacity={0.8}
             >
-              <Card price={item.price} isActive={activeScrollIndex === i} />
+              {/* <Card price={item.price} isActive={activeScrollIndex === i} /> */}
             </TouchableOpacity>
           ))}
         </ScrollView>

@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BookHourly from "../screens/Main/BookHourly";
+import BookingConfirmation from "../screens/Main/BookingConfirmation";
 import InboxScreen from "../screens/Main/Chat/InboxScreen";
 import ReportChat from "../screens/Main/Chat/ReportChat";
 import AddPassenger from "../screens/Main/ClientTrip/AddPassenger";
@@ -40,8 +41,8 @@ import MyOrders from "../screens/Main/Deliveries/MyOrders";
 import OrderCart from "../screens/Main/Deliveries/OrderCart";
 import OrderDropOff from "../screens/Main/Deliveries/OrderDropOff";
 import Equipments from "../screens/Main/Home/Equipments";
+import FilterScreen from "../screens/Main/Home/FilterScreen";
 import MapSteps from "../screens/Main/MapSteps";
-import MarketplaceMap from "../screens/Main/MarketplaceMap";
 import MoveOut from "../screens/Main/MoveOut";
 import AddInventoryItem from "../screens/Main/MoveOut/AddInventoryItem";
 import RoomInventory from "../screens/Main/MoveOut/RoomInventory";
@@ -103,8 +104,6 @@ import CardAccess from "../screens/Main/TeenVC/CardAccess";
 import GrantAccess from "../screens/Main/TeenVC/GrantAccess";
 import VCSuccess from "../screens/Main/TeenVC/VCSuccess";
 import TermsConditions from "../screens/Main/TermsConditions";
-import MarketplaceTour from "../screens/Main/Tours/Index";
-import TripHistory from "../screens/Main/TripHistory";
 import AirplaneFinal from "../screens/Main/TripScreens/Airplane/AirplaneFinal";
 import AirplaneInitial from "../screens/Main/TripScreens/Airplane/AirplaneInitial";
 import Conplaint from "../screens/Main/TripScreens/Complaint";
@@ -160,8 +159,7 @@ import WarehouseStorage from "../screens/Main/WareHouses/WarehouseStorage";
 import YourTripsScreen from "../screens/Main/YourTripsScreen";
 import SellingAVehicle from "../screens/ServiceProviderAuth/AsPro/SellingAVehicle";
 import TabStack from "./TabStack";
-import BookingConfirmation from "../screens/Main/BookingConfirmation";
-import FilterScreen from "../screens/Main/Home/FilterScreen";
+import AddSocials from "../screens/Main/Notification/AddSocials";
 
 const Stack = createNativeStackNavigator();
 
@@ -179,7 +177,6 @@ const MainStack = () => {
       <Stack.Screen name="QrScanner" component={QrScanner} />
       <Stack.Screen name="OrderConfirmPin" component={OrderConfirmPin} />
       <Stack.Screen name="MapSteps" component={MapSteps} />
-      <Stack.Screen name="TripHistory" component={TripHistory} />
       <Stack.Screen name="BookHourly" component={BookHourly} />
       <Stack.Screen name="MoveOut" component={MoveOut} />
       <Stack.Screen name="PicLocation" component={PicLocation} />
@@ -245,7 +242,6 @@ const MainStack = () => {
       <Stack.Screen name="AirplaneFinal" component={AirplaneFinal} />
       <Stack.Screen name="RatingStepOne" component={RatingStepOne} />
       <Stack.Screen name="Conplaint" component={Conplaint} />
-      <Stack.Screen name="MarketplaceMap" component={MarketplaceMap} />
       <Stack.Screen name="TripSelection" component={TripSelection} />
       <Stack.Screen name="PickASeat" component={PickASeat} />
       <Stack.Screen name="MarketplaceEvent" component={MarketplaceEvent} />
@@ -351,7 +347,6 @@ const MainStack = () => {
       <Stack.Screen name="WarehouseStorage" component={WarehouseStorage} />
       <Stack.Screen name="Rentals" component={Rentals} />
       <Stack.Screen name="RentalDetailPage" component={RentalDetailPage} />
-      <Stack.Screen name="MarketplaceTour" component={MarketplaceTour} />
       <Stack.Screen name="RentalVehical" component={RentalVehical} />
       <Stack.Screen name="RrentalMap" component={RrentalMap} />
       <Stack.Screen name="MyOrders" component={MyOrders} />
@@ -380,6 +375,7 @@ const MainStack = () => {
       />
 
       <Stack.Screen name="FilterScreen" component={FilterScreen} />
+      <Stack.Screen name="AddSocials" component={AddSocials} />
     </Stack.Navigator>
   );
 };

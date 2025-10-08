@@ -95,14 +95,14 @@ const HomeCard = () => {
         animations.push(
           Animated.timing(translateX, {
             toValue: -screenWidth * 1.5,
-            duration: 500,
+            duration: 400,
             useNativeDriver: true,
           })
         );
         animations.push(
           Animated.timing(rotateCard, {
             toValue: action.rotation,
-            duration: 500,
+            duration: 400,
             useNativeDriver: true,
           })
         );
@@ -110,14 +110,14 @@ const HomeCard = () => {
         animations.push(
           Animated.timing(translateX, {
             toValue: screenWidth * 1.5,
-            duration: 500,
+            duration: 400,
             useNativeDriver: true,
           })
         );
         animations.push(
           Animated.timing(rotateCard, {
             toValue: action.rotation,
-            duration: 500,
+            duration: 400,
             useNativeDriver: true,
           })
         );
@@ -125,28 +125,26 @@ const HomeCard = () => {
         animations.push(
           Animated.timing(translateY, {
             toValue: -screenHeight * 1.5,
-            duration: 500,
+            duration: 400,
             useNativeDriver: true,
           })
         );
       }
 
       Animated.parallel(animations).start(() => {
-        // Reset position after animation (you might want to trigger next card here)
         setTimeout(() => {
           resetCardPosition();
         }, 100);
       });
-    }, 500);
+    }, 400);
   };
 
   const resetCardPosition = () => {
-    // Reset all animations
     translateX.setValue(0);
     translateY.setValue(0);
     rotateCard.setValue(0);
     gradientOpacity.setValue(0);
-    gradientTranslateY.setValue(200); // Reset to bottom position
+    gradientTranslateY.setValue(200);
     setCurrentGradientColors(["transparent", "transparent"]);
 
     // Here you would typically load the next card

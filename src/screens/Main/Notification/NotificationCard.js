@@ -7,7 +7,7 @@ import { COLORS } from "../../../utils/COLORS";
 import { Images } from "../../../assets/images";
 import fonts from "../../../assets/fonts";
 
-const NotificationCard = ({ username, desc, type, amount, time }) => {
+const NotificationCard = ({ username, desc, type, amount, time, onPress }) => {
   let statusColor = COLORS.primaryColor;
   let statusText = "";
   let statusIcon = null;
@@ -42,7 +42,7 @@ const NotificationCard = ({ username, desc, type, amount, time }) => {
   }
 
   return (
-    <TouchableOpacity activeOpacity={0.9} style={styles.card}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.9} style={styles.card}>
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View style={styles.avatarWrap}>
@@ -50,17 +50,17 @@ const NotificationCard = ({ username, desc, type, amount, time }) => {
           </View>
           <CustomText
             label={username}
-            fontFamily={fonts.semiBold}
+            fontFamily={fonts.medium}
             fontSize={16}
+            lineHeight={16 * 1.4}
             color={COLORS.primaryColor}
-            marginBottom={2}
           />
         </View>
 
         {/* Additional Info Below */}
         <CustomText
           label={desc}
-          marginBottom={2}
+          color={COLORS.white2}
           marginTop={12}
           fontFamily={fonts.medium}
         />
@@ -69,12 +69,15 @@ const NotificationCard = ({ username, desc, type, amount, time }) => {
           <CustomText
             label={statusText}
             fontFamily={fonts.medium}
+            lineHeight={14 * 1.4}
           />
         </View>
         <CustomText
           label={time}
-          color={COLORS.gray2}
+          lineHeight={14 * 1.4}
+          color={COLORS.white3}
           fontFamily={fonts.medium}
+          marginTop={2}
         />
       </View>
 
@@ -93,21 +96,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
     borderRadius: 16,
-    padding: 14,
+    padding: 12,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: COLORS.inputBg,
+    borderColor: "#FFFFFF0A",
   },
   avatarWrap: {
     width: 38,
     height: 38,
-    borderRadius: 12,
+    borderRadius: 99,
     backgroundColor: COLORS.low,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
+    marginRight: 8,
   },
   avatar: {
     width: 28,
