@@ -5,6 +5,7 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import LinearGradient from "react-native-linear-gradient";
@@ -23,7 +24,7 @@ const HomeCard = () => {
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
   const gradientOpacity = useRef(new Animated.Value(0)).current;
-  const gradientTranslateY = useRef(new Animated.Value(200)).current; // Start from bottom
+  const gradientTranslateY = useRef(new Animated.Value(200)).current;
   const [currentGradientColors, setCurrentGradientColors] = useState([
     "transparent",
     "transparent",
@@ -179,12 +180,16 @@ const HomeCard = () => {
           <View style={styles.innerContainer}>
             <View style={styles.headerRow}>
               <View style={styles.row}>
-                <Image source={Images.verifyStar} style={styles.verifyStar} />
+                <Image
+                  source={Images.verifiedBadge}
+                  style={styles.verifyStar}
+                />
                 <CustomText
                   label={"VERIFIED SOLO ARTIST"}
                   fontSize={12}
                   lineHeight={12 * 1.4}
-                  marginLeft={4}
+                  marginLeft={8}
+                  fontFamily={fonts.medium}
                 />
               </View>
               <View style={styles.bg}>
@@ -327,20 +332,19 @@ export default HomeCard;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
     marginTop: 16,
+
     alignItems: "center",
-    padding: 12,
-    borderRadius: 12,
+    width: "100%",
   },
   cardWrapper: {
     width: "100%",
+    padding: 8,
   },
   image: {
-    height: 580,
+    height: Platform.OS == "ios" ? screenHeight * 0.6 : screenHeight * 0.65,
     width: "100%",
     borderRadius: 12,
-    overflow: "hidden",
   },
   innerContainer: {
     padding: 14,
@@ -357,8 +361,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   verifyStar: {
-    height: 24,
-    width: 24,
+    height: 22,
+    width: 22,
   },
   bg: {
     backgroundColor: "#FFFFFF29",
@@ -393,6 +397,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    width: Platform.OS == "android" ? "100%" : "90%",
   },
   forwardIcon: {
     height: 28,

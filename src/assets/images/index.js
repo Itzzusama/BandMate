@@ -216,4 +216,5 @@ export const Images = {
   refugeBadge: require("./refugeBadge.png"),
   startBg: require("./startBg.png"),
   userPics: require("./User-pics.png"),
+  verifiedBadge: require("./verifiedBadge.png"),
 };

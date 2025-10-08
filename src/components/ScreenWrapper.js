@@ -14,9 +14,9 @@ const FocusAwareStatusBar = (props) => {
   const isFocused = useIsFocused();
   return isFocused ? (
     <StatusBar
-      hidden
-      barStyle="dark-content"
-      backgroundColor={COLORS.black}
+      // hidden
+      barStyle="light-content"
+      // backgroundColor={COLORS.black}
       {...props}
     />
   ) : null;
@@ -31,7 +31,7 @@ const ScreenWrapper = ({
   backgroundColor = COLORS.black,
   headerUnScrollable = () => null,
   footerUnScrollable = () => null,
-  barStyle = "dark-content",
+  barStyle = "light-content",
   refreshControl,
   paddingBottom,
   nestedScrollEnabled,

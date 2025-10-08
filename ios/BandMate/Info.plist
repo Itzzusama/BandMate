@@ -22,6 +22,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -31,8 +33,18 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>BandMate app needs access to your music library to provide music-related features and enhance your driving experience.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>BandMate app uses Bluetooth to connect with vehicle devices and provide enhanced features.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>BandMate app uses Bluetooth to communicate with nearby devices and vehicles.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>BandMate app needs access to calendar to schedule and manage your trips.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>BandMate app needs access to your camera to capture vehicle photos for uploads.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>BandMate app needs access to contacts to share trip information with your friends and family.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>BandMate app needs access to your face to provide face recognition services.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -41,26 +53,16 @@
 	<string>BandMate app uses your location to provide accurate services and notifications related to your trips and vehicles.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>BandMate app needs access to your location to provide location-based services, calculate distances, and help you find nearby places.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>BandMate app needs access to microphone for voice commands and audio features.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>BandMate app uses motion data to detect driving patterns and provide trip analytics.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>BandMate app saves photos to your library when needed.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>BandMate app needs access to your photo library to choose existing images.</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>BandMate app needs access to your music library to provide music-related features and enhance your driving experience.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>BandMate app needs access to microphone for voice commands and audio features.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>BandMate app needs access to contacts to share trip information with your friends and family.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>BandMate app needs access to calendar to schedule and manage your trips.</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>BandMate app needs access to reminders to set trip reminders and notifications.</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>BandMate app uses Bluetooth to connect with vehicle devices and provide enhanced features.</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>BandMate app uses Bluetooth to communicate with nearby devices and vehicles.</string>
-	<key>NSMotionUsageDescription</key>
-	<string>BandMate app uses motion data to detect driving patterns and provide trip analytics.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIAppFonts</key>
@@ -95,6 +97,11 @@
 		<string>Poppins-Thin.ttf</string>
 		<string>AbrilFatface-Regular.ttf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>background-fetch</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -107,14 +114,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>location</string>
-		<string>background-fetch</string>
-	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>
 </plist>
