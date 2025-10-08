@@ -1,4 +1,4 @@
-package com.bandmate.app
+package com.solagroup.bandmate
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

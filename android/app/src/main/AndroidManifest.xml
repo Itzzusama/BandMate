@@ -82,14 +82,14 @@
 
       <!-- Add location service for background service -->
       <service 
-          android:name="com.bandmate.app.LocationService" 
+          android:name="com.solagroup.bandmate.LocationService" 
           android:enabled="true"
           android:exported="false"
           android:foregroundServiceType="location" />
 
       <!-- Add boot receiver for background service -->
       <receiver
-          android:name="com.bandmate.app.BootReceiver"
+          android:name="com.solagroup.bandmate.BootReceiver"
           android:enabled="true"
           android:exported="true">
           <intent-filter>

@@ -1,4 +1,4 @@
-package com.bandmate.app
+package com.solagroup.bandmate
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity

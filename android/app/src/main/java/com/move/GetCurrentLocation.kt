@@ -1,5 +1,5 @@
 // GetCurrentLocation.kt
-package com.bandmate.app
+package com.solagroup.bandmate
 
 import android.Manifest
 import android.content.Context

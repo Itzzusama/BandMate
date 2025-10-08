@@ -1,4 +1,4 @@
-package com.bandmate.app
+package com.solagroup.bandmate
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -23,8 +23,8 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import android.content.pm.ServiceInfo
 import android.util.Log
-import com.bandmate.app.MainActivity
-import com.bandmate.app.R
+import com.solagroup.bandmate.MainActivity
+import com.solagroup.bandmate.R
 
 class LocationService : Service() {
     

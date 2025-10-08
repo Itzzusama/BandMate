@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:871946165808:android:43ffaf430906bfa83357f5",
+        "mobilesdk_app_id": "1:871946165808:android:c2a9a7704629fe1b3357f5",
         "android_client_info": {
-          "package_name": "com.bandmate.app"
+          "package_name": "com.solagroup.bandmate"
         }
       },
       "oauth_client": [],

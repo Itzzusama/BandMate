@@ -1,4 +1,4 @@
-package com.bandmate.app
+package com.solagroup.bandmate
 
 import android.content.BroadcastReceiver
 import android.content.Context
