@@ -1,11 +1,10 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import fonts from "../../../../assets/fonts";
 import CustomText from "../../../../components/CustomText";
-import { COLORS } from "../../../../utils/COLORS";
-import MultiRangeSlider from "../../../../components/RangeSliderTwoWay";
 import ErrorComponent from "../../../../components/ErrorComponent";
+import MultiRangeSlider from "../../../../components/RangeSliderTwoWay";
 
-const RangeCard = ({ title }) => {
+const RangeCard = ({ title, rightTitle, leftTitle }) => {
   return (
     <View style={styles.mainContainer}>
       <CustomText
@@ -14,7 +13,7 @@ const RangeCard = ({ title }) => {
         lineHeight={18 * 1.4}
         fontFamily={fonts.medium}
       />
-      <MultiRangeSlider />
+      <MultiRangeSlider rightTitle={rightTitle} leftTitle={leftTitle} />
 
       <ErrorComponent
         errorTitle={"Only meet and be visible to people within that range."}

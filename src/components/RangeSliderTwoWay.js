@@ -9,7 +9,14 @@ const SLIDER_WIDTH = 350;
 const MIN_VALUE = 1;
 const MAX_VALUE = 100;
 
-const MultiRangeSlider = ({ color, height, width, showValue = true }) => {
+const MultiRangeSlider = ({
+  color,
+  height,
+  width,
+  showValue = true,
+  leftTitle,
+  rightTitle,
+}) => {
   const [range, setRange] = useState([MIN_VALUE, MAX_VALUE]);
 
   const onValuesChange = (values) => {
@@ -83,13 +90,13 @@ const MultiRangeSlider = ({ color, height, width, showValue = true }) => {
             fontFamily={fonts.medium}
             color={"#848484"}
             fontSize={12}
-            label={`$ ${range[0]}`}
+            label={leftTitle || `$ ${range[0]}`}
           />
           <CustomText
             fontFamily={fonts.medium}
             color={"#848484"}
             fontSize={12}
-            label={`$ ${range[1]}`}
+            label={rightTitle || `$ ${range[1]}`}
           />
         </View>
       )}

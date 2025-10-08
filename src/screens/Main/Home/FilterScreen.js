@@ -22,7 +22,6 @@ const FilterScreen = () => {
     { name: "Professional", isEnable: true },
   ]);
 
-  // Updated to use object format with isSelected property
   const [interest, setInterest] = useState([
     { name: "Jam Sessions", isSelected: false },
     { name: "Studio time", isSelected: false },
@@ -64,6 +63,14 @@ const FilterScreen = () => {
           btnTitle={"Reset all"}
         />
       )}
+      footerUnScrollable={() => (
+        <CustomButton
+          title={"Discover 83+ Profiles"}
+          width="95%"
+          marginBottom={24}
+          marginTop={16}
+        />
+      )}
     >
       <LocationCard />
       <LookingForCard switchArray={lookingFor} setSwitchArray={setLookingFor} />
@@ -89,13 +96,6 @@ const FilterScreen = () => {
         title={"Availability"}
         array={Availability}
         setArray={setAvailability}
-      />
-
-      <CustomButton
-        title={"Discover 83+ Profiles"}
-        width="95%"
-        marginBottom={24}
-        marginTop={12}
       />
     </ScreenWrapper>
   );

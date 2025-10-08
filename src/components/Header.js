@@ -106,8 +106,8 @@ const Header = ({
           fontFamily={fontFamily || fonts.semiBold}
           textTransform="capitalize"
           textAlign={textAlign}
-          fontSize={20}
-          lineHeight={20 * 1.4}
+          fontSize={24}
+          lineHeight={24 * 1.4}
         />
 
         <View
@@ -117,7 +117,7 @@ const Header = ({
             width: 20,
             alignItems: "center",
             justifyContent: "center",
-            marginLeft: 4,
+            marginLeft: 6,
             borderRadius: 99,
           }}
         >
@@ -202,11 +202,10 @@ const styles = StyleSheet.create({
   backIcon: {
     width: 40,
     height: 40,
-
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
+    marginRight: 12,
   },
   row: {
     flexDirection: "row",

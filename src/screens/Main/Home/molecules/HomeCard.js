@@ -214,7 +214,7 @@ const HomeCard = () => {
                   fontSize={12}
                   lineHeight={12 * 1.4}
                   fontFamily={fonts.medium}
-                  marginLeft={4}
+                  marginLeft={3}
                 />
                 <CustomText
                   label={"17 km"}
