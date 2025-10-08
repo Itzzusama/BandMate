@@ -6,9 +6,12 @@ import CustomInput from "../../../components/CustomInput";
 import CustomText from "../../../components/CustomText";
 
 import fonts from "../../../assets/fonts";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const SurName = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const onboardingCount = useSelector(count);
     const [lastName, setLastName] = useState(state?.sur_name || "");
     const [error, setError] = useState("");
 
@@ -33,7 +36,7 @@ const SurName = forwardRef(
       }
       setError("");
       setState({ ...state, sur_name: lastName.trim() });
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };

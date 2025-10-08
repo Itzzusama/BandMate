@@ -7,9 +7,12 @@ import CustomText from "../../../components/CustomText";
 
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const StepFive = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const onboardingCount = useSelector(count);
     const [gender, setGender] = useState(state?.gender || "");
     const [showSuccessColor, setShowSuccessColor] = useState(false);
     const genderOptions = ["Male", "Female", "Unisex"];
@@ -38,7 +41,7 @@ const StepFive = forwardRef(
       if (err) return;
 
       setState({ ...state, gender: gender.trim().toUpperCase() });
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };

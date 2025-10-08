@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Image, View } from "react-native";
+import { StyleSheet, TouchableOpacity, Image, View, Text } from "react-native";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 import ErrorComponent from "../../../components/ErrorComponent";
@@ -11,9 +11,12 @@ import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import Divider from "../../../components/Divider";
 import { PNGIcons } from "../../../assets/images/icons";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const Password = forwardRef(
   ({ setState, state, currentIndex, setCurrentIndex }, ref) => {
+    const onboardingCount = useSelector(count);
     const [minLength, setMinLength] = useState(false);
     const [hasUppercase, setHasUppercase] = useState(false);
     const [hasDigit, setHasDigit] = useState(false);
@@ -56,7 +59,7 @@ const Password = forwardRef(
       const err = errorCheck(pass);
       if (err) return;
       setState({ ...state, password: pass });
-      if (currentIndex < 11) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };
@@ -97,10 +100,9 @@ const Password = forwardRef(
         <View>
           <CustomText
             label="Create a password"
-            fontFamily={fonts.semiBold}
+            fontFamily={fonts.abril}
             fontSize={24}
             lineHeight={24 * 1.4}
-            color={COLORS.black}
             marginTop={20}
           />
           <CustomInput
@@ -116,18 +118,27 @@ const Password = forwardRef(
             <CustomText
               onPress={generatePassword}
               label="Generate a password for me"
-              color={COLORS.darkPurple}
+              color={COLORS.white}
               fontFamily={fonts.regular}
               fontSize={12}
             />
             <ImageFast
-              style={{ height: 10, width: 10, marginLeft: 4 }}
+              style={{
+                height: 10,
+                width: 10,
+                marginLeft: 4,
+                tintColor: COLORS.white,
+              }}
               source={Images.uparrow}
               resizeMode="contain"
             />
           </TouchableOpacity>
 
-          <Divider thickness={1} color="#12121229" marginVertical={12} />
+          <Divider
+            thickness={1}
+            color="rgba(255, 255, 255, 0.16)"
+            marginVertical={12}
+          />
 
           <ErrorComponent
             errorTitle="Minimum 8 characters."
@@ -163,12 +174,19 @@ const Password = forwardRef(
                 marginRight: 4,
               }}
             />
-            <CustomText
-              label={"Your password on move is encrypted & secured."}
-              color={COLORS.gray1}
-              fontSize={12}
-              lineHeight={12 * 1.4}
-            />
+
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: fonts.regular,
+                color: COLORS.gray1,
+                lineHeight: 12 * 1.4,
+              }}
+            >
+              {`Your password on `}
+              <Text style={styles.darkText}>Bandmate</Text>
+              {` is encrypted & secured.`}
+            </Text>
           </View>
         </View>
       </View>
@@ -187,6 +205,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop:12
+    marginTop: 12,
+  },
+  darkText: {
+    fontSize: 12,
+    fontFamily: fonts.medium,
+    color: COLORS.primaryColor,
   },
 });

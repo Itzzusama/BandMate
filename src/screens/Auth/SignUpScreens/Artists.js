@@ -17,20 +17,29 @@ import Icons from "../../../components/Icons";
 import { ArtistImgs } from "../../../assets/images/artistImgs";
 
 const artists = [
-  { name: "Arctic Monkeys", img: ArtistImgs.img1 },
+  { name: "Arctic Monkeys", img: ArtistImgs.img6 },
   { name: "Blur", img: ArtistImgs.img2 },
   { name: "Beastie Boys", img: ArtistImgs.img3 },
   { name: "Coldplay", img: ArtistImgs.img4 },
   { name: "David Bowie", img: ArtistImgs.img5 },
   { name: "Depeche Mode", img: ArtistImgs.img6 },
+  { name: "Foo Fighters", img: ArtistImgs.img5 },
+  { name: "Linkin Park", img: ArtistImgs.img2 },
+  { name: "Oasis", img: ArtistImgs.img3 },
 ];
 
 const Artists = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const { width } = useWindowDimensions();
 
-    const SPACING = 16; // total horizontal gap between cards
-    const CARD_SIZE = (width - SPACING * 4) / 3; // 3 per row + margins
+    // 🧠 Dynamically decide number of columns based on screen width
+    const SPACING = 12;
+    const MIN_CARD_SIZE = 100;
+    const numColumns = Math.max(
+      3,
+      Math.floor(width / (MIN_CARD_SIZE + SPACING * 2))
+    );
+    const CARD_SIZE = (width - SPACING * (numColumns + 1)) / numColumns;
 
     const [selectedArtists, setSelectedArtists] = useState([]);
     const [error, setError] = useState("Choose at least 0/3");
@@ -42,9 +51,8 @@ const Artists = forwardRef(
     };
 
     const errorCheck = () => {
-      if (selectedArtists.length < 3) {
+      if (selectedArtists.length < 3)
         return "Please choose at least 3 artists.";
-      }
       return "";
     };
 
@@ -71,9 +79,15 @@ const Artists = forwardRef(
           label="Choose 3 or more artists you like."
           fontFamily={fonts.abril}
           fontSize={32}
-          lineHeight={32 * 1.4}
+          lineHeight={30 * 1.4}
           marginTop={12}
-          marginBottom={8}
+        />
+        <CustomText
+          label="Tell us about your musical idols."
+          fontSize={12}
+          color={COLORS.white2}
+          marginBottom={12}
+          marginTop={8}
         />
 
         <SearchInput placeholder="E.g. Coldplay, Bowie, Blur..." />
@@ -96,7 +110,15 @@ const Artists = forwardRef(
             marginTop: 20,
           }}
         >
-          <View style={[styles.grid, { gap: SPACING }]}>
+          <View
+            style={[
+              styles.grid,
+              {
+                gap: SPACING,
+                justifyContent: "center",
+              },
+            ]}
+          >
             {artists.map((artist) => {
               const isSelected = selectedArtists.includes(artist.name);
               return (
@@ -114,15 +136,15 @@ const Artists = forwardRef(
                         height: CARD_SIZE,
                         borderColor: isSelected
                           ? COLORS.btnColor
-                          : "transparent",
-                        borderWidth: isSelected ? 3 : 0,
+                          : COLORS.black,
+                        borderWidth: isSelected ? 2 : 0,
                       },
                     ]}
                   >
                     <Image
                       source={artist.img}
                       style={styles.artistImage}
-                      resizeMode="cover"
+                      resizeMode="contain"
                     />
                     {isSelected && (
                       <View style={styles.overlay}>
@@ -142,7 +164,7 @@ const Artists = forwardRef(
                     color={COLORS.white}
                     fontFamily={fonts.medium}
                     textAlign="center"
-                    marginTop={4}
+                    marginTop={2}
                   />
                 </TouchableOpacity>
               );
@@ -166,6 +188,7 @@ const styles = StyleSheet.create({
   },
   card: {
     alignItems: "center",
+    marginBottom: -5,
   },
   imageWrapper: {
     borderRadius: 100,

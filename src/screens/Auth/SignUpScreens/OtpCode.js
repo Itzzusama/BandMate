@@ -17,8 +17,11 @@ import { post } from "../../../services/ApiRequest";
 import { Images } from "../../../assets/images";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
+  const onboardingCount = useSelector(count);
   const [otp, setOtp] = useState(state?.otp || "");
   const [error, setError] = useState("");
   const [showSuccessColor, setShowSuccessColor] = useState(false);
@@ -89,7 +92,7 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
       };
       const res = await post(`auth/verify-otp`, body);
       if (res?.data) {
-        if (currentIndex < 10) {
+        if (currentIndex < onboardingCount) {
           setCurrentIndex(currentIndex + 1);
         }
       }
@@ -137,10 +140,9 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
       <View>
         <CustomText
           label="Please enter the code"
-          fontFamily={fonts.semiBold}
+          fontFamily={fonts.abril}
           fontSize={24}
           lineHeight={24 * 1.4}
-          color={COLORS.black}
           marginTop={32}
         />
         <CustomInput
@@ -156,7 +158,7 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
           isValid={showSuccessColor}
           error={error}
           color={
-            error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.subtitle
+            error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.white2
           }
           marginBottom={4}
         />
@@ -169,18 +171,24 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
             }
           }}
         >
+          <Icons
+            family="MaterialIcons"
+            name="email"
+            size={14}
+            color={COLORS.white}
+          />
           <CustomText
             label={state?.email || state?.phone}
             fontFamily={fonts.medium}
-            color={COLORS.black}
             lineHeight={14 * 1.4}
             marginRight={8}
+            marginLeft={8}
           />
           <Icons
             family="MaterialIcons"
             name="edit"
             size={14}
-            color={COLORS.black}
+            color={COLORS.white}
           />
         </TouchableOpacity>
 
@@ -193,11 +201,11 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
           height={32}
           rightIconWidth={14}
           rightIconHeight={14}
-          backgroundColor={COLORS.lightGray}
-          color={COLORS.black}
+          backgroundColor={COLORS.inputBg}
+          color={COLORS.white}
           rightIcon={isTimerActive ? false : Images.refresh}
           onPress={isTimerActive ? () => {} : onSendAgain}
-          indicatorColor={COLORS.black}
+          indicatorColor={COLORS.white}
           disabled={resendLoad}
         />
 

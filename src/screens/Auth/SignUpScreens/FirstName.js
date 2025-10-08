@@ -6,9 +6,12 @@ import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
 
 import fonts from "../../../assets/fonts";
+import { useSelector } from "react-redux";
+import { count } from "../../../store/reducer/appSlice";
 
 const StepTwo = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const onboardingCount = useSelector(count);
     const [firstName, setFirstName] = useState(state?.first_name || "");
     const [error, setError] = useState("");
 
@@ -33,7 +36,7 @@ const StepTwo = forwardRef(
       }
       setError("");
       setState({ ...state, first_name: firstName.trim() });
-      if (currentIndex < 10) {
+      if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
     };

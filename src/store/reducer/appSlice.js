@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   hasConnection: true,
   layout: {},
+  onboardingCount: 14,
 };
 
 export const navSlice = createSlice({
@@ -25,12 +26,16 @@ export const navSlice = createSlice({
         },
       };
     },
+    setOnboardingCount: (state, action) => {
+      state.onboardingCount = action.payload;
+    },
   },
 });
 
-export const { setHasConnection, saveLayout } = navSlice.actions;
+export const { setHasConnection, saveLayout, setOnboardingCount } =
+  navSlice.actions;
 
 export const selectHasConnection = (state) => state.navApp.hasConnection;
 export const selectLayout = (state) => state.navApp.layout;
-
+export const count = (state) => state.navApp.onboardingCount;
 export default navSlice.reducer;
