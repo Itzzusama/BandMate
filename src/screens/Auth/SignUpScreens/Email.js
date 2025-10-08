@@ -158,7 +158,13 @@ const Email = forwardRef(
     return (
       <View style={{ justifyContent: "space-between", flex: 1 }}>
         <View>
-          <View style={[styles.row, { justifyContent: "space-between" }]}>
+          <View
+            style={[
+              styles.row,
+              styles.btnContainer,
+              { justifyContent: "space-between" },
+            ]}
+          >
             {["Phone Number", "Email"].map((item, i) => (
               <CustomButton
                 key={i}
@@ -303,7 +309,7 @@ const Email = forwardRef(
                       name={
                         verifyVia == "sms" ? "check-circle" : "radiobox-blank"
                       }
-                      size={28}
+                      size={20}
                       color={
                         verifyVia == "sms" ? COLORS.btnColor : COLORS.white3
                       }
@@ -349,7 +355,7 @@ const Email = forwardRef(
                           ? "check-circle"
                           : "radiobox-blank"
                       }
-                      size={28}
+                      size={20}
                       color={
                         verifyVia == "whatsapp"
                           ? COLORS.btnColor
@@ -373,8 +379,10 @@ const Email = forwardRef(
                     }
                   }
                 }}
+                withLabel={"EMAIL ADDRESS"}
                 error={error}
                 marginBottom={5}
+                height={56}
                 placeholder="E.g. abc@email.com"
                 autoCapitalize="none"
                 keyboardType="email-address"
@@ -446,7 +454,7 @@ const Email = forwardRef(
                   <Icons
                     family="MaterialCommunityIcons"
                     name={selected ? "check-circle" : "radiobox-blank"}
-                    size={28}
+                    size={20}
                     color={selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
@@ -474,7 +482,7 @@ const Email = forwardRef(
                   <Icons
                     family="MaterialCommunityIcons"
                     name={!selected ? "check-circle" : "radiobox-blank"}
-                    size={28}
+                    size={20}
                     color={!selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
@@ -509,5 +517,11 @@ const styles = StyleSheet.create({
     height: 14,
     marginRight: 6,
     tintColor: COLORS.white,
+  },
+  btnContainer: {
+    marginTop: 12,
+    padding: 4,
+    borderRadius: 99,
+    backgroundColor: COLORS.inputBg,
   },
 });
