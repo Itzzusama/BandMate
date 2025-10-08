@@ -11,7 +11,7 @@ const RootNavigation = () => {
 
   return (
     <Stack.Navigator
-      // initialRouteName="AuthStack"
+      initialRouteName="MainStack"
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",

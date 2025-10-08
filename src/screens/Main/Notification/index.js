@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import Header from "../../../components/Header";
 import TopTabWithBG from "../../../components/TopTabWithBG";
 import CustomText from "../../../components/CustomText";
@@ -86,7 +86,7 @@ const Notification = ({ navigation }) => {
             <Icons
               name="chevron-back"
               family="Ionicons"
-              size={22}
+              size={16}
               color={COLORS.primaryColor}
               style={styles.backIcon}
               onPress={() => navigation.goBack()}
@@ -95,18 +95,23 @@ const Notification = ({ navigation }) => {
               label="Notifications"
               fontFamily={fonts.semiBold}
               fontSize={22}
-              style={{ marginLeft: 8 }}
+              lineHeight={22 * 1.4}
+              textStyle={{ marginLeft: 4 }}
             />
           </View>
           <TouchableOpacity style={styles.readAllBtn}>
             <CustomText
               label="Read All"
               fontSize={14}
+              lineHeight={14 * 1.4}
               color={COLORS.primaryColor}
               fontFamily={fonts.medium}
               marginRight={4}
             />
-            <ImageFast source={Images.msg} style={{ height: 16, width: 16 }} />
+            <Image
+              source={Images.msg}
+              style={{ height: 16, width: 16, tintColor: COLORS.white }}
+            />
           </TouchableOpacity>
         </View>
       )}
@@ -120,10 +125,14 @@ const Notification = ({ navigation }) => {
       />
       <Divider thickness={5} marginVertical={8} />
       <View style={styles.dateRow}>
-        <ImageFast source={Images.calender} style={{ height: 24, width: 24 }} />
+        <Image
+          source={Images.calender}
+          style={{ height: 24, width: 24, tintColor: COLORS.white }}
+        />
         <CustomText
           label="12 July, 2025"
           fontSize={16}
+          lineHeight={16 * 1.4}
           color={COLORS.primaryColor}
           fontFamily={fonts.medium}
           marginLeft={8}
@@ -132,7 +141,7 @@ const Notification = ({ navigation }) => {
           name="chevron-right"
           family="Feather"
           size={18}
-          color={COLORS.primaryColor}
+          color={COLORS.white2}
           style={{ marginLeft: "auto" }}
         />
       </View>
@@ -217,9 +226,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   backIcon: {
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.inputBg,
     borderRadius: 99,
-    padding: 8,
+    padding: 10,
     marginRight: 8,
   },
   readAllBtn: {
@@ -240,11 +249,8 @@ const styles = StyleSheet.create({
   },
   allGoodBox: {
     backgroundColor: COLORS.darkPurple,
-    marginHorizontal: 0,
     marginBottom: 16,
     padding: 12,
-    borderTopWidth: 4,
-    borderBottomWidth: 4,
     borderTopColor: COLORS.lightGray,
     borderBottomColor: COLORS.lightGray,
   },
@@ -258,7 +264,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: COLORS.white,
     borderRadius: 12,
-    // marginHorizontal: 12,
     marginBottom: 12,
     padding: 12,
     gap: 12,
@@ -266,7 +271,6 @@ const styles = StyleSheet.create({
   checkIcon: {
     width: 32,
     height: 32,
-    // marginRight: 12,
   },
   sectionTitle: {
     marginLeft: 12,

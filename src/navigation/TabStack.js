@@ -37,35 +37,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   }
   return (
     <View style={[styles.tabMainContainer, { height: 90 + insets.bottom }]}>
-      <ImageFast
-        removeLoading
-        source={Images.tabBG}
-        style={styles.tabBG}
-        resizeMode="cover"
-      />
-      {/* <ImageFast
-        removeLoading
-        source={Images.tabBG}
-        style={styles.tabBG}
-        resizeMode="cover"
-      /> */}
-
       <View style={styles.tabContentContainer}>
-        <BlurView
-          style={{
-            height: "100%",
-            width: "110%",
-            // borderRadius: 100,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          blurType="light"
-          blurAmount={26}
-          reducedTransparencyFallbackColor="#FFFFFF14"
-        />
         <View
           style={{
             flexDirection: "row",
@@ -132,7 +104,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   style={[
                     styles.icon,
                     {
-                      tintColor: isFocused ? COLORS.primaryColor : "#fff",
+                      tintColor: isFocused ? COLORS.black : "#fff",
                     },
                   ]}
                 />
@@ -155,10 +127,9 @@ const TabStack = () => {
       }}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Chat" component={Chat} />
       <Tab.Screen name="Dashboard" component={ProDashboard} />
       <Tab.Screen name="FAQ & News" component={FAQNews} />
-      <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Chat" component={Chat} />
     </Tab.Navigator>
   );
 };
@@ -181,8 +152,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconMainContainer: {
-    width: 48,
-    height: 48,
+    width: 56,
+    height: 56,
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
@@ -192,7 +163,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignSelf: "center",
     marginTop: 10,
-    height: 56,
+    height: 64,
     overflow: "hidden",
   },
   tabMainContainer: {

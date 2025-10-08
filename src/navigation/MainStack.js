@@ -161,13 +161,14 @@ import YourTripsScreen from "../screens/Main/YourTripsScreen";
 import SellingAVehicle from "../screens/ServiceProviderAuth/AsPro/SellingAVehicle";
 import TabStack from "./TabStack";
 import BookingConfirmation from "../screens/Main/BookingConfirmation";
+import FilterScreen from "../screens/Main/Home/FilterScreen";
 
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName="BookingConfirmation"
+      initialRouteName="TabStack"
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
@@ -363,15 +364,22 @@ const MainStack = () => {
       <Stack.Screen name="TripReview" component={TripReview} />
       <Stack.Screen name="QrScreen" component={QrScreen} />
 
-
       {/* customer Parking screens  */}
       <Stack.Screen name="CusParkingMap" component={CusParkingMap} />
       <Stack.Screen name="CustomerTripReview" component={CustomerTripReview} />
       <Stack.Screen name="CustomerTripDetail" component={CustomerTripDetail} />
-      <Stack.Screen name="CustomerProfileDetails" component={CustomerProfileDetails} />
+      <Stack.Screen
+        name="CustomerProfileDetails"
+        component={CustomerProfileDetails}
+      />
       <Stack.Screen name="CustomerCalender" component={CustomerCalender} />
       <Stack.Screen name="FinalizingBooking" component={FinalizingBooking} />
-      <Stack.Screen name="BookingConfirmation" component={BookingConfirmation} />
+      <Stack.Screen
+        name="BookingConfirmation"
+        component={BookingConfirmation}
+      />
+
+      <Stack.Screen name="FilterScreen" component={FilterScreen} />
     </Stack.Navigator>
   );
 };

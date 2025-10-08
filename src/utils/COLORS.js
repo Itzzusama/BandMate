@@ -42,5 +42,6 @@ export const COLORS = {
   warning: "#A57A3A",
   green1: "#37B874",
   orange: "#F28C1C",
+  golden: "#FFCF83",
   pink: "#DC158C",
 };

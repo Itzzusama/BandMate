@@ -67,7 +67,7 @@ const MultiRangeSlider = ({ color, height, width, showValue = true }) => {
         max={MAX_VALUE}
         step={1}
         selectedStyle={{ backgroundColor: color ? color : COLORS.primaryColor }}
-        unselectedStyle={{ backgroundColor: COLORS.lightGray }}
+        unselectedStyle={{ backgroundColor: "#414141" }}
         trackStyle={{ height: 4, borderRadius: 3 }}
         markerStyle={{
           height: height || 12,
@@ -81,11 +81,13 @@ const MultiRangeSlider = ({ color, height, width, showValue = true }) => {
         <View style={styles.labelContainer}>
           <CustomText
             fontFamily={fonts.medium}
+            color={"#848484"}
             fontSize={12}
             label={`$ ${range[0]}`}
           />
           <CustomText
             fontFamily={fonts.medium}
+            color={"#848484"}
             fontSize={12}
             label={`$ ${range[1]}`}
           />

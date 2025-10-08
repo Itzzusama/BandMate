@@ -1,82 +1,52 @@
-import LinearGradient from "react-native-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { StyleSheet, View } from "react-native";
-import { useSelector } from "react-redux";
+import { Image, StyleSheet, View } from "react-native";
 
-import CustomBlurComponent from "../../../../components/CustomBlurComponent";
 import CustomText from "../../../../components/CustomText";
 import ImageFast from "../../../../components/ImageFast";
 
-import { PNGIcons } from "../../../../assets/images/icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Images } from "../../../../assets/images";
-import fonts from "../../../../assets/fonts";
+import { PNGIcons } from "../../../../assets/images/icons";
+import { COLORS } from "../../../../utils/COLORS";
 
-const HomeHeader = () => {
+const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
   const navigation = useNavigation();
-  const { userData } = useSelector((state) => state.users);
-  return (
-    <LinearGradient
-      colors={["#FFFFFF", "#FFFFFF00"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      locations={[0, 1]}
-      style={styles.header}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          width: "100%",
-          padding: 12,
-          paddingTop: 55,
-        }}
-      >
-        <View style={styles.row}>
-          <CustomBlurComponent height={48} maxWidth={200}>
-            <View style={styles.earning}>
-              <ImageFast
-                source={Images.buzz}
-                style={styles.profile}
-                resizeMode="contain"
-              />
-              <CustomText
-                  label={`Hi ${userData?.display_name || "Viktor"}`}
-                  fontFamily={fonts.medium}
-                  fontSize={16}
-                  lineHeight={16 * 1.4}
-                  marginLeft={4}
-                  marginRight={10}
+  const insets = useSafeAreaInsets();
 
-                />
-            </View>
-          </CustomBlurComponent>
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center", }}>
-          <CustomBlurComponent height={48} width={48}>
-            <ImageFast
-              source={PNGIcons.info}
-              style={styles.filterIcon}
-              resizeMode="contain"
-            />
-          </CustomBlurComponent>
-          <CustomBlurComponent height={48} width={48}>
-            <ImageFast
-              source={PNGIcons.bell}
-              style={styles.filterIcon}
-              resizeMode="contain"
-              onPress={() => navigation.navigate("Notification")}
-            />
-          </CustomBlurComponent>
-          <CustomBlurComponent height={48} width={48}>
-            <ImageFast
-              source={PNGIcons.heart}
-              style={styles.filterIcon}
-              resizeMode="contain"
-            />
-          </CustomBlurComponent>
-        </View>
+  return (
+    <View style={[styles.header, { marginTop: insets.top }]}>
+      <ImageFast source={Images.user} style={styles.profileImage} />
+
+      <View style={styles.profileInfo}>
+        <CustomText
+          label={"Hi Myles 👋"}
+          fontSize={17}
+          lineHeight={17 * 1.4}
+          color={COLORS.white}
+        />
+        <CustomText
+          label={"Hope you had a great day!"}
+          fontSize={12}
+          lineHeight={12 * 1.4}
+          color={COLORS.white2}
+        />
       </View>
-    </LinearGradient>
+
+      <View style={styles.imageRow}>
+        <ImageFast
+          removeLoading
+          source={PNGIcons.notiBell}
+          style={styles.image}
+          onPress={onNotificationPress}
+        />
+        <ImageFast
+          removeLoading
+          onPress={onFilterPress}
+          source={PNGIcons.filterBell}
+          style={styles.image}
+        />
+      </View>
+    </View>
   );
 };
 
@@ -84,26 +54,36 @@ export default HomeHeader;
 
 const styles = StyleSheet.create({
   header: {
-    height: 118,
-    width: "100%",
-    backgroundColor: "transparent",
+    flexDirection: "row",
+    // justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 12,
   },
-  row: {
+  profileSection: {
     flexDirection: "row",
     alignItems: "center",
   },
-  earning: {
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.lightGray,
+  },
+  profileInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  image: {
+    height: 40,
+    width: 40,
+  },
+  nameContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    paddingHorizontal: 4,
   },
-  profile: {
-    width: 32,
-    height: 32,
-  },
-  filterIcon: {
-    width: 20,
-    height: 20,
+  imageRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
 });

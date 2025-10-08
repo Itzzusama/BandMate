@@ -7,6 +7,7 @@ import Icons from "./Icons";
 import { COLORS } from "../utils/COLORS";
 import fonts from "../assets/fonts";
 import { PNGIcons } from "../assets/images/icons";
+import CustomButton from "./CustomButton";
 
 const Header = ({
   title,
@@ -27,7 +28,10 @@ const Header = ({
   iconBackgroundColor,
   isImage,
   onCartPress,
-  paddingTop
+  paddingTop,
+  secondText,
+  btnTitle,
+  btn,
 }) => {
   const navigation = useNavigation();
 
@@ -58,7 +62,7 @@ const Header = ({
           backgroundColor,
           marginTop,
           marginBottom,
-              paddingTop:paddingTop|| 18,
+          paddingTop: paddingTop || 18,
         },
       ]}
     >
@@ -69,7 +73,7 @@ const Header = ({
             style={[
               styles.backIcon,
               {
-                backgroundColor: iconBackgroundColor || COLORS.lightGray,
+                backgroundColor: iconBackgroundColor || COLORS.inputBg,
                 borderWidth,
                 borderColor,
               },
@@ -79,7 +83,7 @@ const Header = ({
             <Icons
               name="keyboard-arrow-left"
               family="MaterialIcons"
-              size={26}
+              size={20}
               color={textColor || COLORS.primaryColor}
             />
           </TouchableOpacity>
@@ -95,15 +99,36 @@ const Header = ({
             }}
           />
         )}
+
         <CustomText
           label={title}
-          color={textColor ? textColor : COLORS.primaryColor}
+          color={textColor ? textColor : COLORS.white}
           fontFamily={fontFamily || fonts.semiBold}
           textTransform="capitalize"
           textAlign={textAlign}
           fontSize={20}
           lineHeight={20 * 1.4}
         />
+
+        <View
+          style={{
+            backgroundColor: COLORS.btnColor,
+            height: 20,
+            width: 20,
+            alignItems: "center",
+            justifyContent: "center",
+            marginLeft: 4,
+            borderRadius: 99,
+          }}
+        >
+          <CustomText
+            label={secondText}
+            color={COLORS.black}
+            fontFamily={fonts.medium}
+            textAlign={textAlign}
+            lineHeight={14 * 1.4}
+          />
+        </View>
       </View>
       <View style={styles.row}>
         {onHelpPress ? (
@@ -141,7 +166,7 @@ const Header = ({
               style={{ width: 20, height: 20 }}
             />
           </TouchableOpacity>
-        ) : null}
+        ) :null}
         {isClear ? (
           <TouchableOpacity
             activeOpacity={0.9}
@@ -149,8 +174,8 @@ const Header = ({
             style={styles.clear}
           >
             <CustomText
-              label="Clear All"
-              color={COLORS.white}
+              label={btnTitle||"Clear All"}
+              color={COLORS.btnColor}
               fontFamily={fonts.medium}
               fontSize={14}
               lineHeight={14 * 1.4}
@@ -173,7 +198,6 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 12,
     paddingBottom: 10,
-
   },
   backIcon: {
     width: 40,
@@ -212,7 +236,7 @@ const styles = StyleSheet.create({
   },
 
   clear: {
-    backgroundColor: COLORS.black,
+    backgroundColor: "#1D1D1A",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,

@@ -8,7 +8,7 @@ const CustomSwitch = ({
   marginRight,
   marginLeft,
   marginBottom,
-  bgColor
+  bgColor,
 }) => {
   return (
     <View
@@ -38,7 +38,7 @@ const CustomSwitch = ({
           marginLeft: 2,
         }}
         trackOnStyle={{
-          backgroundColor: bgColor||"#000",
+          backgroundColor: bgColor || COLORS.btnColor,
           height: 31,
           width: 51,
           borderRadius: 100,
