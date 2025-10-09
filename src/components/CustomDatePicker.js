@@ -134,15 +134,9 @@ const CustomDatePicker = ({
           errorTitle={
             showSuccessColor ? "Valid Date " : error ? error : defaultError
           }
-          color={
-            error
-              ? "#EE1045"
-              : showSuccessColor
-              ? "#64CD75"
-              : "rgba(18, 18, 18, 0.64)"
-          }
+          color={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
           color1={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
-          secondTitle={showSuccessColor ? "" : "move."}
+          secondTitle={showSuccessColor ? "" : "BandMate."}
           marginTop={error ? 0 : 4}
         />
       )}

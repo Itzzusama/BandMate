@@ -48,7 +48,7 @@ const ErrorComponent = ({
       <CustomText
         label={secondTitle}
         fontSize={12}
-        color={COLORS.white2}
+        color={COLORS.white}
         fontFamily={fonts.medium}
         lineHeight={12 * 1.4}
       />

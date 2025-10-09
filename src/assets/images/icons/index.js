@@ -193,9 +193,7 @@ export const PNGIcons = {
   Geneva: require("./Geneva.png"),
   sola: require("./sola.png"),
   logo: require("./logo.png"),
-  
-  
-  
+
   notiBell: require("./notiBell.png"),
   filterBell: require("./filterBell.png"),
   bandImage: require("./bandImage.png"),
@@ -204,5 +202,5 @@ export const PNGIcons = {
   btn3: require("./btn3.png"),
   btn4: require("./btn4.png"),
   btn5: require("./btn5.png"),
-
+  trash: require("./trash.png"),
 };

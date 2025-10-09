@@ -13,8 +13,7 @@ const AuthSlider = ({ min, max, marginTop, marginBottom }) => {
             style={[
               styles.block,
               {
-                backgroundColor:
-                  index < min ? COLORS.authHeader : "#FFFFFF14",
+                backgroundColor: index < min ? COLORS.authHeader : "#FFFFFF14",
               },
             ]}
           />
@@ -35,12 +34,11 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
-    borderRadius: 99,
+    borderRadius: 1,
     overflow: "hidden",
   },
   block: {
     flex: 1,
-    height: 6,
-    marginLeft: -1,
+    height: 4,
   },
 });

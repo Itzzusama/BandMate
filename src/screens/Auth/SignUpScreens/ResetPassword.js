@@ -20,63 +20,69 @@ const ResetPassword = forwardRef(
     const onboardingCount = useSelector(count);
     const navigation = useNavigation();
     const dispatch = useDispatch();
-
+    console.log(state);
     const [password, setPassword] = useState("");
     const [showSuccessColor, setShowSuccessColor] = useState(false);
 
-    const [error, setError] = useState("Password do not match");
+    const [error, setError] = useState("Please re-enter your password");
     const [isError, setIsError] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const submit = async () => {
-      navigation.navigate("MainStack");
-      // if (!password) {
-      //   setError("Please enter your password");
-      //   setIsError(true);
-      //   setShowSuccessColor(false);
-      //   return;
-      // } else if (state?.password !== password) {
-      //   setError("Password do not match");
-      //   setIsError(true);
-      //   setShowSuccessColor(false);
-      //   return;
-      // } else {
-      //   setError("");
-      //   let { verifyVia, ...cleanState } = state;
-      //   let finalState = cleanState;
+      if (!password) {
+        setError("Please enter your password");
+        setIsError(true);
+        setShowSuccessColor(false);
+        return;
+      } else if (state?.password !== password) {
+        setError("Password do not match");
+        setIsError(true);
+        setShowSuccessColor(false);
+        return;
+      } else {
+        setError("");
+        if (state.role == "band") {
+          if (currentIndex < onboardingCount) {
+            setCurrentIndex(currentIndex + 1);
+          }
+        } else {
+          navigation.navigate("Success");
+        }
+        // let { verifyVia, ...cleanState } = state;
+        // let finalState = cleanState;
 
-      //   if (finalState?.phone) {
-      //     let { email, ...data } = finalState;
-      //     finalState = data;
-      //   } else if (finalState?.email) {
-      //     let { phone, ...data } = finalState;
-      //     finalState = data;
-      //   }
+        // if (finalState?.phone) {
+        //   let { email, ...data } = finalState;
+        //   finalState = data;
+        // } else if (finalState?.email) {
+        //   let { phone, ...data } = finalState;
+        //   finalState = data;
+        // }
 
-      //   try {
-      //     setLoading(true);
-      //     const response = await post("auth/register", finalState);
-      //     if (response?.data) {
-      //       navigation.navigate("PinOnBoarding", { state: finalState });
-      //       dispatch(setUserData(response?.data?.user));
-      //       dispatch(setToken(response?.data?.tokens?.accessToken));
-      //       await AsyncStorage.setItem(
-      //         "token",
-      //         response?.data?.tokens?.accessToken
-      //       );
-      //       await AsyncStorage.setItem(
-      //         "refreshToken",
-      //         response?.data?.tokens?.refreshToken
-      //       );
-      //     }
+        // try {
+        //   setLoading(true);
+        //   const response = await post("auth/register", finalState);
+        //   if (response?.data) {
+        //     navigation.navigate("PinOnBoarding", { state: finalState });
+        //     dispatch(setUserData(response?.data?.user));
+        //     dispatch(setToken(response?.data?.tokens?.accessToken));
+        //     await AsyncStorage.setItem(
+        //       "token",
+        //       response?.data?.tokens?.accessToken
+        //     );
+        //     await AsyncStorage.setItem(
+        //       "refreshToken",
+        //       response?.data?.tokens?.refreshToken
+        //     );
+        //   }
 
-      //     setLoading(false);
-      //   } catch (error) {
-      //     setLoading(false);
-      //     setError(error?.response?.data?.message);
-      //     setIsError(true);
-      //   }
-      // }
+        //   setLoading(false);
+        // } catch (error) {
+        //   setLoading(false);
+        //   setError(error?.response?.data?.message);
+        //   setIsError(true);
+        // }
+      }
     };
 
     const back = () => {
@@ -126,6 +132,7 @@ const ResetPassword = forwardRef(
             marginBottom={8}
             placeholder="************"
             secureTextEntry
+            isValid={showSuccessColor}
           />
 
           <ErrorComponent
@@ -136,7 +143,7 @@ const ResetPassword = forwardRef(
               showSuccessColor ? "#64CD75" : isError ? "#EE1045" : COLORS.gray1
             }
           />
-          <ErrorComponent errorTitle={"Please re-enter your password"} />
+          {/* <ErrorComponent errorTitle={"Please re-enter your password"} /> */}
         </View>
       </View>
     );

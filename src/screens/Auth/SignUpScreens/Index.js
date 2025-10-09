@@ -22,6 +22,8 @@ import Instruments from "./Instruments";
 import Level from "./Level";
 import Genres from "./Genres";
 import Artists from "./Artists";
+import AddPictures from "./AddPictures";
+import AddDescription from "./AddDescription";
 
 const SignUpScreens = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
@@ -49,51 +51,46 @@ const SignUpScreens = () => {
 
   const [state, setState] = useState(init);
 
-  // 👇 define dynamic steps depending on role
   const steps = useMemo(() => {
     if (state.role === "band") {
       return [
-        "DOB",
-        "UserType",
-        "BandName",
-        "BandMembers",
-        "AgeRange",
+        "Date of Birth",
+        "Choose your user type",
+        "Band's name",
+        "Band's members",
+        "Age range",
+        "Email",
+        "Verifying your email",
+        "Creating a strong password",
+        "Confirming password",
         "Instruments",
         "Level",
         "Genres",
         "Artists",
-        "FirstName",
-        "SurName",
-        "Gender",
-        "NameSelection",
-        "Email",
-        "OtpCode",
-        "Password",
-        "ConfirmPassword",
+        "Pictures",
+        "About you",
       ];
     } else {
-      // default: artist flow
       return [
-        "DOB",
-        "UserType",
-        "FirstName",
-        "SurName",
+        "Date of Birth",
+        "Choose your user type",
+        "Firstname",
+        "Surname",
         "Gender",
-        "NameSelection",
+        "Addressing",
         "Email",
-        "OtpCode",
-        "Password",
-        "ConfirmPassword",
+        "Verifying your email",
+        "Creating a strong password",
+        "Confirming password",
       ];
     }
   }, [state.role]);
 
   const totalSteps = steps.length;
 
-  // 🧩 Step Renderer
   const StepView = ({ stepName }) => {
     switch (stepName) {
-      case "DOB":
+      case "Date of Birth":
         return (
           <DOB
             ref={stepRef}
@@ -104,7 +101,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "UserType":
+      case "Choose your user type":
         return (
           <UserType
             ref={stepRef}
@@ -115,7 +112,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "BandName":
+      case "Band's name":
         return (
           <BandName
             ref={stepRef}
@@ -126,7 +123,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "BandMembers":
+      case "Band's members":
         return (
           <BandMembers
             ref={stepRef}
@@ -137,7 +134,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "AgeRange":
+      case "Age range":
         return (
           <AgeRange
             ref={stepRef}
@@ -190,7 +187,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "FirstName":
+      case "Firstname":
         return (
           <FirstName
             ref={stepRef}
@@ -201,7 +198,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "SurName":
+      case "Surname":
         return (
           <SurName
             ref={stepRef}
@@ -223,7 +220,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "NameSelection":
+      case "Addressing":
         return (
           <NameSelection
             ref={stepRef}
@@ -245,7 +242,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "OtpCode":
+      case "Verifying your email":
         return (
           <OtpCode
             ref={stepRef}
@@ -256,7 +253,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "Password":
+      case "Creating a strong password":
         return (
           <Password
             ref={stepRef}
@@ -267,7 +264,7 @@ const SignUpScreens = () => {
           />
         );
 
-      case "ConfirmPassword":
+      case "Confirming password":
         return (
           <ResetPassword
             ref={stepRef}
@@ -277,7 +274,26 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
-
+      case "Pictures":
+        return (
+          <AddPictures
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
+      case "About you":
+        return (
+          <AddDescription
+            ref={stepRef}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            state={state}
+            setState={setState}
+          />
+        );
       default:
         return <Text>No View</Text>;
     }

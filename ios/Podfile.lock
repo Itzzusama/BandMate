@@ -2131,7 +2131,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-video (6.17.0):
+  - react-native-video (6.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2150,7 +2150,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
-    - react-native-video/Video (= 6.17.0)
+    - react-native-video/Video (= 6.16.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2161,7 +2161,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-video/Fabric (6.17.0):
+  - react-native-video/Fabric (6.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2190,7 +2190,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-video/Video (6.17.0):
+  - react-native-video/Video (6.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3726,7 +3726,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 4df6c897ab5bd841a5bba6f734785c0c9ef4c206
   react-native-skia: 94e1c77539fe0925c164e50848aae6ae9ab84c41
   react-native-slider: 697a1209ffd96f494a003ca19b79fd05d39bafcf
-  react-native-video: 8681d42fce8dd45b1b7e7d9b54c9c054c99229ae
+  react-native-video: 4da16bfca01a02aa2095e40683d74f2d6563207c
   react-native-webview: 6a11548e3714dbf97a93003f5c95dd6fcc10234b
   react-native-worklets-core: be5da7693070046d10b05ec6143f2f19bf05aa98
   React-NativeModulesApple: 342e280bb9fc2aa5f61f6c257b309a86b995e12d

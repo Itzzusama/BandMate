@@ -7,8 +7,8 @@ import ErrorComponent from "../../../components/ErrorComponent";
 
 import fonts from "../../../assets/fonts";
 import { COLORS } from "../../../utils/COLORS";
-import { useSelector } from "react-redux";
-import { count } from "../../../store/reducer/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { count, setOnboardingCount } from "../../../store/reducer/appSlice";
 
 const UserType = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
@@ -16,7 +16,7 @@ const UserType = forwardRef(
     const [selectedRole, setSelectedRole] = useState(state?.role || null);
     const onboardingCount = useSelector(count);
     const [showSuccessColor, setShowSuccessColor] = useState(false);
-
+    const dispatch = useDispatch();
     const handleRoleSelection = (role) => {
       setSelectedRole(role);
 
@@ -86,7 +86,10 @@ const UserType = forwardRef(
 
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => handleRoleSelection("band")}
+            onPress={() => {
+              dispatch(setOnboardingCount(15));
+              handleRoleSelection("band");
+            }}
             style={[
               styles.box,
               {

@@ -24,7 +24,7 @@ import Profile from "../screens/Auth/Profile";
 import PinCode from "../screens/Auth/PinCode";
 import Signup from "../screens/Auth/Signup";
 import Login from "../screens/Auth/Login";
-
+import Success from "../screens/Success";
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
@@ -67,6 +67,7 @@ const AuthStack = () => {
       <Stack.Screen name="ConfirmPinCode" component={ConfirmPinCode} />
       <Stack.Screen name="NewPass" component={NewPass} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Success" component={Success} />
     </Stack.Navigator>
   );
 };

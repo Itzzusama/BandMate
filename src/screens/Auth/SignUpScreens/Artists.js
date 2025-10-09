@@ -132,8 +132,6 @@ const Artists = forwardRef(
                     style={[
                       styles.imageWrapper,
                       {
-                        width: CARD_SIZE,
-                        height: CARD_SIZE,
                         borderColor: isSelected
                           ? COLORS.btnColor
                           : COLORS.black,
@@ -193,7 +191,8 @@ const styles = StyleSheet.create({
   imageWrapper: {
     borderRadius: 100,
     overflow: "hidden",
-    position: "relative",
+    height: 108,
+    width: 108,
   },
   artistImage: {
     width: "100%",

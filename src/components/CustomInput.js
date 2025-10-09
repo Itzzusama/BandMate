@@ -42,6 +42,7 @@ const CustomInput = ({
   isClear,
   paddingVertical,
   Isicon,
+  isValid,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hidePass, setHidePass] = useState(true);
@@ -132,7 +133,9 @@ const CustomInput = ({
               {
                 width: secureTextEntry ? "91%" : isSwitch ? "80%" : "99%",
                 paddingVertical: paddingVertical,
+                // paddingTop: multiline ? 10 : 0,
                 paddingLeft: search ? 8 : 0,
+                paddingRight: 8,
                 color: error
                   ? "#EE1045"
                   : showSuccessColor
@@ -187,20 +190,33 @@ const CustomInput = ({
             />
           )}
         </View>
+
         {secureTextEntry && (
           <ImageFast
             source={!hidePass ? Images.eye : Images.eyeLine}
             resizeMode="contain"
             style={{
               position: "absolute",
-              right: 17,
+              right: isValid ? 40 : 17,
               width: 16,
               height: 16,
-              tintColor: "red",
             }}
             onPress={() => setHidePass(!hidePass)}
           />
         )}
+        {isValid && (
+          <Icons
+            family={"Ionicons"}
+            name={"checkmark-circle"}
+            color={"#64CD75"}
+            size={18}
+            style={{
+              position: "absolute",
+              right: 17,
+            }}
+          />
+        )}
+
         {Isicon ? (
           <View
             style={{
