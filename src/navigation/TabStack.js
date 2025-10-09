@@ -3,7 +3,7 @@ import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "@react-native-community/blur";
 
-import ProDashboard from "../screens/Main/VehicleDashboard/ProDashboard";
+
 import Profile from "../screens/Main/Profile";
 import FAQNews from "../screens/Main/FAQNews";
 import Chat from "../screens/Main/Chat/Chat";
@@ -14,6 +14,7 @@ import ImageFast from "../components/ImageFast";
 import { useHomeSheet } from "../context/HomeSheetContext";
 import { Images } from "../assets/images";
 import { COLORS } from "../utils/COLORS";
+import ProDashboard from "../screens/Main/ProDashboard";
 
 const Tab = createBottomTabNavigator();
 
