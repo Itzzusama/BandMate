@@ -10,7 +10,6 @@ import CustomButton from "../../../components/CustomButton";
 import CustomText from "../../../components/CustomText";
 import Header from "../../../components/Header";
 import Icons from "../../../components/Icons";
-import ImageFast from "../../../components/ImageFast";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 
 import GameCard from "./molecules/GameCard";
@@ -28,8 +27,6 @@ import {
   setVTCIndependent,
 } from "../../../store/reducer/usersSlice";
 import { COLORS } from "../../../utils/COLORS";
-import ParkingLocationFilter from "../CustomerParking/molecules/ParkingLocationFilter";
-import VTCModal from "../Dashboard/Modals/VTCModal";
 
 const Profile = ({ navigation }) => {
   const dispatch = useDispatch();
