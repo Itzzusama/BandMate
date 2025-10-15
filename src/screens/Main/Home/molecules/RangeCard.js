@@ -4,7 +4,7 @@ import CustomText from "../../../../components/CustomText";
 import ErrorComponent from "../../../../components/ErrorComponent";
 import MultiRangeSlider from "../../../../components/RangeSliderTwoWay";
 
-const RangeCard = ({ title, rightTitle, leftTitle }) => {
+const RangeCard = ({ title, rightTitle, leftTitle, unit }) => {
   return (
     <View style={styles.mainContainer}>
       <CustomText
@@ -13,7 +13,11 @@ const RangeCard = ({ title, rightTitle, leftTitle }) => {
         lineHeight={18 * 1.4}
         fontFamily={fonts.medium}
       />
-      <MultiRangeSlider rightTitle={rightTitle} leftTitle={leftTitle} />
+      <MultiRangeSlider
+        rightTitle={rightTitle}
+        leftTitle={leftTitle}
+        unit={unit}
+      />
 
       <ErrorComponent
         errorTitle={"Only meet and be visible to people within that range."}

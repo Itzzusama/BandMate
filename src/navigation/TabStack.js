@@ -103,7 +103,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   style={[
                     styles.icon,
                     {
-                      tintColor: isFocused ? COLORS.black : "#fff",
+                      tintColor: isFocused ? "#111" : COLORS.white3,
                     },
                   ]}
                 />

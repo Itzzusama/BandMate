@@ -28,7 +28,7 @@ const SocialFeeds = () => {
           username="username1"
           displayName="Display Name 1"
           isVerified={true}
-          imageSource={EventImages.eventImg}
+          imageSource={FeedsImages.feed_img}
           promo={true}
           sponsored={true}
           weeksOnChart={2}
@@ -47,7 +47,7 @@ const SocialFeeds = () => {
           username="username2"
           displayName="Display Name 2"
           isVerified={false}
-          imageSource={FeedsImages.feed_img}
+          imageSource={EventImages.eventImg}
           promo={true}
           sponsored={true}
           weeksOnChart={5}
@@ -85,7 +85,7 @@ const SocialFeeds = () => {
         displayName="Display Name"
         isVerified={true}
         partnershipWith="ClubHouse"
-        imageSource={FeedsImages.feed_img}
+        imageSource={FeedsImages.post}
         stats={{
           likes: "1.4k",
           comments: "1.5M",

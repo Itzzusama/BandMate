@@ -215,4 +215,7 @@ export const PNGIcons = {
   inbox: require("./Inbox.png"),
   movie: require("./movie.png"),
   turn: require("./turn.png"),
+  users: require("./users.png"),
+  webflow: require("./webflow.png"),
+  award: require("./award.png"),
 };

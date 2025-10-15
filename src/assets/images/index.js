@@ -223,4 +223,5 @@ export const Images = {
   id_bg: require("./id_bg.png"),
   event: require("./event.png"),
   feeds: require("./feeds.png"),
+  trending: require("./trending.png"),
 };

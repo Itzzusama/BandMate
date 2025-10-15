@@ -6,6 +6,8 @@ import CustomText from "../../../../components/CustomText";
 import Icons from "../../../../components/Icons";
 import fonts from "../../../../assets/fonts";
 import ImageFast from "../../../../components/ImageFast";
+import { PNGIcons } from "../../../../assets/images/icons";
+import { Images } from "../../../../assets/images";
 
 const FeedCard = ({
   username = "@username",
@@ -124,11 +126,9 @@ const FeedCard = ({
 
           {/* Chart Info */}
           <View style={styles.chartInfo}>
-            <Icons
-              family="FontAwesome5"
-              name="award"
-              size={12}
-              color={COLORS.white}
+            <Image
+              source={PNGIcons.award}
+              style={{ height: 12, width: 12, resizeMode: "contain" }}
             />
             <CustomText
               label={`${weeksOnChart} consecutive weeks on the chart`}
@@ -152,7 +152,7 @@ const FeedCard = ({
               </View>
 
               <View style={styles.gainBoxRow}>
-                <View style={styles.gainBox}>
+                <View style={[styles.gainBox, { paddingVertical: 4 }]}>
                   <Icons
                     family="AntDesign"
                     name="caretup"
@@ -174,55 +174,55 @@ const FeedCard = ({
             {/* Bottom Stats */}
             <View style={styles.socialStats}>
               <View style={styles.statItem}>
-                <Icons
-                  family="Feather"
-                  name="heart"
-                  size={16}
-                  color={COLORS.white}
+                <Image
+                  source={PNGIcons.heart}
+                  style={{ height: 13, width: 13, resizeMode: "contain" }}
                 />
                 <CustomText
                   label={stats.likes}
-                  fontSize={13}
+                  fontSize={12}
                   color={COLORS.white}
+                  fontFamily={fonts.medium}
                 />
               </View>
               <View style={styles.statItem}>
                 <Icons
                   family="MaterialIcons"
                   name="chat-bubble-outline"
-                  size={16}
+                  size={14}
                   color={COLORS.white}
                 />
                 <CustomText
                   label={stats.comments}
-                  fontSize={13}
+                  fontSize={12}
                   color={COLORS.white}
+                  fontFamily={fonts.medium}
                 />
               </View>
               <View style={styles.statItem}>
-                <Icons
-                  family="Feather"
-                  name="arrow-up-right"
-                  size={16}
-                  color={COLORS.white}
+                <Image
+                  source={Images.trending}
+                  style={{ height: 12, width: 12, resizeMode: "contain" }}
                 />
                 <CustomText
                   label={stats.shares}
-                  fontSize={13}
+                  fontSize={12}
                   color={COLORS.white}
+                  fontFamily={fonts.medium}
                 />
               </View>
               <View style={styles.statItem}>
                 <Icons
                   family="MaterialIcons"
                   name="repeat"
-                  size={16}
+                  size={14}
                   color={COLORS.white}
                 />
                 <CustomText
                   label={stats.shares}
-                  fontSize={13}
+                  fontSize={12}
                   color={COLORS.white}
+                  fontFamily={fonts.medium}
                 />
               </View>
             </View>
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.black,
     borderRadius: 12,
     overflow: "hidden",
-    marginBottom: 20,
+    marginBottom: 12,
     width: 320,
     borderWidth: 1,
     borderColor: COLORS.inputBg,
@@ -288,10 +288,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   avatar: {
-    width: 42,
-    height: 42,
+    width: 32,
+    height: 32,
     borderRadius: 21,
-    backgroundColor: COLORS.white3,
+    backgroundColor: "#D9D9D9",
   },
   nameContainer: {
     flexDirection: "row",
@@ -355,12 +355,12 @@ const styles = StyleSheet.create({
   },
   chartInfo: {
     position: "absolute",
-    bottom: 115,
+    bottom: 103,
     left: 12,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    borderColor: COLORS.white3,
+    borderColor: "#FFFFFF29",
     borderWidth: 1,
     padding: 4,
     paddingHorizontal: 8,
@@ -368,14 +368,14 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     position: "absolute",
-    bottom: 60,
+    bottom: 52,
     left: 12,
     right: 12,
   },
   rankRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 4,
   },
   rankBox: {
     backgroundColor: "#EE762329",
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
   socialStats: {
     flexDirection: "row",
     gap: 9,
-    marginTop: 8,
+    marginTop: 4,
   },
   statItem: {
     flexDirection: "row",

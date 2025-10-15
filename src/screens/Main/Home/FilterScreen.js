@@ -90,7 +90,7 @@ const FilterScreen = () => {
         setSwitchArray={setExperience}
         title={"Experience level"}
       />
-      <RangeCard title={"Distance range"} />
+      <RangeCard title={"Distance range"} unit={"km"} />
       <RangeCard title={"Age range"} />
       <OptionCard
         title={"Availability"}
