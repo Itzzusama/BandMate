@@ -163,8 +163,8 @@ const UploadImage = (props) => {
             borderRadius: 26,
             maxHeight: "100%",
             borderWidth: 1,
-            backgroundColor: "#FFFFFF29",
-            borderColor: "rgba(255, 255, 255, 0.16)",
+            backgroundColor: COLORS.inputBg,
+            borderColor: COLORS.white2,
           }}
         >
           <BlurView
@@ -221,7 +221,7 @@ export default UploadImage;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
     width: "100%",
     bottom: 0,
     borderTopRightRadius: 20,

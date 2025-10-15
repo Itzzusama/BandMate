@@ -217,4 +217,10 @@ export const Images = {
   startBg: require("./startBg.png"),
   userPics: require("./User-pics.png"),
   verifiedBadge: require("./verifiedBadge.png"),
+  artist: require("./artist.png"),
+  latest_rel: require("./latest_rel.png"),
+  thumbnail: require("./thumbnail.png"),
+  id_bg: require("./id_bg.png"),
+  event: require("./event.png"),
+  feeds: require("./feeds.png"),
 };

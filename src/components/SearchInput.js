@@ -34,6 +34,7 @@ const SearchInput = ({
   CrossPress,
   isChange, // 🔹 new prop
   CameraPress, // 🔹 optional handler
+  borderRadius = 12,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const navigation = useNavigation();
@@ -66,6 +67,7 @@ const SearchInput = ({
             marginTop,
             borderColor: isFocused ? COLORS.primaryColor : "#F2F2F2",
             elevation,
+            borderRadius,
           },
         ]}
       >
@@ -119,7 +121,34 @@ const SearchInput = ({
           autoFocus={autoFocus}
           editable={editable}
         />
-
+        <TouchableOpacity
+          disabled
+          style={[
+            styles.searchIcon,
+            isChange && {
+              backgroundColor: COLORS.darkPurple,
+              width: 36,
+              height: 36,
+              borderRadius: 99,
+              marginRight: 10,
+              marginLeft: -5,
+            },
+          ]}
+          activeOpacity={0.6}
+          onPress={onPress}
+        >
+          {isCross && (
+            <Image
+              source={PNGIcons.crossBg}
+              style={{
+                height: 24,
+                width: 24,
+                marginTop: 2,
+                tintColor: COLORS.white,
+              }}
+            />
+          )}
+        </TouchableOpacity>
         {/* If isChange is true → show Cross + Camera inside */}
         {isChange && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -127,7 +156,12 @@ const SearchInput = ({
               <TouchableOpacity onPress={CrossPress} activeOpacity={0.6}>
                 <Image
                   source={PNGIcons.crossBg}
-                  style={{ height: 22, width: 22, marginTop: 2 }}
+                  style={{
+                    height: 22,
+                    width: 22,
+                    marginTop: 2,
+                    tintColor: COLORS.white,
+                  }}
                 />
               </TouchableOpacity>
             )}

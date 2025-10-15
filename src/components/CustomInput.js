@@ -126,7 +126,7 @@ const CustomInput = ({
 
           <TextInput
             ref={ref}
-            cursorColor="blue"
+            cursorColor="white"
             placeholder={placeholder}
             style={[
               styles.input,

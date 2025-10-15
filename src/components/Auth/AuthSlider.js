@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import { COLORS } from "../../utils/COLORS";
 
-const AuthSlider = ({ min, max, marginTop, marginBottom }) => {
+const AuthSlider = ({ min, max, marginTop, marginBottom, showLeftSpace }) => {
   return (
     <View
       style={[styles.container, { marginTop: marginTop || 20, marginBottom }]}
@@ -14,6 +14,7 @@ const AuthSlider = ({ min, max, marginTop, marginBottom }) => {
               styles.block,
               {
                 backgroundColor: index < min ? COLORS.authHeader : "#FFFFFF14",
+                // marginLeft: showLeftSpace ? -5 : 0,
               },
             ]}
           />

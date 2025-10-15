@@ -3,12 +3,10 @@ import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "@react-native-community/blur";
 
-
-import Profile from "../screens/Main/Profile";
-import FAQNews from "../screens/Main/FAQNews";
 import Chat from "../screens/Main/Chat/Chat";
 import Home from "../screens/Main/Home";
-
+import Event from "../screens/Main/Event";
+import SocialFeeds from "../screens/Main/SocialFeeds";
 import ImageFast from "../components/ImageFast";
 
 import { useHomeSheet } from "../context/HomeSheetContext";
@@ -44,7 +42,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 8,
+            gap: 6,
             padding: 4,
           }}
         >
@@ -78,9 +76,9 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 case "Chat":
                   return Images.blurInbox;
                 case "Dashboard":
-                  return Images.blurdash;
+                  return Images.feeds;
                 case "FAQ & News":
-                  return Images.blurFaq;
+                  return Images.event;
                 default:
                   return null;
               }
@@ -128,8 +126,8 @@ const TabStack = () => {
       }}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Dashboard" component={ProDashboard} />
-      <Tab.Screen name="FAQ & News" component={FAQNews} />
+      <Tab.Screen name="Dashboard" component={SocialFeeds} />
+      <Tab.Screen name="FAQ & News" component={Event} />
       <Tab.Screen name="Chat" component={Chat} />
     </Tab.Navigator>
   );
@@ -139,8 +137,8 @@ export default TabStack;
 
 const styles = StyleSheet.create({
   icon: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
     resizeMode: "contain",
   },
   buzz: {
@@ -160,7 +158,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabContentContainer: {
-    backgroundColor: "#FFFFFF14",
+    backgroundColor: "#252525",
     borderRadius: 100,
     alignSelf: "center",
     marginTop: 10,

@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -32,7 +32,6 @@ const Artists = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const { width } = useWindowDimensions();
 
-    // 🧠 Dynamically decide number of columns based on screen width
     const SPACING = 12;
     const MIN_CARD_SIZE = 100;
     const numColumns = Math.max(
@@ -43,11 +42,34 @@ const Artists = forwardRef(
 
     const [selectedArtists, setSelectedArtists] = useState([]);
     const [error, setError] = useState("Choose at least 0/3");
+    const [prevError, setPrevError] = useState("");
+    const [showSuccessColor, setShowSuccessColor] = useState(false);
+
+    // ✅ Show green color briefly when reaching valid (≥3)
+    useEffect(() => {
+      if (prevError && !error) {
+        setShowSuccessColor(true);
+        const timer = setTimeout(() => setShowSuccessColor(false), 2000);
+        return () => clearTimeout(timer);
+      }
+      setPrevError(error);
+    }, [error]);
 
     const toggleArtist = (name) => {
-      setSelectedArtists((prev) =>
-        prev.includes(name) ? prev.filter((a) => a !== name) : [...prev, name]
-      );
+      setSelectedArtists((prev) => {
+        const updated = prev.includes(name)
+          ? prev.filter((a) => a !== name)
+          : [...prev, name];
+
+        // 🔴 Show error when <3, clear when valid
+        if (updated.length < 3) {
+          setError("Please choose at least 3 artists.");
+        } else {
+          setError("");
+        }
+
+        return updated;
+      });
     };
 
     const errorCheck = () => {
@@ -100,7 +122,17 @@ const Artists = forwardRef(
           marginTop={4}
         />
 
-        <ErrorComponent errorTitle={error} />
+        {/* ✅ Dynamic counter + color feedback */}
+        <ErrorComponent
+          errorTitle={`Choose at least ${selectedArtists.length}/3`}
+          color={
+            error
+              ? "#EE1045" // red when not enough
+              : showSuccessColor
+              ? "#64CD75" // green briefly when success
+              : COLORS.white2 // neutral
+          }
+        />
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -142,7 +174,7 @@ const Artists = forwardRef(
                     <Image
                       source={artist.img}
                       style={styles.artistImage}
-                      resizeMode="contain"
+                      resizeMode="cover"
                     />
                     {isSelected && (
                       <View style={styles.overlay}>

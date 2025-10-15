@@ -6,7 +6,6 @@ import { COLORS } from "../utils/COLORS";
 import CustomText from "./CustomText";
 
 const { width } = Dimensions.get("window");
-const SLIDER_WIDTH = width - 30;
 
 const MultiRangeSlider = ({
   color,
@@ -21,17 +20,18 @@ const MultiRangeSlider = ({
   initialLowValue = 18,
   initialHighValue = 50,
   onValuesChange = () => {},
+  unit = "yrs", // ✅ new prop
+  sliderWidth = width - 30, // ✅ new prop for flexibility
 }) => {
   const [range, setRange] = useState([initialLowValue, initialHighValue]);
 
-  // keep internal state synced if props change
   useEffect(() => {
     setRange([initialLowValue, initialHighValue]);
   }, [initialLowValue, initialHighValue]);
 
   const handleValuesChange = (values) => {
     setRange(values);
-    onValuesChange(values[0], values[1]); // send values to parent
+    onValuesChange(values[0], values[1]);
   };
 
   return (
@@ -40,7 +40,7 @@ const MultiRangeSlider = ({
         <View style={styles.valuesRow}>
           <View style={styles.valueContainer}>
             <CustomText
-              label={"Minimum age"}
+              label={"Minimum"}
               fontSize={12}
               color={COLORS.gray2}
               lineHeight={1.4 * 12}
@@ -49,13 +49,13 @@ const MultiRangeSlider = ({
               fontFamily={fonts.medium}
               fontSize={16}
               lineHeight={1.4 * 16}
-              label={`${range[0]} yrs`}
+              label={`${range[0]} ${unit}`}
             />
           </View>
 
           <View style={styles.valueContainer}>
             <CustomText
-              label={"Maximum age"}
+              label={"Maximum"}
               fontSize={12}
               color={COLORS.gray2}
               lineHeight={1.4 * 12}
@@ -64,7 +64,7 @@ const MultiRangeSlider = ({
               fontFamily={fonts.medium}
               fontSize={16}
               lineHeight={1.4 * 16}
-              label={`${range[1]} yrs`}
+              label={`${range[1]} ${unit}`}
             />
           </View>
         </View>
@@ -72,7 +72,7 @@ const MultiRangeSlider = ({
 
       <MultiSlider
         values={range}
-        sliderLength={SLIDER_WIDTH}
+        sliderLength={sliderWidth} // ✅ now dynamic
         onValuesChange={handleValuesChange}
         min={min}
         max={max}
@@ -90,18 +90,20 @@ const MultiRangeSlider = ({
       />
 
       {showValue && (
-        <View style={styles.labelContainer}>
+        <View
+          style={[styles.labelContainer, { width: sliderWidth }]} // ✅ dynamic width
+        >
           <CustomText
             fontFamily={fonts.medium}
             color={"#848484"}
             fontSize={12}
-            label={leftTitle || `${range[0]} yrs`}
+            label={leftTitle || `${range[0]} ${unit}`}
           />
           <CustomText
             fontFamily={fonts.medium}
             color={"#848484"}
             fontSize={12}
-            label={rightTitle || `${range[1]} yrs`}
+            label={rightTitle || `${range[1]} ${unit}`}
           />
         </View>
       )}
@@ -120,7 +122,6 @@ const styles = StyleSheet.create({
   labelContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: SLIDER_WIDTH,
     marginTop: -12,
   },
   valuesRow: {

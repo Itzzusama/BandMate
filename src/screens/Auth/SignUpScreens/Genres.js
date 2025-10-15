@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -13,7 +13,6 @@ import ErrorComponent from "../../../components/ErrorComponent";
 import SearchInput from "../../../components/SearchInput";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
-import Icons from "../../../components/Icons";
 import { GenresImgs } from "../../../assets/images/genrsImg";
 
 const instrumentCategories = [
@@ -52,19 +51,37 @@ const instrumentCategories = [
 const Genres = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const { width } = useWindowDimensions();
-    const CARD_WIDTH = (width - 36) / 2; // consistent spacing on all screens
+    const CARD_WIDTH = (width - 36) / 2;
     const CARD_HEIGHT = 100;
 
     const [selectedGenres, setSelectedGenres] = useState([]);
-    const [error, setError] = useState("Choose at least 0/3");
+    const [error, setError] = useState("");
+    const [prevError, setPrevError] = useState("");
+    const [showSuccessColor, setShowSuccessColor] = useState(false);
+
+    // ✅ dynamic color fade (green when success)
+    useEffect(() => {
+      if (prevError && !error) {
+        setShowSuccessColor(true);
+        const timer = setTimeout(() => setShowSuccessColor(false), 2000);
+        return () => clearTimeout(timer);
+      }
+      setPrevError(error);
+    }, [error]);
 
     const toggleGenre = (genreName) => {
       setSelectedGenres((prev) => {
-        if (prev.includes(genreName)) {
-          return prev.filter((g) => g !== genreName);
+        const updated = prev.includes(genreName)
+          ? prev.filter((g) => g !== genreName)
+          : [...prev, genreName];
+
+        if (updated.length < 3) {
+          setError("Please choose at least 3 genres.");
         } else {
-          return [...prev, genreName];
+          setError("");
         }
+
+        return updated;
       });
     };
 
@@ -88,16 +105,13 @@ const Genres = forwardRef(
     };
 
     const back = () => {
-      if (currentIndex > 1) {
-        setCurrentIndex(currentIndex - 1);
-      }
+      if (currentIndex > 1) setCurrentIndex(currentIndex - 1);
     };
 
     useImperativeHandle(ref, () => ({ submit, back }));
 
     const renderGenreCard = (genre) => {
       const isSelected = selectedGenres.includes(genre.name);
-
       return (
         <TouchableOpacity
           key={genre.name}
@@ -120,8 +134,6 @@ const Genres = forwardRef(
             fontSize={16}
             fontFamily={fonts.medium}
           />
-
-          {/* ✅ Image at bottom-right corner */}
           <Image
             source={genre.img}
             style={styles.genreImage}
@@ -154,7 +166,17 @@ const Genres = forwardRef(
             marginTop={4}
           />
 
-          <ErrorComponent errorTitle={error} />
+          {/* ✅ Dynamic counter + color */}
+          <ErrorComponent
+            errorTitle={`Choose at least ${selectedGenres.length}/3`}
+            color={
+              error
+                ? "#EE1045" // red when invalid
+                : showSuccessColor
+                ? "#64CD75" // green briefly when valid
+                : COLORS.white2 // neutral
+            }
+          />
 
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -189,11 +211,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     position: "relative",
     overflow: "hidden",
-  },
-  icon: {
-    position: "absolute",
-    top: 10,
-    right: 8,
   },
   genreImage: {
     position: "absolute",

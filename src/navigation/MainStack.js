@@ -40,13 +40,14 @@ import AddSocials from "../screens/Main/Notification/AddSocials";
 import YourTripsScreen from "../screens/Main/YourTripsScreen";
 import SellingAVehicle from "../screens/ServiceProviderAuth/AsPro/SellingAVehicle";
 import TabStack from "./TabStack";
+import Detail from "../screens/Main/Detail";
+import SearchEvent from "../screens/Main/Event/SearchEvent";
 
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName="TabStack"
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
@@ -64,11 +65,9 @@ const MainStack = () => {
       <Stack.Screen name="Donations" component={Donations} />
       <Stack.Screen name="Languages" component={Languages} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
-     
 
       <Stack.Screen name="SellingAVehicle" component={SellingAVehicle} />
 
-     
       <Stack.Screen
         name="YourTripsScreen"
         component={YourTripsScreen}
@@ -78,8 +77,6 @@ const MainStack = () => {
       />
       <Stack.Screen name="UserAddress" component={UserAddress} />
       <Stack.Screen name="Equipments" component={Equipments} />
-      
-
 
       <Stack.Screen name="MyFriends" component={MyFriends} />
 
@@ -117,12 +114,12 @@ const MainStack = () => {
       <Stack.Screen name="PlanScreen" component={PlanScreen} />
       <Stack.Screen name="ReportChat" component={ReportChat} />
 
- 
       <Stack.Screen name="QrScreen" component={QrScreen} />
 
-     
       <Stack.Screen name="FilterScreen" component={FilterScreen} />
       <Stack.Screen name="AddSocials" component={AddSocials} />
+      <Stack.Screen name="Detail" component={Detail} />
+      <Stack.Screen name="SearchEvent" component={SearchEvent} />
     </Stack.Navigator>
   );
 };

@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Platform,
+  Pressable,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import LinearGradient from "react-native-linear-gradient";
@@ -16,10 +17,12 @@ import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import { Images } from "../../../../assets/images";
 import AuthSlider from "../../../../components/Auth/AuthSlider";
+import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const HomeCard = () => {
+  const navigation = useNavigation();
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
@@ -263,7 +266,10 @@ const HomeCard = () => {
                 </View>
               </View>
 
-              <View style={styles.footerRow}>
+              <Pressable
+                style={styles.footerRow}
+                onPress={() => navigation.navigate("Detail")}
+              >
                 <CustomText
                   label={
                     "Lead guitarist looking for a band. Into classic rock and blues."
@@ -273,7 +279,7 @@ const HomeCard = () => {
                   fontFamily={fonts.medium}
                 />
                 <Image source={PNGIcons.forward} style={styles.forwardIcon} />
-              </View>
+              </Pressable>
 
               <AuthSlider min={1} max={4} marginBottom={20} marginTop={12} />
             </View>

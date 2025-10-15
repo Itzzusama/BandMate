@@ -25,9 +25,7 @@ const AddDescription = forwardRef(
 
     const validateDescription = (val) => {
       let newError = "";
-      if (!val.trim()) {
-        newError = "Please enter your description.";
-      } else if (val.trim().length > MAX_LENGTH) {
+      if (val.trim().length > MAX_LENGTH) {
         newError = `Description must be less than ${MAX_LENGTH} characters.`;
       }
       return newError;
@@ -41,7 +39,7 @@ const AddDescription = forwardRef(
       }
       setError("");
       setState({ ...state, description: description.trim() });
-      navigation.navigate("Success");
+      navigation.navigate("VTCChauffeur");
       // if (currentIndex < onboardingCount) {
       //   navigation.navigate("Success");
       //   setCurrentIndex(currentIndex + 1);

@@ -113,7 +113,7 @@ const ScreenWrapper = ({
           position: "absolute",
           zIndex: -1,
         }}
-        resizeMode="cover"
+        resizeMode="stretch"
       />
     </View>
   ) : (

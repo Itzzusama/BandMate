@@ -157,17 +157,18 @@ const CustomButton = ({
 
         {!loading && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {leftView && (
-              <Image
-                source={PNGIcons.sola}
-                style={{
-                  width: 24,
-                  height: 24,
-                  resizeMode: "contain",
-                  marginRight: 5,
-                }}
-              />
-            )}
+            {leftView &&
+              (leftView || (
+                <Image
+                  source={PNGIcons.sola}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    resizeMode: "contain",
+                    marginRight: 5,
+                  }}
+                />
+              ))}
             <CustomText
               textStyle={customText}
               label={title}

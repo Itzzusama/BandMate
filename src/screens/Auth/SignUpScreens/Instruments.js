@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -88,15 +88,25 @@ const instrumentCategories = [
 const Instruments = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const { width } = useWindowDimensions();
-    const CARD_WIDTH = (width - 34) / 2; // 12px padding each side + ~12px spacing
+    const CARD_WIDTH = (width - 34) / 2;
     const CARD_HEIGHT = 100;
 
-    const [selectedInstrument, setSelectedInstrument] = useState(null);
-    const [error, setError] = useState("Choose at least 0/1");
+    const [selectedInstruments, setSelectedInstruments] = useState([]);
+    const [error, setError] = useState("");
+    const [prevError, setPrevError] = useState("");
+    const [showSuccessColor, setShowSuccessColor] = useState(false);
+    useEffect(() => {
+      if (prevError && !error) {
+        setShowSuccessColor(true);
+        const timer = setTimeout(() => setShowSuccessColor(false), 2000);
+        return () => clearTimeout(timer);
+      }
+      setPrevError(error);
+    }, [error]);
 
     const errorCheck = () => {
       let newErrors = "";
-      if (!selectedInstrument) {
+      if (selectedInstruments.length === 0) {
         newErrors = "Please choose at least one instrument";
       }
       return newErrors;
@@ -109,20 +119,35 @@ const Instruments = forwardRef(
         return;
       }
       setError("");
-      setState({ ...state, instrument: selectedInstrument });
+      setState({ ...state, instruments: selectedInstruments });
       setCurrentIndex(currentIndex + 1);
     };
 
     const back = () => {
-      if (currentIndex > 1) {
-        setCurrentIndex(currentIndex - 1);
-      }
+      if (currentIndex > 1) setCurrentIndex(currentIndex - 1);
     };
 
     useImperativeHandle(ref, () => ({ submit, back }));
 
+    const toggleInstrument = (instrumentName) => {
+      let updatedList = [];
+      if (selectedInstruments.includes(instrumentName)) {
+        updatedList = selectedInstruments.filter((i) => i !== instrumentName);
+      } else {
+        updatedList = [...selectedInstruments, instrumentName];
+      }
+
+      setSelectedInstruments(updatedList);
+
+      if (updatedList.length === 0) {
+        setError("Please choose at least one instrument");
+      } else {
+        setError("");
+      }
+    };
+
     const renderInstrumentCard = (instrument) => {
-      const isSelected = selectedInstrument === instrument.name;
+      const isSelected = selectedInstruments.includes(instrument.name);
       return (
         <TouchableOpacity
           key={instrument.name}
@@ -136,7 +161,7 @@ const Instruments = forwardRef(
               borderWidth: isSelected ? 2 : 0,
             },
           ]}
-          onPress={() => setSelectedInstrument(instrument.name)}
+          onPress={() => toggleInstrument(instrument.name)}
           activeOpacity={0.8}
         >
           <CustomText
@@ -179,7 +204,19 @@ const Instruments = forwardRef(
             color={COLORS.white2}
             marginTop={4}
           />
-          <ErrorComponent errorTitle={error} />
+
+          {/* ✅ Dynamic error color */}
+          <ErrorComponent
+            errorTitle={`Choose at least ${selectedInstruments.length}/1`}
+            color={
+              error
+                ? "#EE1045" // red
+                : showSuccessColor
+                ? "#64CD75" // green
+                : COLORS.white2 // neutral
+            }
+          />
+
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 20, marginTop: 12 }}

@@ -51,7 +51,7 @@ const AgeRange = forwardRef(
       <View style={styles.container}>
         <View>
           <CustomText
-            label="Age range?"
+            label="Age range"
             fontFamily={fonts.abril}
             fontSize={24}
             lineHeight={24 * 1.4}

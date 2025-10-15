@@ -46,7 +46,7 @@ const ResetPassword = forwardRef(
             setCurrentIndex(currentIndex + 1);
           }
         } else {
-          navigation.navigate("Success");
+          navigation.navigate("VTCChauffeur");
         }
         // let { verifyVia, ...cleanState } = state;
         // let finalState = cleanState;

@@ -25,6 +25,12 @@ import PinCode from "../screens/Auth/PinCode";
 import Signup from "../screens/Auth/Signup";
 import Login from "../screens/Auth/Login";
 import Success from "../screens/Success";
+import VTCChauffeur from "../screens/Auth/VTCChauffeur";
+import VerifyIdentity from "../screens/Auth/VTCChauffeur/VerifyIdentity";
+import TakePhoto from "../screens/Auth/VTCChauffeur/TakePhoto";
+import TakeIDFront from "../screens/Auth/VTCChauffeur/TakeIDFront";
+import TakeIDBack from "../screens/Auth/VTCChauffeur/TakeIDBack";
+import CompleteProfile from "../screens/Auth/VTCChauffeur/CompleteProfile";
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
@@ -46,6 +52,7 @@ const AuthStack = () => {
           <Stack.Screen name="LoginPass" component={LoginPass} />
         </>
       )} */}
+
       <Stack.Screen name="OnBoarding" component={OnBoarding} />
       <Stack.Screen name="LoginPass" component={LoginPass} />
       <Stack.Screen name="Login" component={Login} />
@@ -68,6 +75,12 @@ const AuthStack = () => {
       <Stack.Screen name="NewPass" component={NewPass} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Success" component={Success} />
+      <Stack.Screen name="VTCChauffeur" component={VTCChauffeur} />
+      <Stack.Screen name="VerifyIdentity" component={VerifyIdentity} />
+      <Stack.Screen name="TakePhoto" component={TakePhoto} />
+      <Stack.Screen name="TakeIDBack" component={TakeIDBack} />
+      <Stack.Screen name="TakeIDFront" component={TakeIDFront} />
+      <Stack.Screen name="CompleteProfile" component={CompleteProfile} />
     </Stack.Navigator>
   );
 };

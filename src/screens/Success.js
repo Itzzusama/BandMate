@@ -19,7 +19,7 @@ const Success = () => {
         index: 0,
         routes: [{ name: "MainStack" }],
       });
-    }, 5000); // 5 seconds
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [navigation]);
