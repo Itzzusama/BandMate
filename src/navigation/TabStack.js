@@ -1,18 +1,16 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlurView } from "@react-native-community/blur";
+import { useHomeSheet } from "../context/HomeSheetContext";
+import { Images } from "../assets/images";
+import { COLORS } from "../utils/COLORS";
+import ImageFast from "../components/ImageFast";
 
 import Chat from "../screens/Main/Chat/Chat";
 import Home from "../screens/Main/Home";
 import Event from "../screens/Main/Event";
 import SocialFeeds from "../screens/Main/SocialFeeds";
-import ImageFast from "../components/ImageFast";
-
-import { useHomeSheet } from "../context/HomeSheetContext";
-import { Images } from "../assets/images";
-import { COLORS } from "../utils/COLORS";
-import ProDashboard from "../screens/Main/ProDashboard";
+import Settings from "../screens/Main/Settings";
 
 const Tab = createBottomTabNavigator();
 
@@ -30,10 +28,10 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
   const { isHomeSheetOpen } = useHomeSheet();
 
-  // Hide tab bar when HomeSheet is open
   if (isHomeSheetOpen) {
     return null;
   }
+
   return (
     <View style={[styles.tabMainContainer, { height: 90 + insets.bottom }]}>
       <View style={styles.tabContentContainer}>
@@ -75,10 +73,12 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   return Images.blurhome;
                 case "Chat":
                   return Images.blurInbox;
-                case "Dashboard":
+                case "Feeds":
                   return Images.feeds;
-                case "FAQ & News":
+                case "Events":
                   return Images.event;
+                case "Settings":
+                  return Images.setting; // ✅ use your settings icon here
                 default:
                   return null;
               }
@@ -102,8 +102,10 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   source={getIcon()}
                   style={[
                     styles.icon,
+                    route.name == "Home" && styles.icon2,
+                    route.name == "Settings" && styles.icon3,
                     {
-                      tintColor: isFocused ? "#111" : COLORS.white3,
+                      tintColor: isFocused ? COLORS.black : COLORS.white3,
                     },
                   ]}
                 />
@@ -126,9 +128,10 @@ const TabStack = () => {
       }}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Dashboard" component={SocialFeeds} />
-      <Tab.Screen name="FAQ & News" component={Event} />
+      <Tab.Screen name="Feeds" component={SocialFeeds} />
+      <Tab.Screen name="Events" component={Event} />
       <Tab.Screen name="Chat" component={Chat} />
+      <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>
   );
 };
@@ -137,8 +140,18 @@ export default TabStack;
 
 const styles = StyleSheet.create({
   icon: {
-    width: 25,
-    height: 25,
+    width: 26,
+    height: 26,
+    resizeMode: "contain",
+  },
+  icon2: {
+    width: 21,
+    height: 21,
+    resizeMode: "contain",
+  },
+  icon3: {
+    width: 28,
+    height: 28,
     resizeMode: "contain",
   },
   buzz: {
@@ -170,12 +183,6 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     zIndex: 999,
-    bottom: 0,
-  },
-  tabBG: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
     bottom: 0,
   },
 });

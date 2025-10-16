@@ -28,6 +28,7 @@ const SearchEventHeader = () => {
             height: 20,
             width: 20,
             marginTop: 2,
+            tintColor: COLORS.white3,
           }}
         />
       </TouchableOpacity>
