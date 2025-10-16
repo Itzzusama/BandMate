@@ -29,8 +29,8 @@ const FansOf = () => {
           fontFamily={fonts.medium}
           fontSize={17}
           color={COLORS.white}
-          marginBottom={8}
-          marginLeft={8}
+          marginBottom={12}
+          marginLeft={12}
           marginTop={-2}
         />
 
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   scrollContainer: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
   },
   card: {
     alignItems: "center",

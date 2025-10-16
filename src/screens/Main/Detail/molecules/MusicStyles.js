@@ -11,7 +11,7 @@ const data = ["Blues", "Rock", "Soul"];
 
 const MusicStyles = () => {
   return (
-    <View style={{ paddingHorizontal: 8 }}>
+    <View style={{ paddingHorizontal: 12 }}>
       <CustomText
         label="Music style"
         fontFamily={fonts.medium}

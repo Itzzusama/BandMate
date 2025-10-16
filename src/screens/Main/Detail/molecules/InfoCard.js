@@ -15,7 +15,7 @@ const InfoCard = ({ name, showIcon, type, marginBottom = 20 }) => {
         color={COLORS.white}
         fontSize={14}
         lineHeight={14 * 1.4}
-        marginBottom={2}
+        marginBottom={1}
       />
     </View>
   );

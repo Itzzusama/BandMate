@@ -40,7 +40,7 @@ export default SearchEventHeader;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     flexDirection: "row",
     gap: 8,
     marginBottom: 10,

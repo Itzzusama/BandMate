@@ -8,7 +8,7 @@ import Divider from "./Divider";
 const AboutArtist = ({ name, bio }) => {
   return (
     <>
-      <View style={{ paddingHorizontal: 8 }}>
+      <View style={{ paddingHorizontal: 12 }}>
         <CustomText
           label={name}
           fontFamily={fonts.medium}

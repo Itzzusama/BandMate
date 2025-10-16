@@ -224,4 +224,6 @@ export const Images = {
   event: require("./event.png"),
   feeds: require("./feeds.png"),
   trending: require("./trending.png"),
+  user3: require("./user3.png"),
+  settings_bg: require("./settings_bg.png"),
 };

@@ -33,7 +33,7 @@ const Event = () => {
       <EventDetailCard />
       <CustomButton
         title={"Connect"}
-        width="95%"
+        width="94%"
         marginBottom={50}
         backgroundColor={"#FF3B30"}
       />

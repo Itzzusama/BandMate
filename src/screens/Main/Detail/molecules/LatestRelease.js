@@ -25,17 +25,17 @@ const LatestRelease = () => {
           end={{ x: 0.5, y: 0 }}
           style={styles.bottomGradient}
         />
-        <View style={{ padding: 12 }}>
-          <CustomText
-            label={"Posted by Artist"}
-            fontFamily={fonts.medium}
-            color={COLORS.white}
-            fontSize={14}
-            lineHeight={14 * 1.4}
-            marginTop={16}
-            marginLeft={40}
-          />
-        </View>
+
+        <CustomText
+          label={"Posted by Artist"}
+          fontFamily={fonts.medium}
+          color={COLORS.white}
+          fontSize={14}
+          lineHeight={14 * 1.4}
+          marginTop={26}
+          marginLeft={49}
+        />
+
         <View style={styles.bottomContent}>
           <View style={styles.bottonRow}>
             <View style={styles.row}>
@@ -69,7 +69,7 @@ export default LatestRelease;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingBottom: 18,
   },
   imgStyle: {
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
     padding: 16,
+    paddingHorizontal: 18,
   },
   bottonRow: {
     flexDirection: "row",

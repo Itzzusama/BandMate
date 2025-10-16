@@ -59,7 +59,7 @@ export default SearchEvent;
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 2,
     gap: 8,
   },

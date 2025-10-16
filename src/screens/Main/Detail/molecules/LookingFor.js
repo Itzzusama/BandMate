@@ -9,7 +9,7 @@ const data = ["Jam Sessions", "Studio time", "Band members"];
 
 const LookingFor = () => {
   return (
-    <View style={{ paddingHorizontal: 8 }}>
+    <View style={{ paddingHorizontal: 12 }}>
       <CustomText
         label="Looking for"
         fontFamily={fonts.medium}

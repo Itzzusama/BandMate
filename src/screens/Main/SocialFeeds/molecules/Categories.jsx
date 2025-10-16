@@ -49,7 +49,7 @@ export default Categories;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     marginTop: 14,
   },
   iconCard: {

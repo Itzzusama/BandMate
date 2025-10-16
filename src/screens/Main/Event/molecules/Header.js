@@ -10,7 +10,7 @@ const Header = ({ onSearchPress, onFilterPress }) => {
     <View style={styles.container}>
       <View style={[styles.container, { flex: 1 }]}>
         <TouchableOpacity
-          style={styles.iconWarpper}
+          style={[styles.iconWarpper, { marginLeft: -12 }]}
           activeOpacity={0.8}
           onPress={onSearchPress}
         >
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     marginTop: 7,
     marginBottom: 8,
   },

@@ -55,7 +55,7 @@ const Detail = ({ navigation }) => {
       paddingBottom={0.1}
       scrollEnabled
       footerUnScrollable={() => (
-        <CustomButton title={"Connect"} width="95%" marginBottom={50} />
+        <CustomButton title={"Connect"} marginBottom={50} width="94%" />
       )}
     >
       <ArtistDetailCard />

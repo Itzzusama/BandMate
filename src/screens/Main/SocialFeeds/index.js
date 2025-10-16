@@ -18,7 +18,6 @@ const SocialFeeds = () => {
       <Categories />
       <Moments />
 
-      {/* Horizontal Scroll for Feed Cards */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -106,7 +105,7 @@ export default SocialFeeds;
 
 const styles = StyleSheet.create({
   feedRow: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     gap: 10, // spacing between cards
   },
 });

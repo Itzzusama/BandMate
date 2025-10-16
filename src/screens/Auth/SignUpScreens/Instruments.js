@@ -207,7 +207,9 @@ const Instruments = forwardRef(
 
           {/* ✅ Dynamic error color */}
           <ErrorComponent
-            errorTitle={`Choose at least ${selectedInstruments.length}/1`}
+            errorTitle={`Choose at least ${
+              selectedInstruments.length > 1 ? 1 : selectedInstruments.length
+            }/1`}
             color={
               error
                 ? "#EE1045" // red

@@ -24,9 +24,7 @@ const FeedCard = ({
 }) => {
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
-        {/* Left Side */}
         <View style={styles.userInfo}>
           <Image
             source={{ uri: "https://placehold.co/100x100" }}

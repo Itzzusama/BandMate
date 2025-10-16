@@ -218,4 +218,10 @@ export const PNGIcons = {
   users: require("./users.png"),
   webflow: require("./webflow.png"),
   award: require("./award.png"),
+  scan: require("./scan.png"),
+  tire: require("./tire.png"),
+  add_user: require("./add_user.png"),
+  rewind: require("./rewind.png"),
+  blot: require("./blot.png"),
+  star_blue: require("./star_blue.png"),
 };

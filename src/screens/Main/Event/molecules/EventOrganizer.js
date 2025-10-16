@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     marginVertical: 12,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     resizeMode: "contain",
   },
   bottomContainer: {

@@ -13,7 +13,7 @@ const PopularRelease = ({ title, data, showDots }) => {
   return (
     <View>
       <Divider />
-      <View style={{ paddingHorizontal: 8 }}>
+      <View style={{ paddingHorizontal: 12 }}>
         <View style={[styles.row, { marginBottom: 8 }]}>
           <View style={[styles.row, { flex: 1 }]}>
             <Image source={PNGIcons.spotify} style={styles.icon} />

@@ -9,7 +9,7 @@ const data = ["Weekdays", "Weekends"];
 
 const Availability = () => {
   return (
-    <View style={{ paddingHorizontal: 8 }}>
+    <View style={{ paddingHorizontal: 12 }}>
       <CustomText
         label="Availability"
         fontFamily={fonts.medium}

@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.inputBg,
     padding: 4,
     borderRadius: 100,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     marginBottom: 14,
   },
   btn: {

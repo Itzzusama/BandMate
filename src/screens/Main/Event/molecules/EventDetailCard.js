@@ -149,7 +149,7 @@ export default EventDetailCard;
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingVertical: 12,
     borderTopWidth: 4,
     borderTopColor: COLORS.inputBg,
@@ -158,7 +158,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     width: 45,
-    marginTop: 8,
   },
   rightContainer: {
     flex: 1,
@@ -204,7 +203,7 @@ const styles = StyleSheet.create({
   infoBtn: {
     alignItems: "center",
     backgroundColor: COLORS.inputBg,
-    paddingVertical: 7,
+    paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 10,
   },

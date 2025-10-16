@@ -14,7 +14,7 @@ const data = [
 
 const Levels = () => {
   return (
-    <View style={{ paddingHorizontal: 8 }}>
+    <View style={{ paddingHorizontal: 12 }}>
       {data.map((item, index) => (
         <>
           <CustomText

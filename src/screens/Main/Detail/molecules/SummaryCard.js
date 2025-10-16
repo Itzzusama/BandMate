@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 18,
     paddingVertical: 16,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     marginBottom: 18,
   },
   statsContainer: {

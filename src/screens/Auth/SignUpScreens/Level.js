@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   levelButton: {
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
     alignItems: "center",
