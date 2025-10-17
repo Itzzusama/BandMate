@@ -38,7 +38,7 @@ const AuthStack = () => {
 
   return (
     <Stack.Navigator
-      // initialRouteName="WelcomeScreen"
+      // initialRouteName="VTCChauffeur"
       screenOptions={{ headerShown: false }}
     >
       {/* {loginValue?.length ? (

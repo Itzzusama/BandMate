@@ -18,11 +18,11 @@ const CustomInput = ({
   keyboardType,
   multiline,
   maxLength,
-  placeholderTextColor = COLORS.white3,
+  placeholderTextColor = COLORS.white2,
   editable,
   textAlignVertical,
   marginBottom,
-  height = 48,
+  height = 56,
   autoCapitalize,
   error,
   isFocus,
@@ -43,6 +43,7 @@ const CustomInput = ({
   paddingVertical,
   Isicon,
   isValid,
+  paddingBottom = 6,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hidePass, setHidePass] = useState(true);
@@ -104,12 +105,12 @@ const CustomInput = ({
                 ? "#EE1045CC"
                 : showSuccessColor
                 ? "#64CD75"
-                : COLORS.white2)
+                : COLORS.white3)
             }
             fontFamily={fonts.medium}
             fontSize={12}
             textTransform={"uppercase"}
-            marginTop={4}
+            marginTop={8}
             lineHeight={12 * 1.4}
             marginBottom={-4}
           />
@@ -133,6 +134,7 @@ const CustomInput = ({
               {
                 width: secureTextEntry ? "91%" : isSwitch ? "80%" : "99%",
                 paddingVertical: paddingVertical,
+                paddingBottom: !withLabel ? 0 : paddingBottom,
                 // paddingTop: multiline ? 10 : 0,
                 paddingLeft: search ? 8 : 0,
                 paddingRight: 8,

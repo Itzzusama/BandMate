@@ -9,37 +9,34 @@ import { COLORS } from "../../../../utils/COLORS";
 
 const data = [
   {
-    title: "Analytics",
+    id: "x",
+    title: "Follow us on X",
     screen: "",
-    icon: SettingIcons.graph,
+    icon: SettingIcons.x,
   },
   {
-    title: "Payment method",
+    title: "Follow us on Facebook",
     screen: "",
-    icon: SettingIcons.payment,
+    icon: SettingIcons.facebook,
   },
   {
-    title: "Notifications",
+    title: "Follow us on Instagram",
     screen: "",
-    icon: SettingIcons.noti,
-  },
-  {
-    title: "Change my password",
-    screen: "",
-    icon: SettingIcons.noti,
-  },
-  {
-    title: "Two factors authentication",
-    screen: "",
-    icon: SettingIcons.compare,
+    icon: SettingIcons.Instagram,
   },
 ];
 
-const SettingOptions = () => {
+const CommunityOptions = () => {
   return data.map((item, index) => (
     <Pressable style={styles.container} key={index}>
       <View style={styles.row}>
-        <Image source={item.icon} style={styles.icon} />
+        <View style={styles.iconWrapper}>
+          <Image
+            source={item.icon}
+            style={[styles.icon, item.id == "x" && styles.xicon]}
+          />
+        </View>
+
         <View>
           <CustomText
             label={item.title}
@@ -47,15 +44,6 @@ const SettingOptions = () => {
             fontSize={16}
             lineHeight={16 * 1.4}
           />
-          {item.title == "Analytics" && (
-            <CustomText
-              label={"Only with Platinum"}
-              fontFamily={fonts.medium}
-              fontSize={14}
-              lineHeight={14 * 1.4}
-              color={"#FFFFFF7A"}
-            />
-          )}
         </View>
       </View>
       <Icons
@@ -68,17 +56,17 @@ const SettingOptions = () => {
   ));
 };
 
-export default SettingOptions;
+export default CommunityOptions;
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: COLORS.inputBg,
-    marginBottom: 8,
+    paddingVertical: 20,
+
+    borderBottomWidth: 1,
+    borderColor: COLORS.inputBg,
   },
   row: {
     flexDirection: "row",
@@ -86,8 +74,21 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   icon: {
+    height: 16,
+    width: 16,
+    resizeMode: "contain",
+  },
+  xicon: {
+    height: 12,
+    width: 12,
+    resizeMode: "contain",
+  },
+  iconWrapper: {
     height: 24,
     width: 24,
-    resizeMode: "contain",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 99,
+    backgroundColor: COLORS.white,
   },
 });

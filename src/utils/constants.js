@@ -30,7 +30,7 @@ export const updateUserProfile = (profilePatch) => async (dispatch) => {
     const res = await put("user/profile", { profile: profilePatch });
     if (res?.data?.data) {
       console.log("res-----", res.data);
-      
+
       dispatch(setUserData(res.data.data));
       ToastMessage("Preferences updated", "success");
       return res.data.data;
@@ -654,3 +654,65 @@ export const formatRelativeDate = (dateString) => {
     return date.toLocaleDateString(undefined, options);
   }
 };
+
+export const free_fearures = [
+  "10 Likes",
+  "1 Super Likes/Day",
+  "Full profile customization",
+  "Advanced Filters",
+];
+export const silver_fearures = [
+  "25 Likes",
+  "5 Super Likes/Day",
+  "3 Rewinds/Day",
+  "Full profile customization",
+  "Manage who can view your profile",
+  "Fine tune your Matches",
+  "Advanced Filters",
+  "Ad-free experience",
+];
+
+export const gold_fearures = [
+  "50 Likes",
+  "10 Super Likes/Day",
+  "10 Rewinds/Day",
+  "Cosmopolitan Pass",
+  "Advanced Filters",
+  "Full profile customization",
+  "Manage who can view your profile",
+  "Fine tune your Matches",
+  "Ad-free experience",
+];
+export const platinum_fearures = [
+  "75 Likes",
+  "20 Super Likes/Day",
+  "15 Rewinds/Day",
+  "Cosmopolitan Pass",
+  "Advanced Filters",
+  "Set your online status",
+  "Full profile customization",
+  "Custom Chat Background",
+  "Manage who can view your profile",
+  "Fine tune your Matches",
+  "Analytics",
+  "Ad-free experience",
+];
+export const pro_fearures = [
+  "Unlimited Likes",
+  "Unlimeted Super Likes/Day",
+  "Unlimited Rewinds/Day",
+  "Cosmopolitan Pass",
+  "Unlock picture and GIF sharing",
+  "Discover who liked your profile",
+  "See read On messages",
+  "Set your online status",
+  "Custom Chat Background",
+  "Hide seen on messages",
+  "Analytics",
+  "Advanced Filters",
+  "Full profile customization",
+  "Exclusive VIP Events",
+  "Manage who can view your profile",
+  "Fine tune your Matches",
+  "Ad-free experience",
+];

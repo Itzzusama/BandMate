@@ -60,10 +60,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.semiBold,
     lineHeight: 14 * 1.4,
     color: "#fff",
-    marginBottom: 2,
   },
   statLabel: {
-    fontSize: 13,
+    fontSize: 14,
     color: COLORS.white3,
     fontFamily: fonts.regular,
   },

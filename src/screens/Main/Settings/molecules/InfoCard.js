@@ -1,12 +1,12 @@
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import CustomText from "../../../../components/CustomText";
 import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
 
-const InfoCard = ({ icon = "sunny-outline", title, subtitle }) => {
+const InfoCard = ({ icon, title, subtitle, onPress }) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={onPress}>
       <Image source={icon} style={styles.icon} />
       <View style={{ marginTop: 12, justifyContent: "flex-end", flex: 1 }}>
         <CustomText textStyle={styles.title}>{title}</CustomText>
@@ -14,7 +14,7 @@ const InfoCard = ({ icon = "sunny-outline", title, subtitle }) => {
           <CustomText textStyle={styles.subtitle}>{subtitle}</CustomText>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -22,7 +22,7 @@ export default InfoCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#121212",
+    backgroundColor: COLORS.inputBg,
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 12,

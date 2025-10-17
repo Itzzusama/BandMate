@@ -25,18 +25,18 @@ const Event = () => {
           setOpenFilter={setOpenFilter}
         />
       )}
+      footerUnScrollable={() => (
+        <View style={{ padding: 12, paddingTop: 0 }}>
+          <CustomButton title={"Connect"} marginBottom={24} />
+        </View>
+      )}
     >
       <ToggleButtons />
       <EventOrganizer />
       <EventDetailCard />
       <EventDetailCard />
       <EventDetailCard />
-      <CustomButton
-        title={"Connect"}
-        width="94%"
-        marginBottom={50}
-        backgroundColor={"#FF3B30"}
-      />
+
       <FilterModal
         isVisible={openFilter}
         onModalClose={() => setOpenFilter(false)}

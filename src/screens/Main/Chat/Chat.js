@@ -78,7 +78,6 @@ const Chat = () => {
 
   return (
     <ScreenWrapper
-    backgroundColor="rgba(246,246,246,0.9)"
       paddingHorizontal={0.1}
       headerUnScrollable={() => <Header title="Inbox" onHelpPress={() => ""} />}
     >

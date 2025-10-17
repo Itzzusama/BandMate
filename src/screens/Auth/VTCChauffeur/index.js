@@ -508,6 +508,24 @@ const VTCChauffeur = () => {
     <ScreenWrapper
       scrollEnabled
       headerUnScrollable={() => <Header title={"Registration"} />}
+      footerUnScrollable={() => (
+        <View style={{ padding: 12 }}>
+          <CustomButton
+            title="Continue"
+            loading={loading}
+            marginBottom={8}
+            onPress={handleIndependentContinue}
+          />
+
+          <CustomButton
+            title="Cancel"
+            backgroundColor={COLORS.inputBg}
+            color={COLORS.white}
+            marginBottom={24}
+            onPress={() => navigation.navigate("VerifyIdentity")}
+          />
+        </View>
+      )}
     >
       <View style={styles.container}>
         <CustomText
@@ -623,22 +641,6 @@ const VTCChauffeur = () => {
           "Attach a file",
           "PDF only. 20MB."
         )}
-
-        <CustomButton
-          title="Continue"
-          marginTop={32}
-          loading={loading}
-          marginBottom={8}
-          onPress={handleIndependentContinue}
-        />
-
-        <CustomButton
-          title="Cancel"
-          backgroundColor={COLORS.inputBg}
-          color={COLORS.white}
-          marginBottom={24}
-          onPress={() => navigation.navigate("VerifyIdentity")}
-        />
       </View>
 
       <CountryBottomSheet
@@ -732,7 +734,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: COLORS.inputBg,
     borderRadius: 12,
-    padding: 15,
+    padding: 12,
     paddingVertical: 8,
     marginBottom: 8,
   },
@@ -752,7 +754,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 12,
     padding: 12,
-    marginBottom: 8,
+    marginBottom: 20,
     marginTop: 7,
     // justifyContent:"space-between",
   },
@@ -776,7 +778,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.inputBg,
     borderRadius: 12,
     padding: 12,
-    marginBottom: 8,
+    marginBottom: 20,
     marginTop: 6,
   },
   removeButton: {

@@ -74,16 +74,17 @@ const EventDetailCard = () => {
           fontSize={14}
           fontFamily={fonts.medium}
           color={COLORS.white}
-          marginTop={4}
+          marginTop={8}
           lineHeight={14 * 1.4}
           textTransform="uppercase"
         />
 
         <CustomText
           label="Kill Boksoon"
-          fontSize={26}
+          fontSize={28}
           fontFamily={fonts.abril}
           color={COLORS.white}
+          lineHeight={28 * 1.4}
         />
 
         <View style={styles.genreRow}>
@@ -126,14 +127,14 @@ const EventDetailCard = () => {
                 label={tag}
                 fontSize={12}
                 color={COLORS.gray6}
-                lineHeight={12 * 1.5}
+                lineHeight={12 * 1.2}
               />
               {index !== arr.length - 1 && (
                 <CustomText
                   label=" • "
                   fontSize={12}
                   color={COLORS.white}
-                  lineHeight={12 * 1.5}
+                  lineHeight={12 * 1.2}
                 />
               )}
             </View>
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
   genreRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 2,
+    marginTop: 4,
   },
   icon2: {
     height: 24,
@@ -220,6 +221,6 @@ const styles = StyleSheet.create({
   tagsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 6,
+    marginTop: 8,
   },
 });

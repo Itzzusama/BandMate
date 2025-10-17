@@ -8,6 +8,7 @@ const light = "Poppins-Light";
 const extraLight = "Poppins-ExtraLight";
 const thin = "Poppins-Thin";
 const abril = "AbrilFatface-Regular";
+const bricolMed = "BricolageGrotesque_24pt-Medium";
 export default {
   black,
   boldExtra,
@@ -19,4 +20,5 @@ export default {
   extraLight,
   thin,
   abril,
+  bricolMed,
 };

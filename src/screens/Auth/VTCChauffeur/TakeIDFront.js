@@ -149,6 +149,7 @@ const TakeIDFront = () => {
             color={COLORS.white}
             onPress={handleCancel}
             backgroundColor={COLORS.inputBg}
+            marginBottom={24}
           />
         </View>
       )}
@@ -260,9 +261,8 @@ const styles = StyleSheet.create({
   },
   actionButtonsContainer: {
     marginTop: "auto",
-    paddingBottom: 20,
-    paddingHorizontal: 15,
-    paddingTop: 10,
+
+    padding: 12,
   },
   blank: {
     flex: 1,

@@ -104,7 +104,7 @@ const Header = ({
         <CustomText
           label={title}
           color={textColor ? textColor : COLORS.white}
-          fontFamily={fontFamily || fonts.semiBold}
+          fontFamily={fontFamily || fonts.medium}
           textTransform="capitalize"
           textAlign={textAlign}
           fontSize={24}

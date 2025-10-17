@@ -42,6 +42,7 @@ import SellingAVehicle from "../screens/ServiceProviderAuth/AsPro/SellingAVehicl
 import TabStack from "./TabStack";
 import Detail from "../screens/Main/Detail";
 import SearchEvent from "../screens/Main/Event/SearchEvent";
+import Plans from "../screens/Main/Settings/Plans";
 
 const Stack = createNativeStackNavigator();
 
@@ -120,6 +121,7 @@ const MainStack = () => {
       <Stack.Screen name="AddSocials" component={AddSocials} />
       <Stack.Screen name="Detail" component={Detail} />
       <Stack.Screen name="SearchEvent" component={SearchEvent} />
+      <Stack.Screen name="Plans" component={Plans} />
     </Stack.Navigator>
   );
 };

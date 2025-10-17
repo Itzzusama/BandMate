@@ -48,6 +48,7 @@ export default UsersInfo;
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 23,
     paddingVertical: 32,
     alignItems: "center",
   },

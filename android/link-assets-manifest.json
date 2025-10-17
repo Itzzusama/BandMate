@@ -6,6 +6,10 @@
       "sha1": "545553bf8733c6edc2846ba1b420f19e4a6ff2de"
     },
     {
+      "path": "src/assets/fonts/BricolageGrotesque_24pt-Medium.ttf",
+      "sha1": "b5fe77e666d41dd97743defd5abe35d84b76eef9"
+    },
+    {
       "path": "src/assets/fonts/Poppins-Black.ttf",
       "sha1": "645e04c53c6b5b35bce654a811ebce16af8aa721"
     },
@@ -43,7 +47,7 @@
     },
     {
       "path": "src/assets/fonts/index.js",
-      "sha1": "fc07a86890b4c83a606faafea3e55b3714a6830c"
+      "sha1": "61600b8076d139b1519540f40e20c5923757a7b7"
     }
   ]
 }

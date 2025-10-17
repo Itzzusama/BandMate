@@ -28,6 +28,24 @@ const VerifyIdentity = () => {
   return (
     <ScreenWrapper
       headerUnScrollable={() => <Header title={"Verify Your Identity"} />}
+      footerUnScrollable={() => (
+        <View style={styles.actionButtonsContainer}>
+          <CustomButton
+            title="Continue"
+            onPress={handleContinue}
+            marginBottom={8}
+            isBoarder
+            secondBorderColor={COLORS.primaryColor}
+          />
+          <CustomButton
+            title="Pass"
+            backgroundColor={COLORS.inputBg}
+            color={COLORS.white}
+            onPress={handleCancel}
+            marginBottom={24}
+          />
+        </View>
+      )}
     >
       <CustomText
         label="Choose a document to validate your identity"
@@ -139,21 +157,6 @@ const VerifyIdentity = () => {
       </View>
 
       {/* Action Buttons */}
-      <View style={styles.actionButtonsContainer}>
-        <CustomButton
-          title="Continue"
-          onPress={handleContinue}
-          marginBottom={8}
-          isBoarder
-          secondBorderColor={COLORS.primaryColor}
-        />
-        <CustomButton
-          title="Pass"
-          backgroundColor={COLORS.inputBg}
-          color={COLORS.white}
-          onPress={handleCancel}
-        />
-      </View>
     </ScreenWrapper>
   );
 };
@@ -189,7 +192,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionButtonsContainer: {
-    marginTop: "auto",
-    paddingBottom: 20,
+    padding: 12,
   },
 });

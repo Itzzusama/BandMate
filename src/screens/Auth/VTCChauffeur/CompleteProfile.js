@@ -18,20 +18,17 @@ import { Images } from "../../../assets/images";
 import Icons from "../../../components/Icons";
 import CustomButton from "../../../components/CustomButton";
 
-const { height } = Dimensions.get("window");
-
 const CompleteProfile = () => {
   const navigation = useNavigation();
   const inset = useSafeAreaInsets();
-
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Step simulation
     const timers = [
       setTimeout(() => setProgress(1), 1500),
       setTimeout(() => setProgress(2), 3500),
     ];
+    return () => timers.forEach(clearTimeout);
   }, [navigation]);
 
   return (
@@ -121,7 +118,15 @@ const CompleteProfile = () => {
         </View>
       </View>
 
-      <View style={styles.row}>
+      <View
+        style={[
+          styles.bottomContainer,
+          {
+            paddingBottom: inset.bottom > 0 ? inset.bottom + 12 : 20,
+            bottom: inset.bottom + 24,
+          },
+        ]}
+      >
         <TouchableOpacity
           onPress={() => navigation.canGoBack() && navigation.goBack()}
           style={[styles.backButton, { backgroundColor: COLORS.inputBg }]}
@@ -132,9 +137,10 @@ const CompleteProfile = () => {
             resizeMode="contain"
           />
         </TouchableOpacity>
+
         <CustomButton
-          title={"Complete Verification"}
-          width={"84%"}
+          title="Complete Verification"
+          width="84%"
           onPress={() => navigation.navigate("Success")}
         />
       </View>
@@ -155,6 +161,7 @@ const styles = StyleSheet.create({
   statusContainer: {
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 80, // space above bottom button
   },
   statusBox: {
     flexDirection: "row",
@@ -172,11 +179,16 @@ const styles = StyleSheet.create({
   doneBox: {
     backgroundColor: "rgba(255,255,255,0.04)",
   },
-  row: {
+  bottomContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 8,
-    marginTop: height * 0.14,
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.15)",
+    paddingHorizontal: 16,
   },
   backButton: {
     height: 48,
