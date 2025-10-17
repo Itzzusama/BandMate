@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 2,
     marginBottom: 9,
     borderBottomColor: "#FFFFFF0A",
     borderBottomWidth: 1,
