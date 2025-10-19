@@ -22,7 +22,7 @@ const CustomInput = ({
   editable,
   textAlignVertical,
   marginBottom,
-  height = 56,
+  height = 48,
   autoCapitalize,
   error,
   isFocus,
@@ -78,7 +78,8 @@ const CustomInput = ({
         style={{
           marginBottom: marginBottom || 8,
           marginTop,
-          height: height ? height : multiline ? 180 : 70,
+          height: withLabel ? 56 : height ? height : multiline ? 180 : 70,
+
           width: "100%",
           borderRadius: borderRadius || 12,
           paddingLeft: 12,

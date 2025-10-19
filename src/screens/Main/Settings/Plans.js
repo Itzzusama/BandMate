@@ -92,7 +92,7 @@ const Plans = () => {
         label={"What You Get"}
         fontFamily={fonts.medium}
         lineHeight={17 * 1.5}
-        marginTop={10}
+        marginTop={12}
         color={COLORS.white}
       />
 
