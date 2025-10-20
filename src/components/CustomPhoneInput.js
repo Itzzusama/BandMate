@@ -1,26 +1,14 @@
-import { BlurView } from "@react-native-community/blur";
 import { useEffect, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
-import CustomInput from "./CustomInput";
-import CustomModal from "./CustomModal";
 import CustomText from "./CustomText";
 import Icons from "./Icons";
 import ImageFast from "./ImageFast";
-
 import fonts from "../assets/fonts";
 import { Images } from "../assets/images";
-import { PNGIcons } from "../assets/images/icons";
 import { COLORS } from "../utils/COLORS";
 import { COUNTRIES as COUNTRIES_DATA } from "../utils/COUNTRIES";
+import CountryBottomSheet from "./CountryBottomSheet";
 
 const COUNTRIES = COUNTRIES_DATA.map((country) => ({
   code: country.code,
@@ -28,8 +16,6 @@ const COUNTRIES = COUNTRIES_DATA.map((country) => ({
   name: country.name,
   flag: country.emoji,
 })).sort((a, b) => a.name.localeCompare(b.name));
-
-const ITEMS_PER_PAGE = 20;
 
 const CustomPhoneInput = ({
   value = "",
@@ -55,8 +41,7 @@ const CustomPhoneInput = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showSuccessColor, setShowSuccessColor] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(() => {
     if (value && value.trim()) {
       for (const country of COUNTRIES) {
@@ -65,13 +50,11 @@ const CustomPhoneInput = ({
         }
       }
     }
-
     const foundCountry = COUNTRIES.find(
       (country) => country.code === defaultCode
     );
     return (
-      foundCountry ||
-      COUNTRIES[0] || {
+      foundCountry || {
         code: "US",
         dialCode: "+1",
         name: "United States",
@@ -81,25 +64,16 @@ const CustomPhoneInput = ({
   });
 
   const [phoneNumber, setPhoneNumber] = useState(() => {
-    try {
-      if (value && value.trim()) {
-        for (const country of COUNTRIES) {
-          if (value.startsWith(country.dialCode)) {
-            const phoneOnly = value.replace(country.dialCode, "").trim();
-            return phoneOnly;
-          }
+    if (value && value.trim()) {
+      for (const country of COUNTRIES) {
+        if (value.startsWith(country.dialCode)) {
+          return value.replace(country.dialCode, "").trim();
         }
-        return value.trim();
       }
-      return "";
-    } catch (error) {
-      console.log("Phone number initialization error:", error);
-      return "";
+      return value.trim();
     }
+    return "";
   });
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const inputRef = useRef();
 
@@ -119,80 +93,26 @@ const CustomPhoneInput = ({
     }
   }, [value]);
 
-  const allFilteredCountries = COUNTRIES.filter(
-    (country) =>
-      country.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      country.dialCode.includes(searchText)
-  );
-
-  const totalPages = Math.ceil(allFilteredCountries.length / ITEMS_PER_PAGE);
-  const paginatedCountries = allFilteredCountries.slice(
-    0,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const handleFocus = () => {
-    setIsFocused(true);
-  };
-
+  const handleFocus = () => setIsFocused(true);
   const handleBlur = () => {
     setIsFocused(false);
-    if (onEndEditing) {
-      onEndEditing();
-    }
+    onEndEditing && onEndEditing();
   };
 
   const validatePhoneNumber = (fullNumber) => {
     const phoneOnly = fullNumber.replace(selectedCountry.dialCode, "").trim();
     const cleanedPhone = phoneOnly.replace(/[^\d]/g, "");
-
     const isValid = cleanedPhone.length >= 7 && cleanedPhone.length <= 15;
-
-    if (isValid) {
-      setShowSuccessColor(true);
-      setTimeout(() => {
-        setShowSuccessColor(false);
-      }, 2000);
-    } else {
-      setShowSuccessColor(false);
-    }
-
-    if (onValidationChange) {
-      onValidationChange(isValid);
-    }
-
-    return isValid;
+    setShowSuccessColor(isValid);
+    onValidationChange && onValidationChange(isValid);
   };
 
   const handleCountrySelect = (country) => {
     setSelectedCountry(country);
-    setModalVisible(false);
-    setCurrentPage(1);
-    setSearchText("");
     const fullNumber = `${country.dialCode}${phoneNumber}`.trim();
     setValue(fullNumber);
     validatePhoneNumber(fullNumber);
-  };
-
-  const handleModalOpen = () => {
-    setModalVisible(true);
-    setCurrentPage(1);
-    setSearchText("");
-  };
-
-  const handleLoadMore = () => {
-    if (currentPage < totalPages && !isLoadingMore) {
-      setIsLoadingMore(true);
-      setTimeout(() => {
-        setCurrentPage((prev) => prev + 1);
-        setIsLoadingMore(false);
-      }, 300);
-    }
-  };
-
-  const handleSearchChange = (text) => {
-    setSearchText(text);
-    setCurrentPage(1);
+    setBottomSheetVisible(false);
   };
 
   const handlePhoneChange = (text) => {
@@ -203,68 +123,6 @@ const CustomPhoneInput = ({
     validatePhoneNumber(fullNumber);
   };
 
-  const formatPhoneNumber = (number) => {
-    const cleaned = number.replace(/\D/g, "");
-    if (cleaned.length <= 3) return cleaned;
-    if (cleaned.length <= 6)
-      return `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`;
-    if (cleaned.length <= 10)
-      return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(
-        6
-      )}`;
-    return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(
-      6,
-      10
-    )}`;
-  };
-
-  const renderCountryItem = ({ item }) => {
-    const isSelected = selectedCountry && selectedCountry.code === item.code;
-
-    return (
-      <TouchableOpacity
-        style={[styles.countryItem, isSelected && styles.selectedItem]}
-        onPress={() => handleCountrySelect(item)}
-        activeOpacity={0.6}
-      >
-        <View style={styles.countryContent}>
-          <Text style={styles.flagText}>{item.flag}</Text>
-          <View style={styles.countryInfo}>
-            <CustomText
-              label={item.name}
-              fontSize={16}
-              fontFamily={fonts.medium}
-              color={isSelected ? COLORS.primaryColor : COLORS.black}
-              style={{ flex: 1 }}
-            />
-            <CustomText
-              label={item.dialCode}
-              fontSize={14}
-              fontFamily={fonts.regular}
-              color={isSelected ? COLORS.primaryColor : COLORS.gray}
-            />
-          </View>
-        </View>
-        <Icons
-          family="MaterialCommunityIcons"
-          name={isSelected ? "radiobox-marked" : "radiobox-blank"}
-          size={24}
-          color={isSelected ? COLORS.primaryColor : COLORS.gray2}
-        />
-      </TouchableOpacity>
-    );
-  };
-
-  const renderFooter = () => {
-    if (!isLoadingMore) return null;
-
-    return (
-      <View style={styles.loadingFooter}>
-        <ActivityIndicator size="small" color={COLORS.primaryColor} />
-      </View>
-    );
-  };
-
   return (
     <View style={{ width: width || "100%" }}>
       <View
@@ -273,7 +131,7 @@ const CustomPhoneInput = ({
           {
             marginBottom: error ? 5 : marginBottom || 15,
             marginTop,
-            height: height,
+            height,
             width: isChange ? "auto" : "100%",
             borderRadius: borderRadius || 10,
             backgroundColor: error
@@ -311,18 +169,17 @@ const CustomPhoneInput = ({
         <View style={styles.inputWrapper}>
           <TouchableOpacity
             style={styles.countrySelector}
-            onPress={() => !isChange && handleModalOpen()}
+            onPress={() => !isChange && setBottomSheetVisible(true)}
             disabled={isChange}
           >
             <CustomText
               label={selectedCountry.flag}
               fontSize={16}
-              lineHeight={16 * 1.4}
+              marginBottom={2}
             />
             <CustomText
               label={selectedCountry.dialCode}
               fontSize={16}
-              lineHeight={16 * 1.4}
               fontFamily={fonts.medium}
               color={
                 error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.white
@@ -353,26 +210,6 @@ const CustomPhoneInput = ({
             onBlur={handleBlur}
             maxLength={15}
           />
-          {showSuccessColor && (
-            <Icons
-              family="MaterialCommunityIcons"
-              name={"check-circle"}
-              size={20}
-              color={"#64CD75"}
-              style={{ bottom: 10 }}
-            />
-          )}
-          {rightIcon && (
-            <View
-              style={[styles.rightIconBg, { backgroundColor: rightIcon.color }]}
-            >
-              <ImageFast
-                source={rightIconSource}
-                style={rightIconStyle}
-                onPress={rightIcon.onPress}
-              />
-            </View>
-          )}
         </View>
       </View>
 
@@ -392,12 +229,9 @@ const CustomPhoneInput = ({
           }}
         >
           <ImageFast
-            resizeMode={"contain"}
+            resizeMode="contain"
             source={Images.PhoneBlue}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+            style={{ width: 20, height: 20 }}
           />
         </View>
       ) : (
@@ -426,87 +260,13 @@ const CustomPhoneInput = ({
         )
       )}
 
-      <CustomModal
-        isChange
-        isVisible={modalVisible}
-        onDisable={() => setModalVisible(false)}
-      >
-        <View
-          style={{
-            padding: 5,
-            width: "95%",
-            alignSelf: "center",
-            borderRadius: 24,
-            marginBottom: 12,
-            maxHeight: "100%",
-            borderWidth: 1,
-            backgroundColor: "#FFFFFF29",
-            borderColor: "rgba(255, 255, 255, 0.16)",
-          }}
-        >
-          <BlurView
-            style={{
-              maxHeight: "100%",
-              width: "100%",
-              borderRadius: 24,
-            }}
-            blurType="light"
-            blurAmount={26}
-            reducedTransparencyFallbackColor="#FFFFFF29"
-          />
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <CustomText
-                label="Select Country"
-                fontFamily={fonts.semiBold}
-                fontSize={24}
-                lineHeight={24 * 1.4}
-              />
-              <TouchableOpacity
-                style={styles.crossContainer}
-                onPress={() => setModalVisible(false)}
-                activeOpacity={0.6}
-              >
-                <ImageFast
-                  source={PNGIcons.cross}
-                  style={styles.cross}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            </View>
-
-            <CustomInput
-              placeholder="Search Country or Code..."
-              value={searchText}
-              onChangeText={handleSearchChange}
-              autoFocus={false}
-              clearButtonMode="while-editing"
-            />
-
-            {paginatedCountries && paginatedCountries.length > 0 ? (
-              <FlatList
-                data={paginatedCountries}
-                keyExtractor={(item) => item.code}
-                renderItem={renderCountryItem}
-                onEndReached={handleLoadMore}
-                onEndReachedThreshold={0.5}
-                style={{ maxHeight: 400, marginTop: 10 }}
-                showsVerticalScrollIndicator={false}
-                ListFooterComponent={renderFooter}
-              />
-            ) : (
-              <View style={styles.noDataContainer}>
-                <CustomText
-                  label="No countries found"
-                  color={COLORS.inputLabel}
-                  fontSize={14}
-                  style={{ textAlign: "center" }}
-                />
-              </View>
-            )}
-          </View>
-        </View>
-      </CustomModal>
+      {/* ✅ Country Picker Bottom Sheet */}
+      <CountryBottomSheet
+        isVisible={bottomSheetVisible}
+        onClose={() => setBottomSheetVisible(false)}
+        selectedCountry={selectedCountry}
+        onCountrySelect={handleCountrySelect}
+      />
     </View>
   );
 };
@@ -526,12 +286,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-
-  dialCodeText: {
-    fontSize: 16,
-    fontFamily: fonts.medium,
-    marginRight: 5,
-  },
   phoneInput: {
     flex: 1,
     fontSize: 16,
@@ -539,89 +293,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     height: "100%",
     paddingVertical: 0,
-  },
-  chevronIcon: {
-    marginLeft: 8,
-  },
-  modalContainer: {
-    backgroundColor: COLORS.white,
-    padding: 12,
-    borderRadius: 22,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 10,
-  },
-  crossContainer: {
-    borderRadius: 100,
-    backgroundColor: "rgba(18, 18, 18, 0.04)",
-    width: 32,
-    height: 32,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  cross: {
-    width: 16,
-    height: 16,
-  },
-  searchInput: {
-    height: 45,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.inputLabel,
-    fontFamily: fonts.regular,
-    fontSize: 14,
-    backgroundColor: "#fff",
-    marginBottom: 10,
-  },
-  countryItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginVertical: 2,
-  },
-  selectedItem: {
-    backgroundColor: "rgba(106, 90, 224, 0.1)",
-  },
-  countryContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  flagText: {
-    fontSize: 24,
-    marginRight: 15,
-  },
-  countryInfo: {
-    flex: 1,
-  },
-  loadingFooter: {
-    padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  noDataContainer: {
-    padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rightIconBg: {
-    width: 32,
-    height: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 100,
-    position: "absolute",
-    right: 0,
-    top: -12,
   },
 });
 

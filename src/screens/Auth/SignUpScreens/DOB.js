@@ -13,6 +13,8 @@ import { count } from "../../../store/reducer/appSlice";
 const StepOne = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     console.log(state);
+    const sixteenYearsAgo = new Date();
+    sixteenYearsAgo.setFullYear(sixteenYearsAgo.getFullYear() - 16);
     const onboardingCount = useSelector(count);
     const [dob, setDob] = useState(state?.dob ? new Date(state.dob) : null);
     const [error, setError] = useState("");
@@ -77,11 +79,12 @@ const StepOne = forwardRef(
             marginBottom={6}
             color={COLORS.white}
           />
+
           <CustomDatePicker
             value={dob}
             setValue={handleDateChange}
-            placeholder="E.g. April 10, 2007"
-            maxDate={new Date()}
+            placeholder="16 years old"
+            maxDate={sixteenYearsAgo}
             error={error}
             defaultError="You must be at least 16 years old to use "
           />

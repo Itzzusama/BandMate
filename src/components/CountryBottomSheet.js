@@ -1,215 +1,247 @@
-import { useEffect, useRef, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useState } from "react";
 import {
-  Animated,
-  Dimensions,
-  Image,
-  Modal,
-  ScrollView,
+  ActivityIndicator,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
   View,
 } from "react-native";
-import { BlurView } from "@react-native-community/blur";
-import fonts from "../assets/fonts";
-import { COLORS } from "../utils/COLORS";
-import { COUNTRIES } from "../utils/constants";
+
 import CustomInput from "./CustomInput";
+import CustomModal from "./CustomModal";
 import CustomText from "./CustomText";
 import Icons from "./Icons";
 
-const { height } = Dimensions.get("window");
+import { COUNTRIES as COUNTRIES_DATA } from "../utils/COUNTRIES";
+import { PNGIcons } from "../assets/images/icons";
+import { COLORS } from "../utils/COLORS";
+import fonts from "../assets/fonts";
+
+// ✅ Format countries for dropdown
+const COUNTRIES = COUNTRIES_DATA.map((country) => ({
+  label: country.name,
+  code: country.code,
+  dialCode: country.dialCode,
+  flag: country.emoji,
+})).sort((a, b) => a.label.localeCompare(b.label));
+
+const ITEMS_PER_PAGE = 20;
 
 const CountryBottomSheet = ({
-  visible,
+  isVisible,
   onClose,
   selectedCountry,
-  onSelectCountry,
+  onCountrySelect,
 }) => {
-  const translateY = useRef(new Animated.Value(height)).current;
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const filteredCountries = COUNTRIES.filter((country) =>
-    country.label.toLowerCase().includes(searchQuery.toLowerCase())
+  const insets = useSafeAreaInsets();
+
+  // ✅ Filter countries by name or dial code
+  const allFilteredCountries = COUNTRIES.filter(
+    (country) =>
+      country.label.toLowerCase().includes(searchText.toLowerCase()) ||
+      country.dialCode.includes(searchText)
   );
 
-  useEffect(() => {
-    if (visible) {
-      Animated.spring(translateY, {
-        toValue: height * 0.25,
-        useNativeDriver: true,
-        bounciness: 0,
-      }).start();
-    } else {
-      Animated.timing(translateY, {
-        toValue: height,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [visible]);
+  const totalPages = Math.ceil(allFilteredCountries.length / ITEMS_PER_PAGE);
+  const paginatedCountries = allFilteredCountries.slice(
+    0,
+    currentPage * ITEMS_PER_PAGE
+  );
 
-  if (!visible) return null;
+  const handleSearchChange = (text) => {
+    setSearchText(text);
+    setCurrentPage(1);
+  };
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages && !isLoadingMore) {
+      setIsLoadingMore(true);
+      setTimeout(() => {
+        setCurrentPage((prev) => prev + 1);
+        setIsLoadingMore(false);
+      }, 300);
+    }
+  };
+
+  const handleCountrySelect = (country) => {
+    onCountrySelect({
+      label: country.label,
+      code: country.code,
+      dialCode: country.dialCode,
+    });
+    setCurrentPage(1);
+    setSearchText("");
+  };
+
+  const handleClose = () => {
+    setCurrentPage(1);
+    setSearchText("");
+    onClose();
+  };
+
+  const renderFooter = () =>
+    isLoadingMore ? (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size="small" color={COLORS.primaryColor} />
+      </View>
+    ) : null;
 
   return (
-    <Modal transparent visible={visible} animationType="fade">
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: COLORS.black,
-            justifyContent: "flex-end",
-          }}
-        >
-          <TouchableWithoutFeedback>
-            <Animated.View
-              style={{
-                transform: [{ translateY }],
-                alignSelf: "center",
-                width: "95%",
-                backgroundColor: COLORS.black,
-              }}
-            >
-              <View
-                style={{
-                  padding: 5,
-                  borderRadius: 32,
-                  borderWidth: 1,
-                  backgroundColor: COLORS.inputBg,
-                  borderColor: "rgba(255, 255, 255, 0.16)",
-                }}
-              >
-                <BlurView
-                  style={{
-                    width: "100%",
-                    borderRadius: 24,
-                  }}
-                  blurType="light"
-                  blurAmount={26}
-                  reducedTransparencyFallbackColor="#FFFFFF29"
-                />
-                <View
-                  style={{
-                    backgroundColor: COLORS.black,
-                    borderTopLeftRadius: 30,
-                    borderTopRightRadius: 30,
-                    paddingTop: 20,
-                    paddingHorizontal: 20,
-                    paddingBottom: 40,
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 20,
-                    }}
-                  >
-                    <CustomText
-                      label={"Country"}
-                      fontSize={20}
-                      fontFamily={fonts.semiBold}
-                      lineHeight={20 * 1.4}
-                    />
-                    <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
-                      <Icons
-                        name="close"
-                        family="Ionicons"
-                        size={24}
-                        color={COLORS.white}
-                      />
-                    </TouchableOpacity>
-                  </View>
-
-                  <CustomInput
-                    placeholder="Search country..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                  />
-
-                  <ScrollView
-                    style={{
-                      gap: 16,
-                      minHeight: 400,
-                    }}
-                  >
-                    {filteredCountries.length > 0 ? (
-                      filteredCountries.map((country) => (
-                        <TouchableOpacity
-                          key={country.code}
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            paddingHorizontal: 16,
-                            marginTop: 8,
-                            paddingVertical: 16,
-                            borderRadius: 12,
-                            backgroundColor:
-                              selectedCountry?.code == country.code
-                                ? COLORS.btnColor
-                                : COLORS.inputBg,
-                          }}
-                          onPress={() => {
-                            onSelectCountry(country);
-                            onClose();
-                          }}
-                        >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              gap: 8,
-                              alignItems: "center",
-                            }}
-                          >
-                            <Image
-                              style={{
-                                height: 20,
-                                width: 20,
-                                borderRadius: 4,
-                              }}
-                              source={{
-                                uri: `https://flagcdn.com/w40/${country.code.toLowerCase()}.png`,
-                              }}
-                              resizeMode="contain"
-                            />
-                            <CustomText
-                              label={country.label}
-                              fontWeight="500"
-                              color={
-                                selectedCountry?.code == country.code
-                                  ? COLORS.black
-                                  : "#ffffff"
-                              }
-                            />
-                          </View>
-                          {selectedCountry?.code == country.code && (
-                            <Icons
-                              name="checkmark"
-                              family="Ionicons"
-                              size={24}
-                              color={COLORS.black}
-                            />
-                          )}
-                        </TouchableOpacity>
-                      ))
-                    ) : (
-                      <CustomText
-                        label="No countries found"
-                        textAlign="center"
-                        color="#6b7280"
-                        marginTop={20}
-                      />
-                    )}
-                  </ScrollView>
-                </View>
-              </View>
-            </Animated.View>
-          </TouchableWithoutFeedback>
+    <CustomModal isChange isVisible={isVisible} onDisable={handleClose}>
+      <View style={[styles.modalContainer, { paddingTop: insets.top }]}>
+        {/* Header with search */}
+        <View style={styles.modalHeader}>
+          <CustomInput
+            search
+            width="86%"
+            height={44}
+            borderRadius={100}
+            marginBottom={0.1}
+            isClear={() => setSearchText("")}
+            placeholder="Search Country or Code..."
+            value={searchText}
+            onChangeText={handleSearchChange}
+            autoFocus={false}
+            clearButtonMode="while-editing"
+          />
+          <TouchableOpacity
+            style={styles.crossContainer}
+            onPress={handleClose}
+            activeOpacity={0.7}
+          >
+            <Image source={PNGIcons.white_cross} style={styles.cross} />
+          </TouchableOpacity>
         </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+
+        {/* Country list */}
+        {paginatedCountries.length > 0 ? (
+          <FlatList
+            data={paginatedCountries}
+            keyExtractor={(item) => item.code}
+            renderItem={({ item }) => {
+              const isSelected =
+                selectedCountry && selectedCountry.code === item.code;
+              return (
+                <TouchableOpacity
+                  style={styles.countryItem}
+                  onPress={() => handleCountrySelect(item)}
+                  activeOpacity={0.6}
+                >
+                  <View style={styles.countryContent}>
+                    <Text style={styles.flagText}>{item.flag}</Text>
+                    <View style={styles.countryInfo}>
+                      <CustomText
+                        label={item.label}
+                        fontSize={16}
+                        fontFamily={fonts.medium}
+                        color={isSelected ? COLORS.primaryColor : COLORS.white}
+                        style={{ flex: 1 }}
+                      />
+                      <CustomText
+                        label={item.dialCode}
+                        fontSize={14}
+                        fontFamily={fonts.regular}
+                        color={isSelected ? COLORS.primaryColor : COLORS.white3}
+                      />
+                    </View>
+                  </View>
+                  <Icons
+                    family="MaterialCommunityIcons"
+                    name={isSelected ? "radiobox-marked" : "radiobox-blank"}
+                    size={26}
+                    color={isSelected ? COLORS.btnColor : COLORS.gray2}
+                  />
+                </TouchableOpacity>
+              );
+            }}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            style={{ marginTop: 10 }}
+            showsVerticalScrollIndicator={false}
+            ListFooterComponent={renderFooter}
+          />
+        ) : (
+          <View style={styles.noDataContainer}>
+            <CustomText
+              label="No countries found"
+              color={COLORS.inputLabel}
+              fontSize={14}
+              style={{ textAlign: "center" }}
+            />
+          </View>
+        )}
+      </View>
+    </CustomModal>
   );
 };
 
 export default CountryBottomSheet;
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    backgroundColor: COLORS.black,
+    width: "100%",
+    height: "100%",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBlockColor: COLORS.inputBg,
+    borderBottomWidth: 4,
+    padding: 16,
+  },
+  crossContainer: {
+    borderRadius: 100,
+    backgroundColor: COLORS.inputBg,
+    width: 44,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cross: {
+    width: 16,
+    height: 16,
+    resizeMode: "contain",
+    tintColor: COLORS.white3,
+  },
+  countryItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    padding: 16,
+    borderRadius: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.inputBg,
+  },
+  countryContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  flagText: {
+    fontSize: 24,
+    marginRight: 15,
+  },
+  countryInfo: {
+    flex: 1,
+  },
+  loadingFooter: {
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  noDataContainer: {
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

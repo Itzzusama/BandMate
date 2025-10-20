@@ -432,10 +432,10 @@ const VTCChauffeur = () => {
       </View>
 
       <CountryBottomSheet
-        visible={showCountrySheet}
+        isVisible={showCountrySheet}
         onClose={() => setShowCountrySheet(false)}
         selectedCountry={independentFormData.country}
-        onSelectCountry={(country) => {
+        onCountrySelect={(country) => {
           setIndependentFormData({ ...independentFormData, country });
           const msg = validateIndependentField(
             "country",
@@ -443,6 +443,7 @@ const VTCChauffeur = () => {
             independentFormData
           );
           setErrors((prev) => ({ ...prev, countryError: msg }));
+          setShowCountrySheet(false);
         }}
       />
 

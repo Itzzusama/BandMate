@@ -122,7 +122,7 @@ const CustomInput = ({
               family="MaterialIcons"
               name="search"
               size={26}
-              color={COLORS.subtitle}
+              color={COLORS.white3}
             />
           ) : null}
 

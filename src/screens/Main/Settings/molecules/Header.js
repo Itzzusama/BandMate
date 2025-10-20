@@ -1,17 +1,17 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { Image } from "react-native";
 import { PNGIcons } from "../../../../assets/images/icons";
 import { COLORS } from "../../../../utils/COLORS";
 import { useNavigation } from "@react-navigation/native";
+import { Pressable } from "react-native";
 
 const Header = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <View>
+      <Pressable onPress={() => navigation.navigate("AdvancedSettings")}>
         <CustomText
           label={"My Profile"}
           fontSize={32}
@@ -29,7 +29,7 @@ const Header = () => {
             color={COLORS.white3}
           />
         </View>
-      </View>
+      </Pressable>
       <TouchableOpacity
         style={styles.crossIconWrapper}
         activeOpacity={0.8}

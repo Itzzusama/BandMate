@@ -23,7 +23,6 @@ const tabs = ["Free", "Silver", "Gold", "Platinum", "Pro"];
 const Plans = () => {
   const [selectedTab, setSelectedTab] = useState("Free");
 
-  // Get features based on selected plan
   const getFeatures = () => {
     switch (selectedTab) {
       case "Free":
@@ -96,7 +95,6 @@ const Plans = () => {
         color={COLORS.white}
       />
 
-      {/* Features List */}
       <View style={{ marginTop: 12 }}>
         {features.map((feature, index) => (
           <View key={index} style={styles.featureCard}>
