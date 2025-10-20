@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 12,
     marginBottom: 12,
+    marginTop: 3,
   },
   feedBtn: {
     flexDirection: "row",

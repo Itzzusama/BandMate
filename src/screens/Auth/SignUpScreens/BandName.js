@@ -70,8 +70,9 @@ const BandStep1 = forwardRef(
             }}
             error={error}
           />
-
-          <ErrorComponent errorTitle="Inappropriate names are forbidded." />
+          {!error && (
+            <ErrorComponent errorTitle="Inappropriate names are forbidded." />
+          )}
         </View>
       </View>
     );

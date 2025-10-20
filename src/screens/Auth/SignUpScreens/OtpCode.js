@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { count } from "../../../store/reducer/appSlice";
 
 const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
+  console.log(state);
   const onboardingCount = useSelector(count);
   const [otp, setOtp] = useState(state?.otp || "");
   const [error, setError] = useState("");
@@ -143,7 +144,7 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
           fontFamily={fonts.abril}
           fontSize={24}
           lineHeight={24 * 1.4}
-          marginTop={32}
+          marginTop={16}
         />
         <CustomInput
           value={otp}
@@ -152,6 +153,7 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
           marginBottom={5}
           placeholder="E.g. 123456"
           keyboardType="numeric"
+          isValid={showSuccessColor}
         />
         <ErrorComponent
           errorTitle="Valid verification code."

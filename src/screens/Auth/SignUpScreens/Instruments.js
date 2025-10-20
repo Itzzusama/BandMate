@@ -175,7 +175,7 @@ const Instruments = forwardRef(
               <Icons
                 family="MaterialCommunityIcons"
                 name={"check-circle"}
-                size={24}
+                size={20}
                 color={COLORS.white}
               />
             </View>
@@ -192,7 +192,7 @@ const Instruments = forwardRef(
             fontFamily={fonts.abril}
             fontSize={32}
             lineHeight={32 * 1.4}
-            marginTop={12}
+            marginTop={8}
             marginBottom={6}
           />
           <SearchInput placeholder={"E.g. Guitar, Piano..."} />
@@ -210,13 +210,15 @@ const Instruments = forwardRef(
             errorTitle={`Choose at least ${
               selectedInstruments.length > 1 ? 1 : selectedInstruments.length
             }/1`}
+            error={error}
             color={
               error
                 ? "#EE1045" // red
                 : showSuccessColor
                 ? "#64CD75" // green
-                : COLORS.white2 // neutral
+                : "" // neutral
             }
+            color1={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
           />
 
           <ScrollView
@@ -269,7 +271,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: "absolute",
-    top: 12,
+    top: 8,
     right: 8,
   },
 });

@@ -82,8 +82,9 @@ const BandStep2 = forwardRef(
             }}
             error={error}
           />
-
-          <ErrorComponent errorTitle="Please only mention fixed members." />
+          {!error && (
+            <ErrorComponent errorTitle="Please only mention fixed members." />
+          )}
         </View>
       </View>
     );

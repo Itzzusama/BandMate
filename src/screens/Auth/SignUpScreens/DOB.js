@@ -12,8 +12,9 @@ import { count } from "../../../store/reducer/appSlice";
 
 const StepOne = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    console.log(state);
     const onboardingCount = useSelector(count);
-    const [dob, setDob] = useState(state?.dob || "");
+    const [dob, setDob] = useState(state?.dob ? new Date(state.dob) : null);
     const [error, setError] = useState("");
     const validateDOB = (value) => {
       let newError = "";

@@ -14,6 +14,7 @@ import SearchInput from "../../../components/SearchInput";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { GenresImgs } from "../../../assets/images/genrsImg";
+import Icons from "../../../components/Icons";
 
 const instrumentCategories = [
   { name: "Rock", color: "#DC158C", img: GenresImgs.img },
@@ -76,7 +77,7 @@ const Genres = forwardRef(
           : [...prev, genreName];
 
         if (updated.length < 3) {
-          setError("Please choose at least 3 genres.");
+          // setError("Please choose at least 3 genres.");
         } else {
           setError("");
         }
@@ -139,6 +140,16 @@ const Genres = forwardRef(
             style={styles.genreImage}
             resizeMode="contain"
           />
+          {isSelected && (
+            <View style={styles.icon}>
+              <Icons
+                family="MaterialCommunityIcons"
+                name={"check-circle"}
+                size={20}
+                color={COLORS.white}
+              />
+            </View>
+          )}
         </TouchableOpacity>
       );
     };
@@ -150,11 +161,17 @@ const Genres = forwardRef(
             label="Choose 3 or more genres you like."
             fontFamily={fonts.abril}
             fontSize={32}
-            lineHeight={30 * 1.4}
+            lineHeight={32 * 1.1}
             marginTop={12}
             marginBottom={6}
           />
-
+          <CustomText
+            label="Tell us about your musical influences and interests"
+            fontSize={12}
+            lineHeight={12 * 1.4}
+            marginBottom={18}
+            color={COLORS.white2}
+          />
           <SearchInput placeholder={"E.g. Blues, Techno, Pop..."} />
 
           <CustomText
@@ -166,16 +183,14 @@ const Genres = forwardRef(
             marginTop={4}
           />
 
-          {/* ✅ Dynamic counter + color */}
           <ErrorComponent
             errorTitle={`Choose at least ${selectedGenres.length}/3`}
             color={
-              error
-                ? "#EE1045" // red when invalid
-                : showSuccessColor
-                ? "#64CD75" // green briefly when valid
-                : COLORS.white2 // neutral
+              error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.white2
             }
+            isValid={showSuccessColor}
+            error={error}
+            color1={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
           />
 
           <ScrollView
@@ -218,5 +233,10 @@ const styles = StyleSheet.create({
     right: 0,
     width: 70,
     height: 98,
+  },
+  icon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
   },
 });

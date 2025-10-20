@@ -1,4 +1,4 @@
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Pressable } from "react-native";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import Header from "./molecules/Header";
 import Categories from "./molecules/Categories";
@@ -7,6 +7,11 @@ import FeedCard from "./molecules/FeedCard";
 import { FeedsImages } from "../../../assets/images/FeedsImages";
 import { EventImages } from "../../../assets/images/eventImages";
 import PostCard from "./molecules/PostCard";
+import CustomText from "../../../components/CustomText";
+import fonts from "../../../assets/fonts";
+import { COLORS } from "../../../utils/COLORS";
+import { Image } from "react-native";
+import { PNGIcons } from "../../../assets/images/icons";
 const SocialFeeds = () => {
   return (
     <ScreenWrapper
@@ -17,7 +22,27 @@ const SocialFeeds = () => {
     >
       <Categories />
       <Moments />
-
+      <View style={[styles.row, { paddingHorizontal: 12, marginBottom: 12 }]}>
+        <View style={{ flex: 1 }}>
+          <CustomText
+            label={"Front Page"}
+            fontSize={18}
+            fontFamily={fonts.medium}
+            lineHeight={18 * 1.4}
+          />
+        </View>
+        <View style={styles.row}>
+          <CustomText
+            label={"GLOBAL RANKING"}
+            fontSize={12}
+            fontFamily={fonts.semiBold}
+            color={COLORS.white3}
+          />
+          <Pressable style={styles.forwardIcon}>
+            <Image source={PNGIcons.forward} style={styles.icon} />
+          </Pressable>
+        </View>
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -107,5 +132,25 @@ const styles = StyleSheet.create({
   feedRow: {
     paddingHorizontal: 12,
     gap: 10, // spacing between cards
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  forwardIcon: {
+    height: 16,
+    width: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 99,
+
+    backgroundColor: COLORS.inputBg,
+  },
+  icon: {
+    height: 15,
+    width: 15,
+    resizeMode: "contain",
+    tintColor: COLORS.btnColor,
   },
 });

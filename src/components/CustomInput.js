@@ -136,6 +136,7 @@ const CustomInput = ({
                 width: secureTextEntry ? "91%" : isSwitch ? "80%" : "99%",
                 paddingVertical: paddingVertical,
                 paddingBottom: !withLabel ? 0 : paddingBottom,
+                bottom: withLabel || secureTextEntry ? 0 : 2,
                 // paddingTop: multiline ? 10 : 0,
                 paddingLeft: search ? 8 : 0,
                 paddingRight: 8,

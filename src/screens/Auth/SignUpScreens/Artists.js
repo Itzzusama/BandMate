@@ -41,7 +41,7 @@ const Artists = forwardRef(
     const CARD_SIZE = (width - SPACING * (numColumns + 1)) / numColumns;
 
     const [selectedArtists, setSelectedArtists] = useState([]);
-    const [error, setError] = useState("Choose at least 0/3");
+    const [error, setError] = useState("");
     const [prevError, setPrevError] = useState("");
     const [showSuccessColor, setShowSuccessColor] = useState(false);
 
@@ -61,9 +61,8 @@ const Artists = forwardRef(
           ? prev.filter((a) => a !== name)
           : [...prev, name];
 
-        // 🔴 Show error when <3, clear when valid
         if (updated.length < 3) {
-          setError("Please choose at least 3 artists.");
+          // setError("Please choose at least 3 artists.");
         } else {
           setError("");
         }
@@ -101,7 +100,7 @@ const Artists = forwardRef(
           label="Choose 3 or more artists you like."
           fontFamily={fonts.abril}
           fontSize={32}
-          lineHeight={30 * 1.4}
+          lineHeight={32 * 1.1}
           marginTop={12}
         />
         <CustomText
@@ -130,8 +129,11 @@ const Artists = forwardRef(
               ? "#EE1045" // red when not enough
               : showSuccessColor
               ? "#64CD75" // green briefly when success
-              : COLORS.white2 // neutral
+              : "" // neutral
           }
+          isValid={showSuccessColor}
+          error={error}
+          color1={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
         />
 
         <ScrollView

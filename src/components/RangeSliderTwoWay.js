@@ -20,8 +20,8 @@ const MultiRangeSlider = ({
   initialLowValue = 18,
   initialHighValue = 50,
   onValuesChange = () => {},
-  unit = "yrs", // ✅ new prop
-  sliderWidth = width - 30, // ✅ new prop for flexibility
+  unit = "yrs",
+  sliderWidth = width - 30,
 }) => {
   const [range, setRange] = useState([initialLowValue, initialHighValue]);
 
@@ -72,7 +72,7 @@ const MultiRangeSlider = ({
 
       <MultiSlider
         values={range}
-        sliderLength={sliderWidth} // ✅ now dynamic
+        sliderLength={sliderWidth}
         onValuesChange={handleValuesChange}
         min={min}
         max={max}
@@ -90,9 +90,7 @@ const MultiRangeSlider = ({
       />
 
       {showValue && (
-        <View
-          style={[styles.labelContainer, { width: sliderWidth }]} // ✅ dynamic width
-        >
+        <View style={[styles.labelContainer, { width: sliderWidth }]}>
           <CustomText
             fontFamily={fonts.medium}
             color={"#848484"}

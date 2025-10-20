@@ -53,7 +53,7 @@ const Level = forwardRef(
             label="Let others know your level."
             fontFamily={fonts.abril}
             fontSize={32}
-            lineHeight={32 * 1.4}
+            lineHeight={32 * 1.1}
             marginTop={12}
           />
           <CustomText

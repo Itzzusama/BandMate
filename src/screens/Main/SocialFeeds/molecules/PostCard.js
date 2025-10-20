@@ -74,8 +74,8 @@ const PostCard = ({
             <Icons
               family="Entypo"
               name="dots-three-vertical"
-              size={18}
-              color={COLORS.white3}
+              size={16}
+              color={COLORS.white}
             />
           </TouchableOpacity>
         </View>
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 2,
     paddingHorizontal: 12,
-    paddingBottom: 6,
+    paddingBottom: 7,
   },
   headerRight: { flexDirection: "row", alignItems: "center", gap: 10 },
   followButton: {

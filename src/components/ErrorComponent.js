@@ -1,8 +1,5 @@
-import { StyleSheet, View } from "react-native";
-
-import CustomText from "./CustomText";
+import { StyleSheet, View, Text } from "react-native";
 import Icons from "./Icons";
-
 import { COLORS } from "../utils/COLORS";
 import fonts from "../assets/fonts";
 
@@ -14,16 +11,13 @@ const ErrorComponent = ({
   marginTop,
   secondTitle,
   error,
-  color1,
   isValid,
   hideInfo,
-  numberOfLines,
-  TextWidth,
   infoTop,
 }) => {
   return (
     <View style={[styles.row, { marginBottom, alignSelf, marginTop }]}>
-      {hideInfo ? null : (
+      {!hideInfo && (
         <Icons
           family={isValid ? "Ionicons" : error ? "Entypo" : "Feather"}
           name={
@@ -36,22 +30,13 @@ const ErrorComponent = ({
         />
       )}
 
-      <CustomText
-        label={errorTitle}
-        fontSize={12}
-        numberOfLines={numberOfLines}
-        color={COLORS.white2}
-        lineHeight={12 * 1.4}
-        width={TextWidth}
-        textTransform="none"
-      />
-      <CustomText
-        label={secondTitle}
-        fontSize={12}
-        color={COLORS.white}
-        fontFamily={fonts.medium}
-        lineHeight={12 * 1.4}
-      />
+      {/* ✅ Single Text node with nested children */}
+      <Text style={styles.text}>
+        <Text style={styles.errorTitle}>{errorTitle}</Text>
+        {secondTitle ? (
+          <Text style={styles.secondTitle}> {secondTitle}</Text>
+        ) : null}
+      </Text>
     </View>
   );
 };
@@ -61,6 +46,22 @@ export default ErrorComponent;
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    borderRadius: 8,
+    alignItems: "flex-start",
+  },
+  text: {
+    flexShrink: 1,
+    flexWrap: "wrap",
+  },
+  errorTitle: {
+    fontSize: 12,
+    color: COLORS.white2,
+    lineHeight: 12 * 1.4,
+    fontFamily: fonts.regular,
+  },
+  secondTitle: {
+    fontSize: 12,
+    color: COLORS.white,
+    lineHeight: 12 * 1.4,
+    fontFamily: fonts.medium,
   },
 });

@@ -266,6 +266,13 @@ const Email = forwardRef(
                     ? "#EE1045CC"
                     : COLORS.gray2
                 }
+                marginBottom={2}
+              />
+              <ErrorComponent
+                errorTitle={
+                  "If you don’t have an account already this phone will be used to create your new account on "
+                }
+                secondTitle={"BandMate."}
               />
               <View
                 style={{
@@ -423,8 +430,14 @@ const Email = forwardRef(
                     ? "#EE1045CC"
                     : COLORS.gray2
                 }
+                marginBottom={2}
               />
-
+              <ErrorComponent
+                errorTitle={
+                  "If you don’t have an account already this email will be used to create your new account on "
+                }
+                secondTitle={"BandMate."}
+              />
               <View
                 style={{
                   borderTopWidth: 1,
@@ -447,11 +460,16 @@ const Email = forwardRef(
                       lineHeight={16 * 1.4}
                     />
                     <CustomText
-                      label="receive the latest news about move, and promotional offers."
                       fontFamily={fonts.medium}
                       lineHeight={14 * 1.4}
                       color={COLORS.gray2}
-                    />
+                    >
+                      receive the latest news about{" "}
+                      <CustomText color={COLORS.white} marginBottom={-5.2}>
+                        BandMate
+                      </CustomText>
+                      , and promotional offers.
+                    </CustomText>
                   </View>
                   <Icons
                     family="MaterialCommunityIcons"

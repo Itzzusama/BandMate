@@ -64,12 +64,9 @@ const FilterScreen = () => {
         />
       )}
       footerUnScrollable={() => (
-        <CustomButton
-          title={"Discover 83+ Profiles"}
-          width="95%"
-          marginBottom={24}
-          marginTop={16}
-        />
+        <View style={{ padding: 12 }}>
+          <CustomButton title={"Discover 83+ Profiles"} marginBottom={24} />
+        </View>
       )}
     >
       <LocationCard />

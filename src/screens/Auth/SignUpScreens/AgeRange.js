@@ -49,31 +49,29 @@ const AgeRange = forwardRef(
 
     return (
       <View style={styles.container}>
-        <View>
-          <CustomText
-            label="Age range"
-            fontFamily={fonts.abril}
-            fontSize={24}
-            lineHeight={24 * 1.4}
-            marginTop={12}
-            marginBottom={16}
-          />
+        <CustomText
+          label="Age range"
+          fontFamily={fonts.abril}
+          fontSize={24}
+          lineHeight={24 * 1.4}
+          marginTop={12}
+          marginBottom={-3}
+        />
 
-          <MultiRangeSlider
-            min={16}
-            max={80}
-            step={1}
-            initialLowValue={ageRange.min}
-            initialHighValue={ageRange.max}
-            onValuesChange={(low, high) => setAgeRange({ min: low, max: high })}
-          />
+        <MultiRangeSlider
+          min={16}
+          max={80}
+          step={1}
+          initialLowValue={ageRange.min}
+          initialHighValue={ageRange.max}
+          onValuesChange={(low, high) => setAgeRange({ min: low, max: high })}
+        />
 
-          {error ? (
-            <ErrorComponent errorTitle={error} />
-          ) : (
-            <ErrorComponent errorTitle="Only permanent members." />
-          )}
-        </View>
+        {error ? (
+          <ErrorComponent errorTitle={error} />
+        ) : (
+          <ErrorComponent errorTitle="Only permanent members." />
+        )}
       </View>
     );
   }

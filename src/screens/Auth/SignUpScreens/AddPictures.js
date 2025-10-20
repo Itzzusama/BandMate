@@ -80,7 +80,7 @@ const AddPictures = forwardRef(
             fontFamily={fonts.abril}
             fontSize={24}
             lineHeight={24 * 1.4}
-            marginTop={12}
+            marginTop={10}
             marginBottom={2}
           />
           <CustomText
