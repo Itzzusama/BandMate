@@ -273,7 +273,6 @@ const CustomPhoneInput = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
     paddingHorizontal: 12,
     justifyContent: "center",
   },

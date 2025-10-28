@@ -110,7 +110,7 @@ const Password = forwardRef(
             onChangeText={(text) => errorCheck(text)}
             marginTop={8}
             marginBottom={16}
-            placeholder="************"
+            placeholder="********"
             secureTextEntry
           />
 

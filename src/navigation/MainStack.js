@@ -12,6 +12,7 @@ import SearchEvent from "../screens/Main/Event/SearchEvent";
 import Plans from "../screens/Main/Settings/Plans";
 import AdvancedSettings from "../screens/Main/Settings/AdvancedSettings";
 import Preferences from "../screens/Main/Settings/Preferences";
+import Settings from "../screens/Main/Settings";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ const MainStack = () => {
       <Stack.Screen name="Plans" component={Plans} />
       <Stack.Screen name="AdvancedSettings" component={AdvancedSettings} />
       <Stack.Screen name="Preferences" component={Preferences} />
+      <Stack.Screen name="Settings" component={Settings} />
     </Stack.Navigator>
   );
 };

@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
-    borderRadius: 1,
+    borderRadius: 100,
     overflow: "hidden",
   },
   block: {

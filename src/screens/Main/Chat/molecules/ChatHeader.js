@@ -1,8 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import fonts from "../../../../assets/fonts";
+import { Images } from "../../../../assets/images";
 import CustomButton from "../../../../components/CustomButton";
 import CustomModal from "../../../../components/CustomModal";
 import CustomText from "../../../../components/CustomText";
@@ -12,7 +13,6 @@ import { COLORS } from "../../../../utils/COLORS";
 
 const ChatHeader = ({ title, source, showIcons = true }) => {
   const navigation = useNavigation();
-
   const [isViewModal, setIsViewModal] = useState(false);
 
   return (
@@ -25,33 +25,66 @@ const ChatHeader = ({ title, source, showIcons = true }) => {
         <Icons
           size={26}
           family="MaterialIcons"
-          color={COLORS.darkPurple}
+          color={COLORS.white}
           name="keyboard-arrow-left"
         />
       </TouchableOpacity>
 
-      <ImageFast resizeMode="cover" source={source} style={styles.userImage} />
+      {/* <ImageFast resizeMode="cover" source={source} style={styles.userImage} /> */}
       <View style={{ flex: 1 }}>
-        <CustomText
-          label={title}
-          fontSize={20}
-          lineHeight={20 * 1.4}
-          fontFamily={fonts.semiBold}
-        />
+        <View style={styles.row}>
+          <View style={styles.onlineDot} />
+          <CustomText
+            label={title || "Catie, 24"}
+            fontSize={20}
+            fontFamily={fonts.semiBold}
+          />
+        </View>
+        <View style={styles.row}>
+          <ImageFast
+            resizeMode="contain"
+            source={Images.pindrop}
+            tintColor={"#828186"}
+            style={{ height: 15, width: 15, marginLeft: -3 }}
+          />
+          <CustomText
+            label={"Los Angeles"}
+            fontFamily={fonts.semiBold}
+            color={"#828186"}
+            fontSize={12}
+          />
+          <View style={styles.sparator} />
+
+          <CustomText
+            label={"Solo Artist"}
+            fontFamily={fonts.semiBold}
+            color={"#828186"}
+            fontSize={12}
+          />
+        </View>
       </View>
       {showIcons && (
         <>
           <TouchableOpacity activeOpacity={0.6} style={[styles.backIcon]}>
-            <Icons size={22} name="phone" family="MaterialIcons" />
+            <ImageFast
+              resizeMode="contain"
+              source={Images.ChatSetting}
+              style={{ height: 15, width: 15, marginLeft: -3 }}
+            />
           </TouchableOpacity>
 
-          <Pressable
+          {/* <Pressable
             style={styles.icon}
             onPress={() => setIsViewModal(true)}
             hitSlop={{ top: 30, left: 30, bottom: 30, right: 30 }}
           >
-            <Icons size={20} family={"Entypo"} name={"dots-three-vertical"} />
-          </Pressable>
+            <Icons
+              size={20}
+              color={COLORS.white}
+              family={"Entypo"}
+              name={"dots-three-vertical"}
+            />
+          </Pressable> */}
         </>
       )}
 
@@ -106,13 +139,14 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.lightGray,
+    borderColor: COLORS.inputBg,
+    // backgroundColor: "rgba(38, 38, 38, 0.64)",
     paddingHorizontal: 15,
   },
   backIcon: {
     width: 40,
     height: 40,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: "#FFFFFF14",
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
@@ -153,5 +187,26 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     overflow: "hidden",
     paddingTop: 20,
+  },
+
+  onlineDot: {
+    backgroundColor: "#64CD75",
+    width: 8,
+    height: 8,
+    marginRight: 3,
+    borderRadius: 100,
+  },
+
+  sparator: {
+    backgroundColor: "#828186",
+    width: 4,
+    height: 4,
+    borderRadius: 100,
+  },
+
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
   },
 });

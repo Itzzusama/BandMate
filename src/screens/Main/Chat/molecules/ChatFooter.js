@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   FlatList,
@@ -8,25 +8,33 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Image,
   View,
 } from "react-native";
-import { COLORS } from "../../../../utils/COLORS";
-import Icons from "../../../../components/Icons";
 import fonts from "../../../../assets/fonts";
 import CustomText from "../../../../components/CustomText";
+import Icons from "../../../../components/Icons";
+import { COLORS } from "../../../../utils/COLORS";
 import UploadChatModal from "./UploadChatModal";
+import { Images } from "../../../../assets/images";
 
-const quickMessages = ["Have you arrived?", "I’m outside"];
+const quickMessages = ["Have you arrived?", "I'm outside"];
 
 const ChatFooter = ({
   inputText,
   setInputText,
   sendMessage,
   showChatFeatures = true,
+  replyMessage,
+  onClearReply,
 }) => {
   const [visible, setVisible] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(new Animated.Value(0));
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const actionsAnim = useRef(new Animated.Value(0)).current; // 0 closed, 1 open
+  const inputFlexAnim = useRef(new Animated.Value(1)).current; // input container flex
+  const autoCloseRef = useRef(null);
 
   useEffect(() => {
     const keyboardShowEvent =
@@ -60,6 +68,83 @@ const ChatFooter = ({
 
   const pb = Platform.OS === "android" ? 20 : isKeyboardVisible ? 20 : 35;
 
+  const scheduleAutoClose = () => {
+    if (autoCloseRef.current) clearTimeout(autoCloseRef.current);
+    autoCloseRef.current = setTimeout(() => {
+      // close if still open and no interaction
+      if (actionsOpen) {
+        Animated.parallel([
+          Animated.timing(actionsAnim, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false,
+          }),
+          Animated.timing(inputFlexAnim, {
+            toValue: 0.87,
+            duration: 200,
+            useNativeDriver: false,
+          }),
+        ]).start(() => setActionsOpen(false));
+      }
+    }, 4000);
+  };
+
+  const openActions = () => {
+    setActionsOpen(true);
+    Animated.parallel([
+      Animated.timing(actionsAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(inputFlexAnim, {
+        toValue: 0.65,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+    ]).start(() => {
+      scheduleAutoClose();
+    });
+  };
+
+  const closeActions = () => {
+    if (autoCloseRef.current) {
+      clearTimeout(autoCloseRef.current);
+      autoCloseRef.current = null;
+    }
+    Animated.parallel([
+      Animated.timing(actionsAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(inputFlexAnim, {
+        toValue: 0.87,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+    ]).start(() => setActionsOpen(false));
+  };
+
+  const toggleActions = () => {
+    if (actionsOpen) closeActions();
+    else openActions();
+  };
+
+  const actionsOpacity = actionsAnim;
+  const actionsScale = actionsAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.9, 1],
+  });
+  const actionsTranslateY = actionsAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [8, 0],
+  });
+  const actionsWidth = actionsAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 120],
+  });
+
   return (
     <>
       {showChatFeatures && (
@@ -74,7 +159,7 @@ const ChatFooter = ({
               />
             </View>
             <TouchableOpacity style={styles.arrowDown}>
-              <Icons name={"arrow-down"} size={20} />
+              <Icons name={"arrow-down"} color={COLORS.white} size={20} />
             </TouchableOpacity>
           </View>
           <FlatList
@@ -94,6 +179,44 @@ const ChatFooter = ({
           />
         </View>
       )}
+
+      {replyMessage && (
+        <View
+          style={[styles.replyContainer, { borderColor: COLORS.buttonColor }]}
+        >
+          <View style={styles.replyContent}>
+            <View style={styles.replyTextContainer}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              >
+                <Image
+                  source={Images.Reply}
+                  style={{ height: 16, width: 16 }}
+                />
+
+                <CustomText
+                  label={`Replying to Adam`}
+                  fontFamily={fonts.medium}
+                />
+              </View>
+              <CustomText
+                label={`${replyMessage.content}`}
+                fontSize={12}
+                color={COLORS.white}
+                marginTop={4}
+              />
+            </View>
+            <TouchableOpacity onPress={onClearReply} style={styles.closeReply}>
+              <Icons
+                name={"x"}
+                size={16}
+                color={COLORS.white}
+                family={"Feather"}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
       <Animated.View
         style={[
           styles.mainContainer,
@@ -106,28 +229,34 @@ const ChatFooter = ({
           },
         ]}
       >
-        <View style={[styles.inputContainer]}>
-          <TouchableOpacity onPress={() => setVisible(true)}>
+        <Animated.View style={[styles.inputContainer, { flex: inputFlexAnim }]}>
+          <TouchableOpacity
+            onPress={toggleActions}
+            onLongPress={() => setVisible(true)}
+          >
             <Icons
               size={20}
               name={"plus"}
               family={"Entypo"}
-              color={COLORS.subtitle}
+              color={COLORS.white3}
             />
           </TouchableOpacity>
           <TextInput
             value={inputText}
             style={[styles.input]}
             placeholder="Type message"
-            placeholderTextColor={COLORS.gray5}
-            onChangeText={(text) => setInputText(text)}
+            placeholderTextColor={COLORS.white3}
+            onChangeText={(text) => {
+              setInputText(text);
+              if (actionsOpen) closeActions();
+            }}
           />
           <TouchableOpacity>
             <Icons
               size={20}
               name={"camera"}
               family={"Feather"}
-              color={COLORS.subtitle}
+              color={COLORS.white3}
             />
           </TouchableOpacity>
           <TouchableOpacity style={{ marginLeft: 15 }}>
@@ -135,10 +264,50 @@ const ChatFooter = ({
               size={18}
               name={"mic"}
               family={"Feather"}
-              color={COLORS.subtitle}
+              color={COLORS.white3}
             />
           </TouchableOpacity>
-        </View>
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            styles.actionsContainer,
+            {
+              opacity: actionsOpacity,
+              width: actionsWidth,
+              transform: [
+                { scale: actionsScale },
+                { translateY: actionsTranslateY },
+              ],
+            },
+          ]}
+          pointerEvents={actionsOpen ? "auto" : "none"}
+        >
+          <TouchableOpacity style={styles.actionBtn} onPress={closeActions}>
+            <Icons
+              size={18}
+              name={"calendar"}
+              family={"Feather"}
+              color={COLORS.white3}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionBtn} onPress={closeActions}>
+            <Icons
+              size={18}
+              name={"music"}
+              family={"Feather"}
+              color={COLORS.white3}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionBtn} onPress={closeActions}>
+            <Icons
+              size={18}
+              name={"gif"}
+              family={"MaterialIcons"}
+              color={COLORS.white3}
+            />
+          </TouchableOpacity>
+        </Animated.View>
 
         <TouchableOpacity
           onPress={sendMessage}
@@ -149,7 +318,7 @@ const ChatFooter = ({
             name={"arrow-right"}
             family={"Feather"}
             size={18}
-            color="#fff"
+            // color="#fff"
           />
         </TouchableOpacity>
       </Animated.View>
@@ -170,17 +339,18 @@ const styles = StyleSheet.create({
     marginTop: 12,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: COLORS.lightGray,
+    borderTopColor: COLORS.primaryColor,
+    backgroundColor: COLORS.black,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     height: 48,
-    width: "87%",
     borderRadius: 25,
     marginRight: 8,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.inputBg,
     paddingLeft: 12,
     paddingRight: 15,
   },
@@ -188,7 +358,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     paddingHorizontal: 8,
-    color: COLORS.black,
+    color: COLORS.white,
     fontFamily: fonts.regular,
     justifyContent: "center",
     padding: 0,
@@ -200,7 +370,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 50,
-    backgroundColor: COLORS.black,
+    backgroundColor: "#A19375",
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    columnGap: 8,
+    marginRight: 8,
+    overflow: "hidden",
+  },
+  actionBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.inputBg,
   },
   dot: {
     backgroundColor: "#397050",
@@ -211,7 +396,7 @@ const styles = StyleSheet.create({
   typeBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.inputBg,
     borderRadius: 30,
     height: 24,
     width: 120,
@@ -223,7 +408,7 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: "#FFFFFF1F",
     borderRadius: 50,
   },
   row: {
@@ -233,7 +418,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   quickMsg: {
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.inputBg,
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
@@ -241,5 +426,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     height: 32,
     marginTop: 10,
+  },
+  replyContainer: {
+    backgroundColor: "rgba(161, 147, 117, 0.08)",
+    borderLeftColor: COLORS.btnColor,
+    marginHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 8,
+    marginBottom: -8,
+  },
+  replyContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+  },
+
+  replyTextContainer: {
+    flex: 1,
+  },
+  closeReply: {
+    padding: 4,
   },
 });

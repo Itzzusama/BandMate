@@ -9,12 +9,13 @@ import fonts from "../../../assets/fonts";
 import { COLORS } from "../../../utils/COLORS";
 import { useSelector } from "react-redux";
 import { count } from "../../../store/reducer/appSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const StepOne = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
-    console.log(state);
-    const sixteenYearsAgo = new Date();
-    sixteenYearsAgo.setFullYear(sixteenYearsAgo.getFullYear() - 16);
+    const navigation = useNavigation();
+    const eighteensYearsAgo = new Date();
+    eighteensYearsAgo.setFullYear(eighteensYearsAgo.getFullYear() - 18);
     const onboardingCount = useSelector(count);
     const [dob, setDob] = useState(state?.dob ? new Date(state.dob) : null);
     const [error, setError] = useState("");
@@ -30,9 +31,9 @@ const StepOne = forwardRef(
           today.getMonth() > birthDate.getMonth() ||
           (today.getMonth() === birthDate.getMonth() &&
             today.getDate() >= birthDate.getDate());
-        const is16OrOlder = ageDiff > 16 || (ageDiff === 16 && hasHadBirthday);
+        const is16OrOlder = ageDiff > 18 || (ageDiff === 18 && hasHadBirthday);
         if (!is16OrOlder) {
-          newError = "You must be at least 16 years old to use ";
+          newError = "You must be at least 18 years old to use ";
         }
       }
 
@@ -60,8 +61,10 @@ const StepOne = forwardRef(
     };
 
     const back = () => {
+      navigation.goBack();
       if (currentIndex > 1) {
         setCurrentIndex(currentIndex - 1);
+        navigation.goBack();
       }
     };
 
@@ -83,10 +86,10 @@ const StepOne = forwardRef(
           <CustomDatePicker
             value={dob}
             setValue={handleDateChange}
-            placeholder="16 years old"
-            maxDate={sixteenYearsAgo}
+            placeholder="18 years old"
+            maxDate={eighteensYearsAgo}
             error={error}
-            defaultError="You must be at least 16 years old to use "
+            defaultError="You must be at least 18 years old to use "
           />
         </View>
       </View>

@@ -1,21 +1,23 @@
 import { useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import fonts from "../../../assets/fonts";
+import { Images } from "../../../assets/images";
 import CustomText from "../../../components/CustomText";
 import Divider from "../../../components/Divider";
 import Header from "../../../components/Header";
 import Icons from "../../../components/Icons";
+import ImageFast from "../../../components/ImageFast";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import TopTab from "../../../components/TopTab";
 import { COLORS } from "../../../utils/COLORS";
 import ConversationBox from "./molecules/ConversationBox";
 
-const tabs = ["Trips", "Shippings", "Parkings", "Rentals", "Tours"];
+const tabs = ["", "1 on 1", "Groups", "Matches" ];
 
 const Chat = () => {
   const [tab, setTab] = useState(0);
 
-  const requestData = [
+  const PindedData = [
     {
       _id: 1,
       otherUser: {
@@ -36,6 +38,33 @@ const Chat = () => {
       lastMessage: {
         _id: 332,
         content: "What is the price of the car?",
+      },
+    },
+  ];
+
+  const requestData = [
+    {
+      _id: 1,
+      isRequest: true,
+      otherUser: {
+        _id: 2,
+        name: "Viktor Sola",
+      },
+      lastMessage: {
+        _id: 3,
+        content: "Heyy, how are you Julian?",
+      },
+    },
+    {
+      _id: 2,
+      isRequest: true,
+      otherUser: {
+        _id: 42,
+        name: "Dani",
+      },
+      lastMessage: {
+        _id: 332,
+        content: "Hey, would you be available for...",
       },
     },
   ];
@@ -79,7 +108,7 @@ const Chat = () => {
   return (
     <ScreenWrapper
       paddingHorizontal={0.1}
-      headerUnScrollable={() => <Header title="Inbox" onHelpPress={() => ""} />}
+      headerUnScrollable={() => <Header title="Inbox"   />}
     >
       <View style={{}}>
         <TopTab
@@ -87,13 +116,57 @@ const Chat = () => {
           tab={tab}
           marginTop={5}
           tabNames={tabs}
+          images={[Images.Bag]}
           setTab={setTab}
           fontFamily={fonts.medium}
           scrollViewPaddingHorizontal={12}
+          activeTintColor={COLORS.primaryColor}
+          inactiveTintColor="#A19375"
         />
       </View>
+
       <Divider thickness={5} marginVertical={9} />
+
       <View style={styles.headerSection}>
+        <View style={styles.row}>
+          <View style={styles.row}>
+            <ImageFast
+              source={Images.PinItem}
+              resizeMode={"contain"}
+              style={{ height: 16, width: 16 }}
+            />
+            <CustomText
+              fontSize={16}
+              label="Pinned"
+              fontFamily={fonts.medium}
+            />
+          </View>
+          <CustomText
+            fontSize={16}
+            color={COLORS.subtitle}
+            fontFamily={fonts.medium}
+            label={requestData.length}
+          />
+        </View>
+        <TouchableOpacity>
+          <Icons
+            size={22}
+            family="Entypo"
+            name="chevron-down"
+            color={COLORS.subtitle}
+          />
+        </TouchableOpacity>
+      </View>
+      <View>
+        <FlatList
+          data={PindedData}
+          renderItem={({ item }) => <ConversationBox item={item} />}
+        />
+      </View>
+
+      <Divider thickness={5} marginVertical={0} />
+
+      <View style={[styles.headerSection, { marginTop: 10 }]}>
         <View style={styles.row}>
           <CustomText
             fontSize={16}
@@ -122,14 +195,23 @@ const Chat = () => {
           renderItem={({ item }) => <ConversationBox item={item} />}
         />
       </View>
+
       <Divider thickness={5} marginVertical={0} />
+
       <View style={[styles.headerSection, { marginTop: 10 }]}>
         <View style={styles.row}>
-          <CustomText
-            fontSize={16}
-            label="My Chats"
-            fontFamily={fonts.medium}
-          />
+          <View style={styles.row}>
+            <ImageFast
+              source={Images.MyChat}
+              resizeMode={"contain"}
+              style={{ height: 13, width: 13 }}
+            />
+            <CustomText
+              fontSize={16}
+              label="My Chats"
+              fontFamily={fonts.medium}
+            />
+          </View>
           <CustomText
             fontSize={16}
             color={COLORS.subtitle}
@@ -169,7 +251,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.lightGray,
+    borderBottomColor: "#262626",
     paddingHorizontal: 15,
     paddingBottom: 8,
   },

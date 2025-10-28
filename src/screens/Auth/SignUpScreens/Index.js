@@ -1,5 +1,6 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useEffect } from "react";
 import { Text } from "react-native";
+import { useSelector } from "react-redux";
 
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import AuthHeader from "../../../components/Auth/AuthHeader";
@@ -29,6 +30,9 @@ const SignUpScreens = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const stepRef = useRef(null);
 
+  const user = useSelector((state) => state.users.userData);
+  const token = useSelector((state) => state.authConfig.token);
+  console.log(user);
   const init = {
     email: "",
     password: "",
@@ -41,18 +45,22 @@ const SignUpScreens = () => {
     allowdMarketingEmails: false,
     notificationPreferences: { email: false, push: false, sms: false },
     gender: "",
-    role: "", // ["artist","band"]
+    role: "",
     phone: "",
     verifyVia: "sms",
     bandName: "",
     bandMembers: "",
     membersAge: "",
+    Instruments: [],
+    instrumentWithLevel: [],
+    Artists: [],
+    Genres: [],
   };
 
   const [state, setState] = useState(init);
 
   const steps = useMemo(() => {
-    if (state.role === "band") {
+    if (state.role === "band" || user?.role === "band") {
       return [
         "Date of Birth",
         "Choose your user type",
@@ -84,10 +92,94 @@ const SignUpScreens = () => {
         "Confirming password",
       ];
     }
-  }, [state.role]);
+  }, [state.role, user?.role]);
 
   const totalSteps = steps.length;
 
+  useEffect(() => {
+    if (token && user?.role === "band") {
+      const missingInstruments =
+        !user?.Instruments || user.Instruments.length === 0;
+      const missingGenres = !user?.Genres || user.Genres.length === 0;
+      const missingArtists = !user?.Artists || user.Artists.length === 0;
+      const missingImages = !user?.pictures || user.pictures.length === 0;
+      let targetStepName = null;
+
+      if (missingInstruments) {
+        targetStepName = "Instruments";
+      } else if (missingGenres) {
+        targetStepName = "Genres";
+      } else if (missingArtists) {
+        targetStepName = "Artists";
+      } else if (missingImages) {
+        targetStepName = "Pictures";
+      }
+
+      if (targetStepName) {
+        const targetIndex = steps.indexOf(targetStepName);
+        if (targetIndex !== -1) {
+          setCurrentIndex(targetIndex + 1);
+        }
+      }
+    }
+  }, [token, user, steps]);
+
+  useEffect(() => {
+    const currentStep = steps[currentIndex - 1];
+    console.log("Current Step:", currentStep);
+    console.log("Current State:", state);
+  }, [state, currentIndex, steps]);
+
+  const isButtonDisabled = () => {
+    const currentStep = steps[currentIndex - 1];
+    const shouldDisable = (() => {
+      switch (currentStep) {
+        case "Date of Birth":
+          return !state.dob;
+        case "Choose your user type":
+          return !state.role;
+        case "Band's name":
+          return !state.bandName?.trim();
+        case "Band's members":
+          return !state.bandMembers?.trim();
+        case "Age range":
+          return !state.membersAge;
+        case "Email":
+          return !state.email?.trim();
+        case "Verifying your email":
+          return !state.pin?.trim();
+        case "Creating a strong password":
+          return !state.password?.trim();
+        case "Confirming password":
+          return !state.confirmPassword?.trim();
+        case "Instruments":
+          return !state.Instruments?.length === 0;
+        case "Level":
+          return !state.instrumentWithLevel?.length === 0;
+        case "Genres":
+          return !state.Genres?.length === 0;
+        case "Artists":
+          return !state.Artists?.length === 0;
+        case "Firstname":
+          return !state.first_name?.trim();
+        case "Surname":
+          return !state.sur_name?.trim();
+        case "Gender":
+          return !state.gender;
+        case "Addressing":
+          return !state.nameDisplayPreference?.trim();
+        case "Pictures":
+          return !state.pictures?.length === 0;
+        case "About you":
+          return !state.description?.trim();
+        default:
+          return false;
+      }
+    })();
+
+    console.log(`Button disabled for ${currentStep}:`, shouldDisable);
+    return shouldDisable;
+  };
   const StepView = ({ stepName }) => {
     switch (stepName) {
       case "Date of Birth":
@@ -274,6 +366,7 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
+
       case "Pictures":
         return (
           <AddPictures
@@ -284,6 +377,7 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
+
       case "About you":
         return (
           <AddDescription
@@ -294,6 +388,7 @@ const SignUpScreens = () => {
             setState={setState}
           />
         );
+
       default:
         return <Text>No View</Text>;
     }
@@ -308,6 +403,7 @@ const SignUpScreens = () => {
           paddingHorizontal={12}
           onPress={() => stepRef.current?.submit?.()}
           onBackPress={() => stepRef.current?.back?.()}
+          btnDisabled={isButtonDisabled()}
         />
       )}
     >

@@ -19,6 +19,7 @@ import { count } from "../../../store/reducer/appSlice";
 const Email = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const onboardingCount = useSelector(count);
+    console.log(state, "state---email");
     const dispatch = useDispatch();
     const [selected, setSelected] = useState(true);
     const [email, setEmail] = useState(state?.email || "");
@@ -288,7 +289,7 @@ const Email = forwardRef(
                 onPress={() => setVerifyVia("sms")}
               >
                 <View style={styles.row}>
-                  <View style={{ width: "90%" }}>
+                  <View style={{ flex: 1 }}>
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
                     >
@@ -312,18 +313,15 @@ const Email = forwardRef(
                       color={COLORS.gray2}
                     />
                   </View>
-                  <View style={{ width: "10%" }}>
-                    <Icons
-                      family="MaterialCommunityIcons"
-                      name={
-                        verifyVia == "sms" ? "check-circle" : "radiobox-blank"
-                      }
-                      size={20}
-                      color={
-                        verifyVia == "sms" ? COLORS.btnColor : COLORS.white3
-                      }
-                    />
-                  </View>
+
+                  <Icons
+                    family="MaterialCommunityIcons"
+                    name={
+                      verifyVia == "sms" ? "check-circle" : "radiobox-blank"
+                    }
+                    size={22}
+                    color={verifyVia == "sms" ? COLORS.btnColor : COLORS.white3}
+                  />
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
@@ -332,7 +330,7 @@ const Email = forwardRef(
                 onPress={() => setVerifyVia("whatsapp")}
               >
                 <View style={styles.row}>
-                  <View style={{ width: "90%" }}>
+                  <View style={{ flex: 1 }}>
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
                     >
@@ -356,22 +354,19 @@ const Email = forwardRef(
                       color={COLORS.gray2}
                     />
                   </View>
-                  <View style={{ width: "10%" }}>
-                    <Icons
-                      family="MaterialCommunityIcons"
-                      name={
-                        verifyVia == "whatsapp"
-                          ? "check-circle"
-                          : "radiobox-blank"
-                      }
-                      size={20}
-                      color={
-                        verifyVia == "whatsapp"
-                          ? COLORS.btnColor
-                          : COLORS.white3
-                      }
-                    />
-                  </View>
+
+                  <Icons
+                    family="MaterialCommunityIcons"
+                    name={
+                      verifyVia == "whatsapp"
+                        ? "check-circle"
+                        : "radiobox-blank"
+                    }
+                    size={22}
+                    color={
+                      verifyVia == "whatsapp" ? COLORS.btnColor : COLORS.white3
+                    }
+                  />
                 </View>
               </TouchableOpacity>
             </>
@@ -474,7 +469,7 @@ const Email = forwardRef(
                   <Icons
                     family="MaterialCommunityIcons"
                     name={selected ? "check-circle" : "radiobox-blank"}
-                    size={20}
+                    size={22}
                     color={selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
@@ -502,7 +497,7 @@ const Email = forwardRef(
                   <Icons
                     family="MaterialCommunityIcons"
                     name={!selected ? "check-circle" : "radiobox-blank"}
-                    size={20}
+                    size={22}
                     color={!selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
@@ -531,6 +526,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 8,
   },
   icon: {
     width: 14,

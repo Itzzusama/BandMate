@@ -62,7 +62,17 @@ const OnBoarding = () => {
               backgroundColor={COLORS.white}
               color={COLORS.black}
               marginBottom={8}
-              leftView
+              leftView={
+                <Image
+                  source={PNGIcons.sola}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    resizeMode: "contain",
+                    marginRight: 5,
+                  }}
+                />
+              }
             />
 
             <CustomButton

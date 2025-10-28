@@ -1,8 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 
-//screens
-
+// screens
 import AllowNotification from "../screens/Auth/AllowNotification";
 import WelcomeScreen from "../screens/Main/WelcomeScreen/Index";
 import SignUpScreens from "../screens/Auth/SignUpScreens/Index";
@@ -31,28 +30,36 @@ import TakePhoto from "../screens/Auth/VTCChauffeur/TakePhoto";
 import TakeIDFront from "../screens/Auth/VTCChauffeur/TakeIDFront";
 import TakeIDBack from "../screens/Auth/VTCChauffeur/TakeIDBack";
 import CompleteProfile from "../screens/Auth/VTCChauffeur/CompleteProfile";
+
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
   const loginValue = useSelector((state) => state.users.loginValue);
+  const isToken = useSelector((state) => state.authConfig.token);
+  const user = useSelector((state) => state.users.userData);
+  const isBandIncomplete = () => {
+    if (user?.role !== "band") return false;
+
+    const missingInstruments =
+      !user?.Instruments || user.Instruments.length === 0;
+    const missingArtists = !user?.Artists || user.Artists.length === 0;
+    const missingGenres = !user?.Genres || user.Genres.length === 0;
+    const missingImages = !user?.pictures || user.pictures.length === 0;
+    return (
+      missingInstruments || missingArtists || missingGenres || missingImages
+    );
+  };
+
+  let initialRoute = "OnBoarding";
+  if (isToken && isBandIncomplete()) {
+    initialRoute = "SignUpScreens";
+  }
 
   return (
     <Stack.Navigator
-      // initialRouteName="VTCChauffeur"
+      initialRouteName={initialRoute}
       screenOptions={{ headerShown: false }}
     >
-      {/* {loginValue?.length ? (
-        <>
-          <Stack.Screen name="LoginPass" component={LoginPass} />
-          <Stack.Screen name="OnBoarding" component={OnBoarding} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="OnBoarding" component={OnBoarding} />
-          <Stack.Screen name="LoginPass" component={LoginPass} />
-        </>
-      )} */}
-
       <Stack.Screen name="OnBoarding" component={OnBoarding} />
       <Stack.Screen name="LoginPass" component={LoginPass} />
       <Stack.Screen name="Login" component={Login} />

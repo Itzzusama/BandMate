@@ -1,30 +1,19 @@
 import { StyleSheet, View } from "react-native";
-import { PNGIcons } from "../../../../assets/images/icons";
+import fonts from "../../../../assets/fonts";
 import CustomText from "../../../../components/CustomText";
-import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
 
 const ListHeader = () => {
   return (
-    <View style={{ marginTop: 15 }}>
-      <View style={styles.box}>
-        <ImageFast source={PNGIcons.warning1} style={styles.icon} />
-        <CustomText
-          fontSize={12}
-          lineHeight={12 * 1.4}
-          textTransform={"none"}
-          label={"Keep clean and respectful chats at any time."}
-        />
-      </View>
-      <View style={styles.box}>
-        <ImageFast source={PNGIcons.warning1} style={styles.icon} />
-        <CustomText
-          fontSize={12}
-          lineHeight={12 * 1.4}
-          textTransform={"none"}
-          label={"Report any abuse or TOS infringements."}
-        />
-      </View>
+    <View style={styles.box}>
+      <View style={styles.border} />
+      <CustomText
+        fontSize={12}
+        color={COLORS.white}
+        fontFamily={fonts.regular}
+        label={"You matched with Catie on Jan 4, 2023"}
+      />
+      <View style={styles.border} />
     </View>
   );
 };
@@ -33,19 +22,16 @@ export default ListHeader;
 
 const styles = StyleSheet.create({
   box: {
-    backgroundColor: COLORS.lightGray,
-    borderRadius: 100,
-    justifyContent: "center",
-    columnGap: 5,
-    height: 20,
+    // backgroundColor: COLORS.inputBg,
+    justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
-    marginBottom: 10,
-    alignSelf: "center",
-    paddingHorizontal: 8,
+    gap: 5,
+    marginTop: 10,
   },
-  icon: {
-    width: 11,
-    height: 11,
+  border: {
+    width: "18%",
+    height: 1,
+    backgroundColor: COLORS.inputBg,
   },
 });

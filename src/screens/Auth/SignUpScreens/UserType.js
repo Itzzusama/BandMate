@@ -64,14 +64,14 @@ const UserType = forwardRef(
 
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => handleRoleSelection("artist")}
+            onPress={() => handleRoleSelection("solo")}
             style={[
               styles.box,
               {
                 backgroundColor: COLORS.darkGreen,
                 borderWidth: 3,
                 borderColor:
-                  selectedRole === "artist" ? COLORS.white : "transparent",
+                  selectedRole === "solo" ? COLORS.white : "transparent",
               },
             ]}
           >

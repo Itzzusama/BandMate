@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 import CustomText from "../../../../components/CustomText";
 import ImageFast from "../../../../components/ImageFast";
@@ -15,7 +15,9 @@ const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
 
   return (
     <View style={[styles.header, { marginTop: insets.top }]}>
-      <ImageFast source={Images.user} style={styles.profileImage} />
+      <Pressable onPress={() => navigation.navigate("Settings")}>
+        <ImageFast source={Images.user} style={styles.profileImage} />
+      </Pressable>
 
       <View style={styles.profileInfo}>
         <CustomText

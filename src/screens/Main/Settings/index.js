@@ -18,10 +18,12 @@ import PreferencesOptions from "./molecules/PreferencesOptions";
 import CommunityOptions from "./molecules/CommunityOptions";
 import RateApp from "./molecules/RateApp";
 import FeedbackSection from "./molecules/FeedbackSection";
+import { logout } from "../../../store/reducer/AuthConfig";
+import { useDispatch } from "react-redux";
 
 const Settings = () => {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
   return (
     <ScreenWrapper
       paddingBottom={0.1}
@@ -76,6 +78,7 @@ const Settings = () => {
         title={"Logout"}
         backgroundColor={COLORS.inputBg}
         marginBottom={8}
+        onPress={() => dispatch(logout())}
         color={COLORS.white}
         leftView={
           <Icons

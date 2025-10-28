@@ -96,12 +96,12 @@ const CustomButton = ({
       ]}
     >
       <TouchableOpacity
-        disabled={loading || disabled}
+        disabled={loading}
         activeOpacity={0.8}
         style={[
           {
             backgroundColor: disabled
-              ? COLORS.authText
+              ? "#FFFFFF29"
               : bgBlur
               ? "transparent"
               : backgroundColor
@@ -157,18 +157,7 @@ const CustomButton = ({
 
         {!loading && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {leftView &&
-              (leftView || (
-                <Image
-                  source={PNGIcons.sola}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    resizeMode: "contain",
-                    marginRight: 5,
-                  }}
-                />
-              ))}
+            {leftView && leftView}
             <CustomText
               textStyle={customText}
               label={title}

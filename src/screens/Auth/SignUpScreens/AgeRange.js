@@ -12,15 +12,15 @@ const AgeRange = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const onboardingCount = useSelector(count);
     const [ageRange, setAgeRange] = useState({
-      min: state?.ageRange?.min || 18,
-      max: state?.ageRange?.max || 50,
+      start: state?.ageRange?.start || 18,
+      end: state?.ageRange?.end || 50,
     });
 
     const [error, setError] = useState("");
 
     const errorCheck = () => {
       let newError = "";
-      if (ageRange.min < 16) {
+      if (ageRange.start < 16) {
         newError = "You must be at least 16 years old to use this app.";
       }
       return newError;
@@ -33,7 +33,8 @@ const AgeRange = forwardRef(
         return;
       }
       setError("");
-      setState({ ...state, ageRange });
+
+      setState({ ...state, membersAge: ageRange });
       if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
@@ -62,9 +63,9 @@ const AgeRange = forwardRef(
           min={16}
           max={80}
           step={1}
-          initialLowValue={ageRange.min}
-          initialHighValue={ageRange.max}
-          onValuesChange={(low, high) => setAgeRange({ min: low, max: high })}
+          initialLowValue={ageRange.start}
+          initialHighValue={ageRange.end}
+          onValuesChange={(low, high) => setAgeRange({ start: low, end: high })}
         />
 
         {error ? (

@@ -33,8 +33,10 @@ const AuthFooter = ({
   iconBackgroundColor,
   paddingHorizontal,
   backImage,
+  disabled,
 }) => {
   const navigation = useNavigation();
+  console.log("Button Disabled:", btnDisabled);
   return (
     <View
       style={[
@@ -62,7 +64,7 @@ const AuthFooter = ({
           width={isCalender ? "70%" : "84%"}
           onPress={onPress}
           loading={loading || btnLoading}
-          disabled={btnDisabled}
+          // disabled={btnDisabled}
           secondText={secondText}
           fontSize={btnSize || 14}
           fontFamily={btnFamily}
@@ -118,14 +120,15 @@ const AuthFooter = ({
             }}
           >
             {`By pressing "`}
-            <Text style={styles.darkText}> Continue</Text>
+            <Text style={styles.darkText}>Continue</Text>
             {`" you agree with`}
             <Text style={[styles.darkText]}> BandMate </Text>
             <Text
               style={[styles.darkText, { textDecorationLine: "underline" }]}
             >
-              TOS.
+              TOS
             </Text>
+            .
           </Text>
         )}
       </View>

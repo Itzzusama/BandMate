@@ -15,6 +15,9 @@ import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { GenresImgs } from "../../../assets/images/genrsImg";
 import Icons from "../../../components/Icons";
+import { put } from "../../../services/ApiRequest";
+import { setUserData } from "../../../store/reducer/usersSlice";
+import { useDispatch } from "react-redux";
 
 const instrumentCategories = [
   { name: "Rock", color: "#DC158C", img: GenresImgs.img },
@@ -30,7 +33,7 @@ const instrumentCategories = [
   { name: "Metal", color: "#8E66AC", img: GenresImgs.img10 },
   { name: "Funk", color: "#608108", img: GenresImgs.img11 },
   { name: "R & B", color: "#777777", img: GenresImgs.img12 },
-  { name: "Soul", color: "#8D67AB", img: GenresImgs.img13 },
+  { name: "Sould", color: "#8D67AB", img: GenresImgs.img13 },
   { name: "Experimental", color: "#E0128B", img: GenresImgs.img14 },
   { name: "Punk Rock", color: "#477D95", img: GenresImgs.img15 },
   { name: "Indie Rock", color: "#016450", img: GenresImgs.img16 },
@@ -54,7 +57,7 @@ const Genres = forwardRef(
     const { width } = useWindowDimensions();
     const CARD_WIDTH = (width - 36) / 2;
     const CARD_HEIGHT = 100;
-
+    const dispatch = useDispatch();
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [error, setError] = useState("");
     const [prevError, setPrevError] = useState("");
@@ -94,15 +97,28 @@ const Genres = forwardRef(
       return newErrors;
     };
 
-    const submit = () => {
+    const submit = async () => {
       const err = errorCheck();
       if (err) {
         setError(err);
         return;
       }
       setError("");
-      setState({ ...state, genres: selectedGenres });
-      setCurrentIndex(currentIndex + 1);
+
+      try {
+        const res = await put("user/profile", {
+          Genres: selectedGenres,
+        });
+        console.log(res?.data);
+        if (res?.data?.success) {
+          console.log(res?.data);
+          setState({ ...state, genres: selectedGenres });
+          setCurrentIndex(currentIndex + 1);
+          dispatch(setUserData(res?.data?.user));
+        }
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     const back = () => {
@@ -220,7 +236,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   card: {
-    borderRadius: 4,
+    borderRadius: 12,
     padding: 12,
     paddingTop: 4,
     marginBottom: 2,

@@ -1,17 +1,16 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
-import { useSocket } from "../../../components/SocketProvider";
-import { get } from "../../../services/ApiRequest";
-import ChatFooter from "./molecules/ChatFooter";
-import ChatHeader from "./molecules/ChatHeader";
-import ChatBubble from "./molecules/ChatBubble";
-import { formatDate, formatRelativeDate } from "../../../utils/constants";
 import { Images } from "../../../assets/images";
 import ScreenWrapper from "../../../components/ScreenWrapper";
-import CustomText from "../../../components/CustomText";
+import { useSocket } from "../../../components/SocketProvider";
+// import { get } from "../../../services/ApiRequest"; // API commented out for static data
 import { COLORS } from "../../../utils/COLORS";
+import { formatDate } from "../../../utils/constants";
+import ChatBubble from "./molecules/ChatBubble";
+import ChatFooter from "./molecules/ChatFooter";
+import ChatHeader from "./molecules/ChatHeader";
 import ListHeader from "./molecules/ListHeader";
 
 const InboxScreen = ({ route }) => {
@@ -21,28 +20,66 @@ const InboxScreen = ({ route }) => {
   const userId = userData?._id;
 
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [replyMessage, setReplyMessage] = useState(null);
+  const [messages, setMessages] = useState([
+    {
+      _id: "m5",
+      content: "Sounds good. See you there!",
+      senderId: { _id: "me" },
+      isSender: true,
+      timestamp: "2025-06-11T16:52:00.000Z",
+    },
+    {
+      _id: "m4",
+      content:
+        "The Romans, who adopted many Greek beliefs, associated owls with Minerva",
+      senderId: { _id: "42" },
+      isSender: false,
+      timestamp: "2025-06-11T16:50:00.000Z",
+    },
+    {
+      _id: "m3",
+      content: "Are you free tonight?",
+      senderId: { _id: "42" },
+      isSender: false,
+      timestamp: "2025-06-11T16:45:00.000Z",
+    },
+    {
+      _id: "m2",
+      content: "Yep, I’m around.",
+      senderId: { _id: "me" },
+      isSender: true,
+      timestamp: "2025-06-11T16:40:00.000Z",
+    },
+    {
+      _id: "m1",
+      content: "Hey Marcus!",
+      senderId: { _id: "42" },
+      isSender: false,
+      timestamp: "2025-06-11T16:35:00.000Z",
+    },
+  ]);
   const [inputText, setInputText] = useState("");
 
   const recipientId = route?.params?.recipientId;
   const recipientName = route?.params?.recipientName || "Chat";
 
-  const fetchMessages = async () => {
-    try {
-      setLoading(true);
-      const res = await get(`conversations/${recipientId}/messages`);
-
-      if (res?.data?.success) {
-        setMessages(res?.data.messages);
-      } else {
-        setMessages([]);
-      }
-    } catch (err) {
-      console.error("Error fetching messages:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchMessages = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const res = await get(`conversations/${recipientId}/messages`);
+  //
+  //     if (res?.data?.success) {
+  //       setMessages(res?.data.messages);
+  //     } else {
+  //       setMessages([]);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching messages:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (!socket) return;
@@ -63,7 +100,15 @@ const InboxScreen = ({ route }) => {
       socket.off("send:message");
       socket.off("message:error");
     };
-  }, [socket, recipientId, fetchMessages]);
+  }, [socket, recipientId]);
+
+  const handleReply = (message) => {
+    setReplyMessage(message);
+  };
+
+  const clearReply = () => {
+    setReplyMessage(null);
+  };
 
   const sendMsg = () => {
     if (!inputText.trim() || !socket) return;
@@ -75,9 +120,12 @@ const InboxScreen = ({ route }) => {
       senderId: { _id: userId },
       timestamp: new Date().toISOString(),
       isPending: true,
+      isSender: true,
+      replyTo: replyMessage?._id,
     };
 
     setInputText("");
+    setReplyMessage(null);
 
     setMessages((prev = []) => [tempMessage, ...prev]);
 
@@ -94,22 +142,26 @@ const InboxScreen = ({ route }) => {
     return senderId === userId;
   };
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
+  // useEffect(() => {
+  //   // Fetch messages from API (disabled - using static seed data)
+  //   fetchMessages();
+  // }, []);
 
   return (
     <ScreenWrapper
       scrollEnabled
+      statusBarColor="rgba(38, 38, 38, 0.64)"
       paddingHorizontal={10}
       headerUnScrollable={() => (
-        <ChatHeader source={Images.user} title={recipientName || "Chat"} />
+        <ChatHeader source={Images.user} title={"Catie, 24" || "Chat"} />
       )}
       footerUnScrollable={() => (
         <ChatFooter
           setInputText={setInputText}
           sendMessage={sendMsg}
           inputText={inputText}
+          replyMessage={replyMessage}
+          onClearReply={clearReply}
         />
       )}
     >
@@ -134,17 +186,11 @@ const InboxScreen = ({ route }) => {
                 formatDate(previousItem?.timestamp);
             return (
               <>
-                <ChatBubble item={item} isSender={true} />
-                {showDate && (
-                  <View style={styles.timeBox}>
-                    <CustomText
-                      fontSize={12}
-                      lineHeight={12 * 1.4}
-                      // label={formatRelativeDate(item?.timestamp)}
-                      label={"Tuesday June 11, 2025"}
-                    />
-                  </View>
-                )}
+                <ChatBubble
+                  item={item}
+                  isSender={item?.isSender ?? isUserMessage(item)}
+                  onReply={handleReply}
+                />
               </>
             );
           }}
@@ -164,7 +210,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   timeBox: {
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.primaryColor,
     borderRadius: 100,
     marginBottom: 10,
     alignSelf: "center",

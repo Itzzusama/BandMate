@@ -15,6 +15,9 @@ import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import Icons from "../../../components/Icons";
 import { ArtistImgs } from "../../../assets/images/artistImgs";
+import { put } from "../../../services/ApiRequest";
+import { setUserData } from "../../../store/reducer/usersSlice";
+import { useDispatch } from "react-redux";
 
 const artists = [
   { name: "Arctic Monkeys", img: ArtistImgs.img6 },
@@ -31,7 +34,7 @@ const artists = [
 const Artists = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const { width } = useWindowDimensions();
-
+    const dispatch = useDispatch();
     const SPACING = 12;
     const MIN_CARD_SIZE = 100;
     const numColumns = Math.max(
@@ -77,15 +80,27 @@ const Artists = forwardRef(
       return "";
     };
 
-    const submit = () => {
+    const submit = async () => {
       const err = errorCheck();
       if (err) {
         setError(err);
         return;
       }
       setError("");
-      setState({ ...state, artists: selectedArtists });
-      setCurrentIndex(currentIndex + 1);
+      try {
+        const res = await put("user/profile", {
+          Artists: selectedArtists,
+        });
+        console.log(res?.data);
+        if (res?.data?.success) {
+          console.log(res?.data);
+          setState({ ...state, artists: selectedArtists });
+          setCurrentIndex(currentIndex + 1);
+          dispatch(setUserData(res?.data?.user));
+        }
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     const back = () => {

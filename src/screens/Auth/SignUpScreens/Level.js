@@ -1,47 +1,73 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
-
 import CustomText from "../../../components/CustomText";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
-
+import ErrorComponent from "../../../components/ErrorComponent";
+import { put, renewToken } from "../../../services/ApiRequest";
+import Instruments from "./Instruments";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../../../store/reducer/usersSlice";
 const LEVELS = ["Beginner", "Intermediate", "Advanced", "Legend"];
-
-const INSTRUMENTS = ["Bass", "Guitar", "Piano", "Vocals"];
 
 const Level = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+    const instruments = state?.instruments || [];
+    const dispatch = useDispatch();
     const [selectedLevels, setSelectedLevels] = useState({});
     const [error, setError] = useState("");
+
+    useEffect(() => {
+      if (state?.instrumentWithLevel?.length) {
+        const prefill = {};
+        state.instrumentWithLevel.forEach((item) => {
+          prefill[item.instrument] = item.level;
+        });
+        setSelectedLevels(prefill);
+      }
+    }, [state?.instrumentWithLevel]);
 
     const selectLevel = (instrument, level) => {
       setSelectedLevels((prev) => ({ ...prev, [instrument]: level }));
     };
 
     const errorCheck = () => {
-      let newError = "";
-      const allSelected = INSTRUMENTS.every((inst) => selectedLevels[inst]);
-      if (!allSelected) {
-        newError = "Please select a level for each instrument.";
-      }
-      return newError;
+      const allSelected = instruments.every((inst) => selectedLevels[inst]);
+      return allSelected ? "" : "Please select a level for each instrument.";
     };
 
-    const submit = () => {
+    const submit = async () => {
       const err = errorCheck();
       if (err) {
         setError(err);
         return;
       }
+
       setError("");
-      setState({ ...state, levels: selectedLevels });
-      setCurrentIndex(currentIndex + 1);
+
+      const instrumentWithLevel = instruments.map((inst) => ({
+        instrument: inst,
+        level: selectedLevels[inst],
+      }));
+      console.log(instrumentWithLevel);
+      try {
+        const res = await put("user/profile", {
+          Instruments: instrumentWithLevel,
+        });
+        console.log(res?.data);
+        if (res?.data?.success) {
+          console.log(res?.data);
+          setState({ ...state, instrumentWithLevel });
+          setCurrentIndex(currentIndex + 1);
+          dispatch(setUserData(res?.data?.user));
+        }
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     const back = () => {
-      if (currentIndex > 1) {
-        setCurrentIndex(currentIndex - 1);
-      }
+      if (currentIndex > 1) setCurrentIndex(currentIndex - 1);
     };
 
     useImperativeHandle(ref, () => ({ submit, back }));
@@ -56,6 +82,7 @@ const Level = forwardRef(
             lineHeight={32 * 1.1}
             marginTop={12}
           />
+
           <CustomText
             label="Tell us about your musical skills and level."
             fontSize={12}
@@ -63,7 +90,8 @@ const Level = forwardRef(
             marginBottom={18}
             color={COLORS.white2}
           />
-          {INSTRUMENTS.map((instrument) => (
+
+          {instruments.map((instrument) => (
             <View key={instrument} style={{ marginBottom: 12 }}>
               <CustomText
                 label={instrument}
@@ -103,6 +131,10 @@ const Level = forwardRef(
               </View>
             </View>
           ))}
+
+          {error ? (
+            <ErrorComponent errorTitle={error} color={error ? "#EE1045" : ""} />
+          ) : null}
         </ScrollView>
       </View>
     );

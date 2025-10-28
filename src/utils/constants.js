@@ -71,38 +71,27 @@ export const getToken = async () => {
   }
 };
 
-export const uploadAndGetUrl = async (
-  file,
-  type = "thumbnail",
-  folder = "thumbnails"
-) => {
+export const uploadAndGetUrl = async (file) => {
   try {
-    // const token = await AsyncStorage.getItem('token');
-
     const formData = new FormData();
     formData.append("image", {
-      uri: file.path || file.fileCopyUri || "",
-      type: "image/jpeg",
-      name: "photo.jpg",
+      uri: file?.path || file?.fileCopyUri || file?.uri || "",
+      type: file?.type || "image/jpeg",
+      name: file?.name || "photo.jpg",
     });
-    formData.append("type", type);
-    formData.append("folder", folder);
     const res = await axios.post(
-      `${endPoints.BASE_URL}upload-image`,
+      // `${endPoints.BASE_URL}upload-image`,
+      `https://move.sola-group.ch/api/upload-image`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${token}`,
         },
       }
     );
-
-    console.log("res-----", res.data?.image);
-
     return res?.data?.image;
   } catch (err) {
-    console.log("================err", err);
+    console.log("================err", err?.response?.data || err);
     ToastMessage(
       err?.response?.data?.message || "Something failed! Please try again",
       "error"

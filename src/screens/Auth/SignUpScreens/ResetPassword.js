@@ -8,7 +8,7 @@ import CustomInput from "../../../components/CustomInput";
 import CustomText from "../../../components/CustomText";
 
 import { setUserData } from "../../../store/reducer/usersSlice";
-import { setToken } from "../../../store/reducer/AuthConfig";
+import { setRefreshToken, setToken } from "../../../store/reducer/AuthConfig";
 import { post } from "../../../services/ApiRequest";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
@@ -20,7 +20,7 @@ const ResetPassword = forwardRef(
     const onboardingCount = useSelector(count);
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    console.log(state);
+
     const [password, setPassword] = useState("");
     const [showSuccessColor, setShowSuccessColor] = useState(false);
 
@@ -40,48 +40,62 @@ const ResetPassword = forwardRef(
         setShowSuccessColor(false);
         return;
       } else {
-        setError("");
-        if (state.role == "band") {
-          if (currentIndex < onboardingCount) {
-            setCurrentIndex(currentIndex + 1);
-          }
-        } else {
-          navigation.navigate("VTCChauffeur");
+        setError("Password match");
+
+        const { verifyVia, ...cleanState } = state;
+        let finalState = cleanState;
+
+        if (finalState?.phone) {
+          const { email, ...rest } = finalState;
+          finalState = rest;
+        } else if (finalState?.email) {
+          const { phone, ...rest } = finalState;
+          finalState = rest;
         }
-        // let { verifyVia, ...cleanState } = state;
-        // let finalState = cleanState;
+        const forBand = {
+          ageRange: finalState.membersAge,
+          members: finalState.bandMembers,
+          bandName: finalState.bandName,
+        };
+        const payload = {
+          role: finalState.role,
+          dob: finalState.dob,
+          first_name: finalState.first_name || "unknown",
+          sur_name: finalState.sur_name || "unknown",
+          nameDisplayPreference: finalState.nameDisplayPreference || "first",
+          gender: finalState.gender || "MALE",
+          password: finalState.password,
+          fcmToken: "123445",
+          ...(finalState.email && { email: finalState.email }),
+          ...(finalState.phone && { phone: finalState.phone }),
+          ...(finalState.role === "band" && {
+            ...forBand,
+          }),
+        };
+        console.log("📌 Final Payload Sent to API:", payload);
+        try {
+          setLoading(true);
+          const response = await post("auth/register", payload);
+          if (response?.data) {
+            dispatch(setUserData(response?.data?.user));
+            dispatch(setToken(response?.data?.tokens?.accessToken));
+            dispatch(setRefreshToken(response?.data?.tokens?.refreshToken));
 
-        // if (finalState?.phone) {
-        //   let { email, ...data } = finalState;
-        //   finalState = data;
-        // } else if (finalState?.email) {
-        //   let { phone, ...data } = finalState;
-        //   finalState = data;
-        // }
+            if (state.role === "band") {
+              if (currentIndex < onboardingCount) {
+                setCurrentIndex(currentIndex + 1);
+              }
+            } else {
+              navigation.navigate("Success");
+            }
+          }
 
-        // try {
-        //   setLoading(true);
-        //   const response = await post("auth/register", finalState);
-        //   if (response?.data) {
-        //     navigation.navigate("PinOnBoarding", { state: finalState });
-        //     dispatch(setUserData(response?.data?.user));
-        //     dispatch(setToken(response?.data?.tokens?.accessToken));
-        //     await AsyncStorage.setItem(
-        //       "token",
-        //       response?.data?.tokens?.accessToken
-        //     );
-        //     await AsyncStorage.setItem(
-        //       "refreshToken",
-        //       response?.data?.tokens?.refreshToken
-        //     );
-        //   }
-
-        //   setLoading(false);
-        // } catch (error) {
-        //   setLoading(false);
-        //   setError(error?.response?.data?.message);
-        //   setIsError(true);
-        // }
+          setLoading(false);
+        } catch (error) {
+          setLoading(false);
+          setError(error?.response?.data?.message);
+          setIsError(true);
+        }
       }
     };
 
@@ -105,8 +119,7 @@ const ResetPassword = forwardRef(
         setShowSuccessColor(false);
         setIsError(true);
       } else {
-        console.log("settt");
-        setError("Valid Password");
+        setError("Password match");
         setIsError(false);
         setShowSuccessColor(true);
         setTimeout(() => {
@@ -130,7 +143,7 @@ const ResetPassword = forwardRef(
             onChangeText={(text) => errorCheck(text)}
             marginTop={4}
             marginBottom={8}
-            placeholder="************"
+            placeholder="********"
             secureTextEntry
             isValid={showSuccessColor}
           />
@@ -139,11 +152,8 @@ const ResetPassword = forwardRef(
             error={isError}
             isValid={showSuccessColor}
             errorTitle={error}
-            color={
-              showSuccessColor ? "#64CD75" : isError ? "#EE1045" : COLORS.gray1
-            }
+            color={showSuccessColor ? "#64CD75" : isError ? "#EE1045" : ""}
           />
-          {/* <ErrorComponent errorTitle={"Please re-enter your password"} /> */}
         </View>
       </View>
     );

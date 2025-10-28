@@ -131,7 +131,6 @@ const TabStack = () => {
       <Tab.Screen name="Feeds" component={SocialFeeds} />
       <Tab.Screen name="Events" component={Event} />
       <Tab.Screen name="Chat" component={Chat} />
-      <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>
   );
 };
