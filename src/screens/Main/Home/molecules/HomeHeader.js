@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
 import { COLORS } from "../../../../utils/COLORS";
+import fonts from "../../../../assets/fonts";
 
 const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
   const navigation = useNavigation();
@@ -25,12 +26,14 @@ const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
           fontSize={17}
           lineHeight={17 * 1.4}
           color={COLORS.white}
+          fontFamily={fonts.medium}
         />
         <CustomText
           label={"Hope you had a great day!"}
           fontSize={12}
           lineHeight={12 * 1.4}
           color={COLORS.white2}
+          fontFamily={fonts.medium}
         />
       </View>
 
