@@ -15,10 +15,13 @@ import Header from "../../../components/Header";
 import { post, put } from "../../../services/ApiRequest";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
 
 const ConfirmPinCode = ({ route }) => {
   const pin = route.params?.pin;
   const navigation = useNavigation();
+  const [googleModalVisible, setGoogleModalVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,11 +43,12 @@ const ConfirmPinCode = ({ route }) => {
         setLoading(true);
         const res = await post("user/create-pin", { pin: otp });
         if (res?.data?.success) {
-          if (biometricAvailable) {
-            setShowBiometricModal(true);
-          } else {
-            navigation.navigate("OnBoarding1");
-          }
+          // if (biometricAvailable) {
+          //   setShowBiometricModal(true);
+          // } else {
+          //   navigation.navigate("OnBoarding1");
+          // }
+          setGoogleModalVisible(true);
         } else {
           setError(res?.data?.message);
         }
@@ -52,7 +56,8 @@ const ConfirmPinCode = ({ route }) => {
         if (biometricAvailable) {
           setShowBiometricModal(true);
         } else {
-          navigation.navigate("OnBoarding1");
+          setGoogleModalVisible(true);
+          // navigation.navigate("OnBoarding1");
         }
       } catch (error) {
         setLoading(false);
@@ -209,6 +214,20 @@ const ConfirmPinCode = ({ route }) => {
         onBtnOne={onContinueModal}
         loading={biometricLoading}
         onBtnTwo={onLaterModal}
+      />
+      <CustomModalGooglePlaces
+        isVisible={googleModalVisible}
+        onClose={() => {
+          setGoogleModalVisible(false);
+          navigation.navigate("Success");
+        }}
+        onLocationSelect={(location) => {
+          console.log("Selected location:", location);
+          setSelectedLocation(location);
+          setGoogleModalVisible(false);
+          navigation.navigate("Success");
+        }}
+        initialValue={selectedLocation?.address || ""}
       />
     </ScreenWrapper>
   );

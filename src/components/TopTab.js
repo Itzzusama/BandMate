@@ -49,7 +49,9 @@ const TopTab = ({
                 styles.roundedContainer,
                 {
                   backgroundColor:
-                    tab == index ? activeColor || "#FFFFFF14" : "transparent",
+                    tab == index
+                      ? activeColor || COLORS.cardColor
+                      : "transparent",
                   height: height || 34,
                   paddingVertical: paddingVertical,
                   paddingHorizontal: paddingHorizontal,

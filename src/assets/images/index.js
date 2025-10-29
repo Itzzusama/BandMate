@@ -165,4 +165,6 @@ export const Images = {
   ChatInfo: require("./ChatInfo.png"),
   pindrop: require("./pin_drop.png"),
   ChatSetting: require("./ChatSetting.png"),
+  lock2: require("./lock2.png"),
+  number: require("./number.png"),
 };

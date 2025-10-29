@@ -23,13 +23,12 @@ const FansOf = () => {
     <>
       <View style={styles.container}>
         <CustomText
-          label="Fans of"
+          label="Fan of"
           fontFamily={fonts.medium}
           fontSize={17}
           color={COLORS.white}
-          marginBottom={12}
+          marginBottom={15}
           marginLeft={12}
-          marginTop={-2}
         />
 
         <ScrollView
@@ -51,7 +50,7 @@ const FansOf = () => {
                   color={COLORS.white}
                   fontFamily={fonts.medium}
                   textAlign="center"
-                  marginTop={6}
+                  marginTop={4}
                 />
               </View>
             </TouchableOpacity>

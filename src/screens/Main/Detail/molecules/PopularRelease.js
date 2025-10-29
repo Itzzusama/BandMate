@@ -13,7 +13,7 @@ const PopularRelease = ({ title, data, showDots }) => {
   return (
     <View>
       <View style={{ paddingHorizontal: 12 }}>
-        <View style={[styles.row, { marginBottom: 8 }]}>
+        <View style={[styles.row, { marginBottom: 12 }]}>
           <View style={[styles.row, { flex: 1 }]}>
             <Image source={PNGIcons.spotify} style={styles.icon} />
             <CustomText
@@ -26,7 +26,7 @@ const PopularRelease = ({ title, data, showDots }) => {
             />
           </View>
           <CustomText
-            label="See all"
+            label="Show all"
             color={COLORS.gray3}
             fontSize={12}
             lineHeight={12 * 1.4}

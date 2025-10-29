@@ -181,18 +181,7 @@ const CustomButton = ({
           </View>
         )}
 
-        {rightIcon && (
-          <Image
-            source={rightIcon}
-            style={{
-              width: rightIconWidth || 18,
-              height: rightIconHeight || 18,
-              resizeMode: "contain",
-              marginLeft: 5,
-              tintColor: COLORS.white,
-            }}
-          />
-        )}
+        {rightIcon && rightIcon}
       </TouchableOpacity>
     </Animated.View>
   );

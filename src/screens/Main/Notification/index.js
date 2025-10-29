@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   backIcon: {
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     borderRadius: 99,
     padding: 10,
     marginRight: 8,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   readAllBtn: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     borderRadius: 99,
     paddingHorizontal: 14,
     paddingVertical: 6,

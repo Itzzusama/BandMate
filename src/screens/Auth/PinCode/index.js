@@ -10,11 +10,15 @@ import Header from "../../../components/Header";
 
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
 
 const PinCode = () => {
   const navigation = useNavigation();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+
+  const [googleModalVisible, setGoogleModalVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const onContinue = () => {
     if (!otp) {
       setError("Please enter PIN code");
@@ -36,19 +40,17 @@ const PinCode = () => {
       scrollEnabled
       headerUnScrollable={() => <Header title="PIN Code" />}
       footerUnScrollable={() => (
-        <View style={{ padding: 14, marginBottom: 10 }}>
+        <View style={{ padding: 12, marginBottom: 24 }}>
           <CustomButton
             title="continue"
             marginBottom={8}
             onPress={onContinue}
-            borderColor={COLORS.gray2}
-            isBoarder
           />
           <CustomButton
             title="Later"
-            backgroundColor={COLORS.lightGray}
-            color={COLORS.primaryColor}
-            onPress={() => navigation.navigate("AllowNotification")}
+            backgroundColor={COLORS.cardColor}
+            color={COLORS.white}
+            onPress={() => setGoogleModalVisible(true)}
           />
         </View>
       )}
@@ -72,6 +74,20 @@ const PinCode = () => {
         setValue={setOtp}
         error={error}
         marginBottom={40}
+      />
+      <CustomModalGooglePlaces
+        isVisible={googleModalVisible}
+        onClose={() => {
+          setGoogleModalVisible(false);
+          navigation.navigate("Success");
+        }}
+        onLocationSelect={(location) => {
+          console.log("Selected location:", location);
+          setSelectedLocation(location);
+          setGoogleModalVisible(false);
+          navigation.navigate("Success");
+        }}
+        initialValue={selectedLocation?.address || ""}
       />
     </ScreenWrapper>
   );

@@ -17,6 +17,7 @@ const LookingFor = () => {
         fontSize={17}
         lineHeight={17 * 1.4}
         marginBottom={10}
+        marginTop={2}
       />
 
       <View style={styles.row}>

@@ -74,7 +74,7 @@ const Header = ({
             style={[
               styles.backIcon,
               {
-                backgroundColor: iconBackgroundColor || COLORS.inputBg,
+                backgroundColor: iconBackgroundColor || COLORS.cardColor,
                 borderWidth,
                 borderColor,
               },
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   },
 
   clear: {
-    backgroundColor: "#1D1D1A",
+    backgroundColor: COLORS.cardColor,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,

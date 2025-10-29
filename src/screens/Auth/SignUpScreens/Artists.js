@@ -35,8 +35,11 @@ const Artists = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const { width } = useWindowDimensions();
     const dispatch = useDispatch();
-    const SPACING = 14;
-    const MIN_CARD_SIZE = 100;
+
+    const SPACING = width < 360 ? 8 : width < 400 ? 10 : width < 480 ? 12 : 14;
+
+    const MIN_CARD_SIZE = width < 360 ? 85 : width < 400 ? 95 : 100;
+
     const numColumns = Math.max(
       3,
       Math.floor(width / (MIN_CARD_SIZE + SPACING * 2))
@@ -48,7 +51,6 @@ const Artists = forwardRef(
     const [prevError, setPrevError] = useState("");
     const [showSuccessColor, setShowSuccessColor] = useState(false);
 
-    // ✅ Show green color briefly when reaching valid (≥3)
     useEffect(() => {
       if (prevError && !error) {
         setShowSuccessColor(true);
@@ -65,7 +67,6 @@ const Artists = forwardRef(
           : [...prev, name];
 
         if (updated.length < 3) {
-          // setError("Please choose at least 3 artists.");
         } else {
           setError("");
         }
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
   },
   card: {
     alignItems: "center",
-    marginBottom: -5,
+    marginBottom: 0,
   },
   imageWrapper: {
     borderRadius: 100,

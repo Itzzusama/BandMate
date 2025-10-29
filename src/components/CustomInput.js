@@ -44,6 +44,7 @@ const CustomInput = ({
   Isicon,
   isValid,
   paddingBottom = 6,
+  backgroundColor,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hidePass, setHidePass] = useState(true);
@@ -88,6 +89,8 @@ const CustomInput = ({
             ? "#EE10450A"
             : showSuccessColor
             ? "#64CD750A"
+            : backgroundColor
+            ? backgroundColor
             : COLORS.inputBg,
           borderColor: error
             ? "#EE1045CC"
@@ -136,7 +139,7 @@ const CustomInput = ({
                 width: secureTextEntry ? "91%" : isSwitch ? "80%" : "99%",
                 paddingVertical: paddingVertical,
                 paddingBottom: !withLabel ? 0 : paddingBottom,
-                bottom: withLabel || secureTextEntry ? 0 : 2,
+                bottom: withLabel || secureTextEntry || height == 44 ? 0 : 2,
                 // paddingTop: multiline ? 10 : 0,
                 paddingLeft: search ? 8 : 0,
                 paddingRight: 8,
@@ -185,7 +188,7 @@ const CustomInput = ({
                 width: 22,
                 height: 22,
                 marginRight: 10,
-                backgroundColor: COLORS.white,
+                top: -2,
               }}
               onPress={() => {
                 onChangeText?.("");

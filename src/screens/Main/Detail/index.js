@@ -13,6 +13,7 @@ import Availability from "./molecules/Availability";
 import Levels from "./molecules/Levels";
 import PopularRelease from "./molecules/PopularRelease";
 import FansOf from "./molecules/FansOf";
+import DiscograpghyBtn from "./molecules/DiscograpghyBtn";
 
 const releaseData = [
   {
@@ -78,7 +79,9 @@ const Detail = ({ navigation }) => {
 
       <Availability />
       <PopularRelease title={"Popular releases"} data={releaseData} />
+      <DiscograpghyBtn />
       <PopularRelease title={"Popular releases"} data={releaseData} />
+      <DiscograpghyBtn />
       <FansOf />
       <PopularRelease title={"Songs Viktor Knows"} data={songsData} showDots />
     </ScreenWrapper>

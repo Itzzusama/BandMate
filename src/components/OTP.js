@@ -64,7 +64,7 @@ const OTPComponent = ({
             ]}
           >
             <CustomText
-              color={!symbol ? COLORS.gray2 : COLORS.black}
+              color={!symbol ? COLORS.white2 : COLORS.white2}
               fontSize={32}
               fontFamily={fonts.medium}
               lineHeight={32 * 1.4}
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 12,
     padding: 12,
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.cardColor,
     borderWidth: 1,
     borderColor: "transparent",
   },

@@ -205,13 +205,15 @@ const UploadImageCustom = ({
           <CustomButton
             marginBottom={8}
             icon={Images.gallery}
-            backgroundColor={"#525252"}
+            backgroundColor={COLORS.cardColor}
             title={"Choose from Gallery"}
+            color={COLORS.white}
             onPress={takePhotoFromLibrary}
           />
           <CustomButton
             icon={Images.bin}
             iconColor={COLORS.white}
+            color={COLORS.white}
             title={"Delete this Image"}
             backgroundColor={"#EE1045"}
             onPress={() => onDelete(selected)}

@@ -1,38 +1,38 @@
-import { useCallback, useEffect, useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  TouchableOpacity,
+  Alert,
+  Animated,
+  FlatList,
+  Image,
   ScrollView,
   StyleSheet,
-  FlatList,
-  Animated,
-  Alert,
+  TouchableOpacity,
   View,
-  Image,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 import CustomInput from "./CustomInput";
 import CustomModal from "./CustomModal";
 import CustomText from "./CustomText";
-import Icons from "./Icons";
 
-import { PNGIcons } from "../assets/images/icons";
-import { COLORS } from "../utils/COLORS";
 import fonts from "../assets/fonts";
+import { Images } from "../assets/images";
+import { PNGIcons } from "../assets/images/icons";
 import {
   setRecentSearches,
   setSavedLocations,
 } from "../store/reducer/usersSlice";
+import { COLORS } from "../utils/COLORS";
 import {
-  resetLocationRequestState,
-  getLocationWithPermission,
   calculateDistance,
-  formatDistance,
   calculateRoadDistanceAndTime,
+  formatDistance,
+  getLocationWithPermission,
+  resetLocationRequestState,
 } from "../utils/LocationUtils";
-import { Images } from "../assets/images";
+import ImageFast from "./ImageFast";
 
 const API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 
@@ -177,16 +177,9 @@ const CustomModalGooglePlaces = ({
   const [predictionsWithDistance, setPredictionsWithDistance] = useState([]);
   const [loadingDistances, setLoadingDistances] = useState(false);
 
-  // New state for nearby places
-  const [nearbyPlaces, setNearbyPlaces] = useState({
-    airports: [],
-    trainStations: [],
-    hotels: [],
-    restaurants: [],
-    gyms: [],
-    coffeeShops: [],
-  });
-  const [loadingNearbyPlaces, setLoadingNearbyPlaces] = useState(false);
+  // Nearby cities state
+  const [nearbyCities, setNearbyCities] = useState([]);
+  const [loadingNearbyCities, setLoadingNearbyCities] = useState(false);
 
   const debouncedSearchQuery = useDebounce(searchQuery, debounceDelay);
 
@@ -211,9 +204,9 @@ const CustomModalGooglePlaces = ({
       try {
         const locationData = await getLocationWithPermission();
         setCurrentUserLocation(locationData);
-        // Fetch nearby places when location is available
+        // Fetch nearby cities when location is available
         if (locationData) {
-          fetchNearbyPlaces(locationData.latitude, locationData.longitude);
+          fetchNearbyCities(locationData.latitude, locationData.longitude);
         }
       } catch (error) {
         console.log(
@@ -258,7 +251,7 @@ const CustomModalGooglePlaces = ({
     try {
       let url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${API_KEY}&input=${encodeURIComponent(
         text
-      )}`;
+      )}&types=(cities)`;
 
       if (currentUserLocation) {
         url += `&location=${currentUserLocation.latitude},${currentUserLocation.longitude}&radius=50000`;
@@ -564,10 +557,12 @@ const CustomModalGooglePlaces = ({
         distance: null,
       }));
 
-      setPredictionsWithDistance([
-        ...predictionsWithDistanceData,
-        ...remainingPredictions,
-      ]);
+      // Keep only items that resolve to a city
+      const cityPredictions = predictionsWithDistanceData.filter(
+        (p) => p.city && p.city !== null
+      );
+
+      setPredictionsWithDistance(cityPredictions);
     } catch (error) {
       console.error("Error calculating prediction distances:", error);
       setPredictionsWithDistance(
@@ -612,8 +607,8 @@ const CustomModalGooglePlaces = ({
       addToRecentSearches(fullLocationData);
       onLocationSelect(fullLocationData);
 
-      // Refresh nearby places with new location
-      fetchNearbyPlaces(locationData.latitude, locationData.longitude);
+      // Refresh nearby cities with new location
+      fetchNearbyCities(locationData.latitude, locationData.longitude);
 
       closeModal();
     } catch (error) {
@@ -767,32 +762,18 @@ const CustomModalGooglePlaces = ({
           styles.selectMap,
           {
             borderBottomWidth: hideBorder ? 0 : 1,
-            borderBottomColor: hideBorder ? "transparent" : "#F6F6F6",
+            borderBottomColor: hideBorder ? "transparent" : COLORS.subtitle,
           },
         ]}
         onPress={() => handlePredictionPress(item)}
         disabled={isLoadingCurrentLocation}
       >
-        {showLocationIcon && (
-          <View style={styles.locationIconContainer}>
-            <Image
-              source={getIconForPlace()}
-              style={[styles.map, { tintColor: "#121212" }]}
-              resizeMode="contain"
-            />
-          </View>
-        )}
         <View style={styles.row}>
-          {isRecent ? (
-            <Image source={PNGIcons.clock} style={styles.map} />
-          ) : null}
-
           <View style={{ width: distanceText ? "75%" : "83%" }}>
             <CustomText
               label={item?.description || item?.address}
               fontFamily={fonts.medium}
               fontSize={16}
-              lineHeight={16 * 1.4}
               marginLeft={8}
             />
             <CustomText
@@ -800,20 +781,19 @@ const CustomModalGooglePlaces = ({
                 item?.structured_formatting?.secondary_text || item?.city || ""
               }
               fontFamily={fonts.medium}
-              lineHeight={14 * 1.4}
               marginLeft={8}
-              color="#1212127A"
+              color={COLORS.white2}
             />
           </View>
         </View>
+
         {distanceText ? (
           <View style={{ alignItems: "flex-end", justifyContent: "center" }}>
             <CustomText
               label={distanceText}
               fontFamily={fonts.medium}
               fontSize={14}
-              lineHeight={14 * 1.4}
-              color={COLORS.subtitle}
+              color={COLORS.white2}
             />
           </View>
         ) : loadingDistances && currentUserLocation ? (
@@ -858,120 +838,99 @@ const CustomModalGooglePlaces = ({
       </View>
     ) : null;
 
-  // New function to fetch nearby places
-  const fetchNearbyPlaces = async (latitude, longitude) => {
+  // Fetch nearby cities using Places Autocomplete with city restriction
+  const fetchNearbyCities = async (latitude, longitude) => {
     if (!latitude || !longitude) return;
 
-    setLoadingNearbyPlaces(true);
+    setLoadingNearbyCities(true);
 
     try {
-      const radius = 50000; // 50km radius
-      const types = [
-        { type: "airport", category: "airports" },
-        { type: "train_station", category: "trainStations" },
-        { type: "lodging", category: "hotels" },
-        { type: "restaurant", category: "restaurants" },
-        { type: "gym", category: "gyms" },
-        { type: "cafe", category: "coffeeShops" },
-      ];
+      // Use a generic input to get city suggestions around the location
+      let url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${API_KEY}&input=a&types=(cities)&location=${latitude},${longitude}&radius=50000`;
 
-      const nearbyData = {
-        airports: [],
-        trainStations: [],
-        hotels: [],
-        restaurants: [],
-        gyms: [],
-        coffeeShops: [],
-      };
-
-      // Fetch places for each type
-      for (const { type, category } of types) {
-        try {
-          const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${API_KEY}&location=${latitude},${longitude}&radius=${radius}&type=${type}`;
-
-          const response = await fetch(url);
-          if (!response?.ok) {
-            console.error(
-              `HTTP error for ${type}! status: ${response?.status}`
-            );
-            continue;
-          }
-
-          const data = await response?.json();
-
-          if (data.error_message) {
-            console.error(
-              `Google Places API Error for ${type}:`,
-              data.error_message
-            );
-            continue;
-          }
-
-          if (data.results && data.results.length > 0) {
-            // Take first 3 results for each category and calculate road distances
-            const placesWithDistance = await Promise.all(
-              data.results.slice(0, 3).map(async (place) => {
-                let distance = null;
-                try {
-                  const road = await calculateRoadDistanceAndTime(
-                    { latitude, longitude },
-                    {
-                      latitude: place.geometry.location.lat,
-                      longitude: place.geometry.location.lng,
-                    },
-                    { mode: "driving", units: "metric" }
-                  );
-                  distance = road?.distanceKm ?? null;
-                } catch (e) {
-                  distance = calculateDistance(
-                    latitude,
-                    longitude,
-                    place.geometry.location.lat,
-                    place.geometry.location.lng
-                  );
-                }
-
-                return {
-                  place_id: place.place_id,
-                  name: place.name,
-                  address:
-                    place.vicinity ||
-                    place.formatted_address ||
-                    "Address not available",
-                  latitude: place.geometry.location.lat,
-                  longitude: place.geometry.location.lng,
-                  distance: distance,
-                  rating: place.rating,
-                  types: place.types,
-                  description: place.name,
-                  structured_formatting: {
-                    secondary_text:
-                      place.vicinity ||
-                      place.formatted_address ||
-                      "Address not available",
-                  },
-                };
-              })
-            );
-
-            // Sort by distance and take the closest one
-            placesWithDistance.sort(
-              (a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity)
-            );
-            nearbyData[category] = placesWithDistance[0]
-              ? [placesWithDistance[0]]
-              : [];
-          }
-        } catch (error) {
-          console.error(`Error fetching ${type}:`, error);
-        }
+      const response = await fetch(url);
+      if (!response?.ok) {
+        throw new Error(`HTTP error! status: ${response?.status}`);
       }
 
-      setNearbyPlaces(nearbyData);
+      const data = await response?.json();
+      if (data.error_message) {
+        console.error(
+          "Google Places API Error (nearby cities):",
+          data.error_message
+        );
+        setNearbyCities([]);
+        return;
+      }
+
+      const predictions = Array.isArray(data.predictions)
+        ? data.predictions
+        : [];
+
+      // Resolve details and compute distance, keep only items resolving to a city
+      const resolved = await Promise.all(
+        predictions.slice(0, 10).map(async (prediction) => {
+          try {
+            if (!prediction?.place_id) return null;
+            const details = await fetchPlaceDetails(prediction.place_id);
+            if (!details?.geometry?.location) return null;
+
+            let distance = null;
+            try {
+              const road = await calculateRoadDistanceAndTime(
+                { latitude, longitude },
+                {
+                  latitude: details.geometry.location.lat,
+                  longitude: details.geometry.location.lng,
+                },
+                { mode: "driving", units: "metric" }
+              );
+              distance = road?.distanceKm ?? null;
+            } catch (e) {
+              distance = calculateDistance(
+                latitude,
+                longitude,
+                details.geometry.location.lat,
+                details.geometry.location.lng
+              );
+            }
+
+            const components = details.address_components
+              ? extractAddressComponents(details.address_components)
+              : {};
+
+            // Only include if it resolves to a city
+            if (!components.city) return null;
+
+            return {
+              place_id: prediction.place_id,
+              description: prediction.description,
+              structured_formatting: prediction.structured_formatting,
+              latitude: details.geometry.location.lat,
+              longitude: details.geometry.location.lng,
+              distance: distance,
+              city: components.city,
+              state: components.state,
+              country: components.country,
+              zipCode: components.zipCode,
+            };
+          } catch (e) {
+            console.warn("Failed resolving city prediction:", e);
+            return null;
+          }
+        })
+      );
+
+      const cities = resolved
+        .filter(Boolean)
+        .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
+
+      setNearbyCities(cities);
     } catch (error) {
-      console.error("Error fetching nearby places:", error);
+      console.error("Error fetching nearby cities:", error);
+      setNearbyCities([]);
     } finally {
-      setLoadingNearbyPlaces(false);
+      setLoadingNearbyCities(false);
     }
   };
 
@@ -990,58 +949,36 @@ const CustomModalGooglePlaces = ({
             value={searchQuery}
             placeholder="Search location..."
             autoFocus
-            backgroundColor="rgba(18, 18, 18, 0.04)"
+            backgroundColor={COLORS.cardColor}
           />
           <TouchableOpacity
-            style={styles.crossContainer}
+            style={styles.iconContainer}
+            activeOpacity={0.8}
             onPress={closeModal}
-            activeOpacity={0.7}
           >
-            <Image source={PNGIcons.cross} style={styles.cross} />
+            <Image
+              source={PNGIcons.white_cross}
+              style={{
+                height: 20,
+                width: 20,
+
+                tintColor: COLORS.white3,
+              }}
+            />
           </TouchableOpacity>
         </View>
-
         <TouchableOpacity
           activeOpacity={0.6}
-          style={[
-            styles.selectMap,
-            { borderBottomWidth: 1, borderBottomColor: "#F6F6F6" },
-          ]}
-          onPress={handleMapSelection}
-        >
-          <View style={styles.row}>
-            <Image source={PNGIcons.map} style={styles.map} />
-            <CustomText
-              label="Select On The Map"
-              fontFamily={fonts.medium}
-              fontSize={16}
-              lineHeight={16 * 1.4}
-              marginLeft={8}
-            />
-          </View>
-          <Icons
-            name="keyboard-arrow-right"
-            family="MaterialIcons"
-            size={24}
-            color={COLORS.subtitle}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.6}
-          style={[
-            styles.selectMap,
-            {
-              borderBottomWidth:
-                predictionsWithDistance.length && predictions.length ? 4 : 1,
-              borderBottomColor: "#F6F6F6",
-            },
-          ]}
+          style={[styles.selectMap]}
           onPress={handleCurrentLocationSelection}
           disabled={isLoadingCurrentLocation}
         >
           <View style={styles.row}>
-            <Image source={PNGIcons.pin} style={styles.map} />
+            <Image
+              source={PNGIcons.pin}
+              tintColor={"#A19375"}
+              style={styles.map}
+            />
             <View>
               <CustomText
                 label={
@@ -1051,8 +988,8 @@ const CustomModalGooglePlaces = ({
                 }
                 fontFamily={fonts.medium}
                 fontSize={16}
-                lineHeight={16 * 1.4}
                 marginLeft={8}
+                color={COLORS.white}
               />
               <CustomText
                 label={
@@ -1063,9 +1000,8 @@ const CustomModalGooglePlaces = ({
                     : "Tap to get your current location"
                 }
                 fontFamily={fonts.medium}
-                lineHeight={14 * 1.4}
                 marginLeft={8}
-                color="#1212127A"
+                color={COLORS.white2}
               />
             </View>
           </View>
@@ -1075,9 +1011,8 @@ const CustomModalGooglePlaces = ({
             <CustomText
               label={currentUserLocation ? "Currently here" : "Get location"}
               fontFamily={fonts.medium}
-              lineHeight={14 * 1.4}
               marginLeft={8}
-              color={COLORS.subtitle}
+              color={COLORS.white2}
             />
           )}
         </TouchableOpacity>
@@ -1085,231 +1020,27 @@ const CustomModalGooglePlaces = ({
         <ScrollView>
           {predictionsWithDistance.length && predictions.length ? null : (
             <>
-              <View style={styles.divider}>
-                <Image source={PNGIcons.plane} style={styles.plane} />
-                <CustomText
-                  label="AIRPORTS"
-                  fontFamily={fonts.medium}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  color="#121212A3"
-                  marginLeft={6}
-                />
-              </View>
-              {loadingNearbyPlaces ? (
+              {loadingNearbyCities ? (
                 <SkeletonLoader type="section" style={styles.skeletonSection} />
-              ) : nearbyPlaces.airports.length > 0 ? (
-                renderPredictionItem(
-                  {
-                    item: {
-                      description: nearbyPlaces.airports[0].name,
-                      structured_formatting: {
-                        secondary_text: nearbyPlaces.airports[0].address,
-                      },
-                      place_id: nearbyPlaces.airports[0].place_id,
-                      latitude: nearbyPlaces.airports[0].latitude,
-                      longitude: nearbyPlaces.airports[0].longitude,
-                      distance: nearbyPlaces.airports[0].distance,
-                      types: nearbyPlaces.airports[0].types,
-                    },
-                  },
-                  false,
-                  true,
-                  true
-                )
               ) : (
-                <View style={styles.emptyContainer}>
-                  <CustomText
-                    label="No airports found nearby"
-                    fontFamily={fonts.medium}
-                    fontSize={14}
-                    color={COLORS.gray}
-                    textAlign="center"
-                  />
-                </View>
+                <FlatList
+                  data={nearbyCities}
+                  renderItem={({ item }) =>
+                    renderPredictionItem({ item }, false, true, true)
+                  }
+                  keyExtractor={(item, index) => `${item?.place_id}-${index}`}
+                  ListEmptyComponent={renderEmptyComponent}
+                  showsVerticalScrollIndicator={false}
+                />
               )}
 
-              <View style={styles.divider}>
-                <Image source={PNGIcons.bus} style={styles.plane} />
-                <CustomText
-                  label="TRAIN STATIONS"
-                  fontFamily={fonts.medium}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  color="#121212A3"
-                  marginLeft={6}
-                />
-              </View>
-              {loadingNearbyPlaces ? (
-                <SkeletonLoader type="section" style={styles.skeletonSection} />
-              ) : nearbyPlaces.trainStations.length > 0 ? (
-                renderPredictionItem(
-                  {
-                    item: {
-                      description: nearbyPlaces.trainStations[0].name,
-                      structured_formatting: {
-                        secondary_text: nearbyPlaces.trainStations[0].address,
-                      },
-                      place_id: nearbyPlaces.trainStations[0].place_id,
-                      latitude: nearbyPlaces.trainStations[0].latitude,
-                      longitude: nearbyPlaces.trainStations[0].longitude,
-                      distance: nearbyPlaces.trainStations[0].distance,
-                      types: nearbyPlaces.trainStations[0].types,
-                    },
-                  },
-                  false,
-                  true,
-                  true
-                )
-              ) : (
-                <View style={styles.emptyContainer}>
-                  <CustomText
-                    label="No train stations found nearby"
-                    fontFamily={fonts.medium}
-                    fontSize={14}
-                    color={COLORS.gray}
-                    textAlign="center"
-                  />
-                </View>
-              )}
-
-              <View style={styles.divider}>
-                <Image source={PNGIcons.bed} style={styles.plane} />
-                <CustomText
-                  label="HOTELS"
-                  fontFamily={fonts.medium}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  color="#121212A3"
-                  marginLeft={6}
-                />
-              </View>
-              {loadingNearbyPlaces ? (
-                <SkeletonLoader type="section" style={styles.skeletonSection} />
-              ) : nearbyPlaces.hotels.length > 0 ? (
-                renderPredictionItem(
-                  {
-                    item: {
-                      description: nearbyPlaces.hotels[0].name,
-                      structured_formatting: {
-                        secondary_text: nearbyPlaces.hotels[0].address,
-                      },
-                      place_id: nearbyPlaces.hotels[0].place_id,
-                      latitude: nearbyPlaces.hotels[0].latitude,
-                      longitude: nearbyPlaces.hotels[0].longitude,
-                      distance: nearbyPlaces.hotels[0].distance,
-                      types: nearbyPlaces.hotels[0].types,
-                    },
-                  },
-                  false,
-                  true,
-                  true
-                )
-              ) : (
-                <View style={styles.emptyContainer}>
-                  <CustomText
-                    label="No hotels found nearby"
-                    fontFamily={fonts.medium}
-                    fontSize={14}
-                    color={COLORS.gray}
-                    textAlign="center"
-                  />
-                </View>
-              )}
-
-              <View style={styles.divider}>
-                <CustomText
-                  label="RECOMMENDED"
-                  fontFamily={fonts.medium}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  color="#121212A3"
-                />
-              </View>
-
-              {/* Restaurant */}
-              {loadingNearbyPlaces ? (
-                <SkeletonLoader type="section" style={styles.skeletonSection} />
-              ) : nearbyPlaces.restaurants.length > 0 ? (
-                renderPredictionItem(
-                  {
-                    item: {
-                      description: nearbyPlaces.restaurants[0].name,
-                      structured_formatting: {
-                        secondary_text: nearbyPlaces.restaurants[0].address,
-                      },
-                      place_id: nearbyPlaces.restaurants[0].place_id,
-                      latitude: nearbyPlaces.restaurants[0].latitude,
-                      longitude: nearbyPlaces.restaurants[0].longitude,
-                      distance: nearbyPlaces.restaurants[0].distance,
-                      types: nearbyPlaces.restaurants[0].types,
-                    },
-                  },
-                  false,
-                  true,
-                  false,
-                  true
-                )
-              ) : null}
-
-              {/* Gym */}
-              {loadingNearbyPlaces ? (
-                <SkeletonLoader type="section" style={styles.skeletonSection} />
-              ) : nearbyPlaces.gyms.length > 0 ? (
-                renderPredictionItem(
-                  {
-                    item: {
-                      description: nearbyPlaces.gyms[0].name,
-                      structured_formatting: {
-                        secondary_text: nearbyPlaces.gyms[0].address,
-                      },
-                      place_id: nearbyPlaces.gyms[0].place_id,
-                      latitude: nearbyPlaces.gyms[0].latitude,
-                      longitude: nearbyPlaces.gyms[0].longitude,
-                      distance: nearbyPlaces.gyms[0].distance,
-                      types: nearbyPlaces.gyms[0].types,
-                    },
-                  },
-                  false,
-                  true,
-                  false,
-                  true
-                )
-              ) : null}
-
-              {/* Coffee Shop */}
-              {loadingNearbyPlaces ? (
-                <SkeletonLoader type="section" style={styles.skeletonSection} />
-              ) : nearbyPlaces.coffeeShops.length > 0 ? (
-                renderPredictionItem(
-                  {
-                    item: {
-                      description: nearbyPlaces.coffeeShops[0].name,
-                      structured_formatting: {
-                        secondary_text: nearbyPlaces.coffeeShops[0].address,
-                      },
-                      place_id: nearbyPlaces.coffeeShops[0].place_id,
-                      latitude: nearbyPlaces.coffeeShops[0].latitude,
-                      longitude: nearbyPlaces.coffeeShops[0].longitude,
-                      distance: nearbyPlaces.coffeeShops[0].distance,
-                      types: nearbyPlaces.coffeeShops[0].types,
-                    },
-                  },
-                  false,
-                  true,
-                  false,
-                  true
-                )
-              ) : null}
-
-              <View>
+              {/* <View>
                 {recentSearches?.length ? (
                   <View style={styles.divider}>
                     <CustomText
                       label="RECENT SEARCHES"
                       fontFamily={fonts.medium}
                       fontSize={12}
-                      lineHeight={12 * 1.4}
                       color="#121212A3"
                     />
                   </View>
@@ -1324,16 +1055,15 @@ const CustomModalGooglePlaces = ({
                   ListEmptyComponent={renderEmptyComponent}
                   showsVerticalScrollIndicator={false}
                 />
-              </View>
+              </View> */}
 
-              <View>
+              {/* <View>
                 {savedLocations?.length ? (
                   <View style={styles.divider}>
                     <CustomText
                       label="SAVED LOCATIONS"
                       fontFamily={fonts.medium}
                       fontSize={12}
-                      lineHeight={12 * 1.4}
                       color="#121212A3"
                     />
                   </View>
@@ -1348,7 +1078,7 @@ const CustomModalGooglePlaces = ({
                   ListEmptyComponent={renderEmptyComponent}
                   showsVerticalScrollIndicator={false}
                 />
-              </View>
+              </View> */}
             </>
           )}
 
@@ -1399,7 +1129,7 @@ export default CustomModalGooglePlaces;
 
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.black,
     width: "100%",
     height: "100%",
     paddingTop: 20,
@@ -1409,8 +1139,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 15,
-    borderBlockColor: "#F6F6F6",
-    borderBottomWidth: 4,
+
     padding: 16,
   },
   selectMap: {
@@ -1418,15 +1147,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF0A",
   },
-  crossContainer: {
-    borderRadius: 100,
-    backgroundColor: "rgba(18, 18, 18, 0.04)",
-    width: 44,
-    height: 44,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  // crossContainer: {
+  //   borderRadius: 100,
+  //   backgroundColor: "rgba(18, 18, 18, 0.04)",
+  //   width: 44,
+  //   height: 44,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
   cross: {
     width: 16,
     height: 16,
@@ -1461,7 +1192,7 @@ const styles = StyleSheet.create({
   divider: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F6F6F6",
+    backgroundColor: "#FFFFFF0A",
     paddingHorizontal: 12,
     paddingVertical: 5,
   },
@@ -1497,14 +1228,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F6F6F6",
+    borderBottomColor: COLORS.subtitle,
   },
   skeletonSectionContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F6F6F6",
+    borderBottomColor: COLORS.subtitle,
   },
   skeletonIcon: {
     width: 24,
@@ -1542,5 +1273,13 @@ const styles = StyleSheet.create({
     width: 30,
     height: 12,
     borderRadius: 4,
+  },
+  iconContainer: {
+    borderRadius: 99,
+    height: 40,
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.cardColor,
   },
 });

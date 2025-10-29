@@ -59,7 +59,7 @@ const AddDescription = forwardRef(
           dispatch(setUserData(res?.data?.user));
           ToastMessage("Profile updated successfully!", "success");
 
-          navigation.navigate("PinOnBoarding");
+          navigation.navigate("PinOnBoarding", { state: state });
         } else {
           setError("Failed to update profile. Please try again.");
         }

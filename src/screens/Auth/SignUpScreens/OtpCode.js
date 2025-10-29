@@ -93,7 +93,7 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
       };
       const res = await post(`auth/verify-otp`, body);
       if (res?.data) {
-        console.log(res?.data);
+        console.log(res?.data?.success);
         if (currentIndex < onboardingCount) {
           setCurrentIndex(currentIndex + 1);
         }

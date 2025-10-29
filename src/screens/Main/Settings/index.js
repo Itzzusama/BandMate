@@ -78,7 +78,13 @@ const Settings = () => {
         title={"Logout"}
         backgroundColor={COLORS.cardColor}
         marginBottom={8}
-        onPress={() => dispatch(logout())}
+        onPress={() => {
+          dispatch(logout());
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AuthStack" }],
+          });
+        }}
         color={COLORS.white}
         leftView={
           <Icons

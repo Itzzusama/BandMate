@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { Image, View } from "react-native";
 import fonts from "../../../assets/fonts";
 import { Images } from "../../../assets/images";
 import CustomButton from "../../../components/CustomButton";
@@ -8,26 +8,41 @@ import CustomText from "../../../components/CustomText";
 import ImageFast from "../../../components/ImageFast";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import { COLORS } from "../../../utils/COLORS";
+import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces"; // ✅ Import modal
 
 const PinOnBoarding = ({ route }) => {
-  const { state } = route.params;
+  const { state } = route?.params || {};
   const navigation = useNavigation();
+
+  const [googleModalVisible, setGoogleModalVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
   return (
     <ScreenWrapper
       footerUnScrollable={() => (
-        <View style={{ padding: 14, marginBottom: 20 }}>
+        <View style={{ padding: 12, marginBottom: 24 }}>
           <CustomButton
             title="Create a PIN Code"
             marginBottom={8}
-            rightIcon={Images.lock}
+            rightIcon={
+              <Image
+                source={Images.lock2}
+                style={{
+                  width: 18,
+                  height: 18,
+                  resizeMode: "contain",
+                  marginLeft: 5,
+                }}
+              />
+            }
             onPress={() => navigation.navigate("PinCode", { state })}
-            secondBorderColor={COLORS.gray2}
-            isBoarder
           />
+
           <CustomButton
             title="Later"
-            backgroundColor={COLORS.lightGray}
-            color={COLORS.primaryColor}
+            backgroundColor={COLORS.cardColor}
+            color={COLORS.white}
+            onPress={() => setGoogleModalVisible(true)}
           />
         </View>
       )}
@@ -41,7 +56,7 @@ const PinOnBoarding = ({ route }) => {
         }}
       >
         <ImageFast
-          source={Images.pinCode}
+          source={Images.number}
           style={{ height: 80, width: 80 }}
           resizeMode="contain"
         />
@@ -60,6 +75,21 @@ const PinOnBoarding = ({ route }) => {
           lineHeight={14 * 1.4}
         />
       </View>
+
+      <CustomModalGooglePlaces
+        isVisible={googleModalVisible}
+        onClose={() => {
+          setGoogleModalVisible(false);
+          navigation.navigate("Success");
+        }}
+        onLocationSelect={(location) => {
+          console.log("Selected location:", location);
+          setSelectedLocation(location);
+          setGoogleModalVisible(false);
+          navigation.navigate("Success");
+        }}
+        initialValue={selectedLocation?.address || ""}
+      />
     </ScreenWrapper>
   );
 };
