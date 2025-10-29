@@ -48,7 +48,7 @@ const AuthStack = () => {
     );
   };
 
-  let initialRoute = "SignUpScreens"; //"OnBoarding";
+  let initialRoute = "OnBoarding"; //"OnBoarding";
   if (isToken && isBandIncomplete()) {
     initialRoute = "SignUpScreens";
   }
