@@ -25,6 +25,10 @@ const TopTabWithBG = ({
   activeHeight,
   withImage,
   activeFontFamily,
+  alignSelf,
+  height = 48,
+    backgroundColor= "#1d1d1d",
+
 }) => {
   return (
     <View
@@ -35,6 +39,10 @@ const TopTabWithBG = ({
           marginTop: marginTop,
           marginBottom: marginBottom,
           width,
+          alignSelf,
+          height,
+          backgroundColor,
+          gap:4
         },
       ]}
     >
@@ -48,7 +56,7 @@ const TopTabWithBG = ({
               paddingVertical: paddingVertical ? paddingVertical : 5,
               paddingHorizontal: paddingHorizontal,
               backgroundColor:
-                tab === tabName ? COLORS.primaryColor : COLORS.lightGray,
+                tab === tabName ? "#FFFFFF0A" : "#1d1d1d",
               borderRadius: 100,
               height: activeHeight,
             },
@@ -84,12 +92,12 @@ const TopTabWithBG = ({
                     ? fontFamily
                     : tab === tabName
                     ? activeFontFamily || fonts.semiBold
-                    : fonts.medium
+                    : fonts.regular
                 }
                 label={tabName}
                 fontSize={fontSize}
                 lineHeight={fontSize * 1.4}
-                color={tab == tabName ? COLORS.white : COLORS.gray}
+                color={tab == tabName ? COLORS.white : "#FFFFFFA3"}
               />
             </View>
           )}
@@ -108,8 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderRadius: 100,
     paddingHorizontal: 4,
-    backgroundColor: COLORS.lightGray,
-    height: 48,
+    paddingVertical:4
   },
   item: {
     flex: 1,

@@ -1,20 +1,20 @@
 import { StyleSheet, View } from "react-native";
 import { COLORS } from "../../utils/COLORS";
 
-const AuthSlider = ({ min, max, marginTop, marginBottom, showLeftSpace }) => {
+const AuthSlider = ({ min, max, marginTop, marginBottom, gap, height = 4 }) => {
   return (
     <View
       style={[styles.container, { marginTop: marginTop || 20, marginBottom }]}
     >
-      <View style={styles.sliderTrack}>
+      <View style={[styles.sliderTrack, { gap }]}>
         {Array.from({ length: max }).map((_, index) => (
           <View
             key={index}
             style={[
               styles.block,
               {
-                backgroundColor: index < min ? COLORS.authHeader : "#FFFFFF14",
-                // marginLeft: showLeftSpace ? -5 : 0,
+                backgroundColor: index < min ? COLORS.authHeader : "#FFFFFF17",
+                height,
               },
             ]}
           />
@@ -40,6 +40,5 @@ const styles = StyleSheet.create({
   },
   block: {
     flex: 1,
-    height: 4,
   },
 });

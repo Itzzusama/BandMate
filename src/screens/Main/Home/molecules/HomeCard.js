@@ -1,23 +1,23 @@
+import { useNavigation } from "@react-navigation/native";
+import { useRef, useState } from "react";
 import {
-  StyleSheet,
-  Image,
-  View,
   Animated,
   Dimensions,
-  TouchableOpacity,
+  Image,
   Platform,
   Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import React, { useRef, useState } from "react";
 import LinearGradient from "react-native-linear-gradient";
-import ImageFast from "../../../../components/ImageFast";
-import { PNGIcons } from "../../../../assets/images/icons";
-import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
-import { COLORS } from "../../../../utils/COLORS";
 import { Images } from "../../../../assets/images";
+import { PNGIcons } from "../../../../assets/images/icons";
 import AuthSlider from "../../../../components/Auth/AuthSlider";
-import { useNavigation } from "@react-navigation/native";
+import CustomText from "../../../../components/CustomText";
+import ImageFast from "../../../../components/ImageFast";
+import { COLORS } from "../../../../utils/COLORS";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -161,12 +161,7 @@ const HomeCard = () => {
   });
 
   return (
-    <LinearGradient
-      colors={["#1E2C2D", "#121212"]}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 1 }}
-      style={styles.container}
-    >
+    <View style={styles.container}>
       <Animated.View
         style={[
           styles.cardWrapper,
@@ -180,6 +175,8 @@ const HomeCard = () => {
         ]}
       >
         <ImageFast source={PNGIcons.bandImage} style={styles.image}>
+          <View style={styles.overlay} />
+
           <View style={styles.innerContainer}>
             <View style={styles.headerRow}>
               <View style={styles.row}>
@@ -281,7 +278,7 @@ const HomeCard = () => {
                 <Image source={PNGIcons.forward} style={styles.forwardIcon} />
               </Pressable>
 
-              <AuthSlider min={1} max={4} marginBottom={20} marginTop={12} />
+              <AuthSlider min={1} max={3} marginBottom={20} marginTop={12} gap={8} height={6} />
             </View>
           </View>
 
@@ -298,8 +295,8 @@ const HomeCard = () => {
           >
             <LinearGradient
               colors={currentGradientColors}
-              start={{ x: 0.5, y: 1 }} // Start from bottom
-              end={{ x: 0.5, y: 0 }} // End at top
+              start={{ x: 0.5, y: 1 }}
+              end={{ x: 0.5, y: 0 }}
               style={styles.gradientFill}
             />
           </Animated.View>
@@ -330,7 +327,7 @@ const HomeCard = () => {
           </TouchableOpacity>
         ))}
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
@@ -339,18 +336,27 @@ export default HomeCard;
 const styles = StyleSheet.create({
   container: {
     marginTop: 16,
-
     alignItems: "center",
     width: "100%",
+    paddingHorizontal: 6,
   },
   cardWrapper: {
     width: "100%",
-    padding: 8,
+    padding: 4,
+    backgroundColor: "#FFFFFF29",
+    borderColor: "#FFFFFF29",
+    borderRadius: 34,
+    borderWidth: 1,
+    // marginHorizontal:6
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.12)",
   },
   image: {
-    height: Platform.OS == "ios" ? screenHeight * 0.6 : screenHeight * 0.65,
+    height: Platform.OS == "ios" ? screenHeight * 0.56 : screenHeight * 0.55,
     width: "100%",
-    borderRadius: 12,
+    borderRadius: 32,
   },
   innerContainer: {
     padding: 14,
@@ -374,7 +380,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF29",
     borderRadius: 99,
     borderWidth: 1,
-    borderColor: COLORS.white3,
+    borderColor: "#FFFFFF7A",
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
@@ -434,7 +440,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 200, // Fixed height
+    height: 200,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     overflow: "hidden",
