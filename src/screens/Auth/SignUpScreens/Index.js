@@ -28,14 +28,16 @@ import AddDescription from "./AddDescription";
 
 const SignUpScreens = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
+  const [isDisabled, setIsDisabled] = useState(true);
   const stepRef = useRef(null);
 
   const user = useSelector((state) => state.users.userData);
   const token = useSelector((state) => state.authConfig.token);
-  console.log(user);
+
   const init = {
     email: "",
     password: "",
+    confirmPassword: "",
     dob: "",
     pin: "",
     first_name: "",
@@ -55,12 +57,14 @@ const SignUpScreens = () => {
     instrumentWithLevel: [],
     Artists: [],
     Genres: [],
+    pictures: [],
+    description: "",
   };
 
   const [state, setState] = useState(init);
 
   const steps = useMemo(() => {
-    if (state.role === "band" || user?.role === "band") {
+    if (state.role === "band") {
       return [
         "Date of Birth",
         "Choose your user type",
@@ -90,6 +94,12 @@ const SignUpScreens = () => {
         "Verifying your email",
         "Creating a strong password",
         "Confirming password",
+        "Instruments",
+        "Level",
+        "Genres",
+        "Artists",
+        "Pictures",
+        "About you",
       ];
     }
   }, [state.role, user?.role]);
@@ -97,7 +107,7 @@ const SignUpScreens = () => {
   const totalSteps = steps.length;
 
   useEffect(() => {
-    if (token && user?.role === "band") {
+    if (token) {
       const missingInstruments =
         !user?.Instruments || user.Instruments.length === 0;
       const missingGenres = !user?.Genres || user.Genres.length === 0;
@@ -105,290 +115,137 @@ const SignUpScreens = () => {
       const missingImages = !user?.pictures || user.pictures.length === 0;
       let targetStepName = null;
 
-      if (missingInstruments) {
-        targetStepName = "Instruments";
-      } else if (missingGenres) {
-        targetStepName = "Genres";
-      } else if (missingArtists) {
-        targetStepName = "Artists";
-      } else if (missingImages) {
-        targetStepName = "Pictures";
-      }
+      if (missingInstruments) targetStepName = "Instruments";
+      else if (missingGenres) targetStepName = "Genres";
+      else if (missingArtists) targetStepName = "Artists";
+      else if (missingImages) targetStepName = "Pictures";
 
       if (targetStepName) {
         const targetIndex = steps.indexOf(targetStepName);
-        if (targetIndex !== -1) {
-          setCurrentIndex(targetIndex + 1);
-        }
+        if (targetIndex !== -1) setCurrentIndex(targetIndex + 1);
       }
     }
   }, [token, user, steps]);
 
-  useEffect(() => {
-    const currentStep = steps[currentIndex - 1];
-    console.log("Current Step:", currentStep);
-    console.log("Current State:", state);
-  }, [state, currentIndex, steps]);
+  // useEffect(() => {
+  //   const currentStep = steps[currentIndex - 1];
 
-  const isButtonDisabled = () => {
-    const currentStep = steps[currentIndex - 1];
-    const shouldDisable = (() => {
-      switch (currentStep) {
-        case "Date of Birth":
-          return !state.dob;
-        case "Choose your user type":
-          return !state.role;
-        case "Band's name":
-          return !state.bandName?.trim();
-        case "Band's members":
-          return !state.bandMembers?.trim();
-        case "Age range":
-          return !state.membersAge;
-        case "Email":
-          return !state.email?.trim();
-        case "Verifying your email":
-          return !state.pin?.trim();
-        case "Creating a strong password":
-          return !state.password?.trim();
-        case "Confirming password":
-          return !state.confirmPassword?.trim();
-        case "Instruments":
-          return !state.Instruments?.length === 0;
-        case "Level":
-          return !state.instrumentWithLevel?.length === 0;
-        case "Genres":
-          return !state.Genres?.length === 0;
-        case "Artists":
-          return !state.Artists?.length === 0;
-        case "Firstname":
-          return !state.first_name?.trim();
-        case "Surname":
-          return !state.sur_name?.trim();
-        case "Gender":
-          return !state.gender;
-        case "Addressing":
-          return !state.nameDisplayPreference?.trim();
-        case "Pictures":
-          return !state.pictures?.length === 0;
-        case "About you":
-          return !state.description?.trim();
-        default:
-          return false;
-      }
-    })();
+  //   let disabled = true;
 
-    console.log(`Button disabled for ${currentStep}:`, shouldDisable);
-    return shouldDisable;
-  };
+  //   switch (currentStep) {
+  //     case "Date of Birth":
+  //       disabled = !state.dob;
+  //       break;
+  //     case "Choose your user type":
+  //       disabled = !state.role;
+  //       break;
+  //     case "Band's name":
+  //       disabled = !state.bandName;
+  //       break;
+  //     case "Band's members":
+  //       disabled = !state.bandMembers;
+  //       break;
+  //     case "Age range":
+  //       disabled = !state.membersAge;
+  //       break;
+  //     case "Email":
+  //       disabled = !state.email;
+  //       break;
+  //     case "Verifying your email":
+  //       disabled = !state.pin;
+  //       break;
+  //     case "Creating a strong password":
+  //       disabled = !state.password;
+  //       break;
+  //     case "Confirming password":
+  //       disabled = !state.confirmPassword;
+  //       break;
+  //     case "Instruments":
+  //       disabled = !state.Instruments || state.Instruments.length === 0;
+  //       break;
+  //     case "Level":
+  //       disabled =
+  //         !state.instrumentWithLevel || state.instrumentWithLevel.length === 0;
+  //       break;
+  //     case "Genres":
+  //       disabled = !state.Genres || state.Genres.length === 0;
+  //       break;
+  //     case "Artists":
+  //       disabled = !state.Artists || state.Artists.length === 0;
+  //       break;
+  //     case "Firstname":
+  //       disabled = !state.first_name;
+  //       break;
+  //     case "Surname":
+  //       disabled = !state.sur_name;
+  //       break;
+  //     case "Gender":
+  //       disabled = !state.gender;
+  //       break;
+  //     case "Addressing":
+  //       disabled = !state.nameDisplayPreference;
+  //       break;
+  //     case "Pictures":
+  //       disabled = !state.pictures || state.pictures.length === 0;
+  //       break;
+  //     case "About you":
+  //       disabled = !state.description;
+  //       break;
+  //     default:
+  //       disabled = false;
+  //   }
+
+  //   setIsDisabled(Boolean(disabled));
+  // }, [currentIndex, steps, state]);
+
   const StepView = ({ stepName }) => {
+    const commonProps = {
+      ref: stepRef,
+      currentIndex,
+      setCurrentIndex,
+      state,
+      setState,
+    };
+
     switch (stepName) {
       case "Date of Birth":
-        return (
-          <DOB
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <DOB {...commonProps} />;
       case "Choose your user type":
-        return (
-          <UserType
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <UserType {...commonProps} />;
       case "Band's name":
-        return (
-          <BandName
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <BandName {...commonProps} />;
       case "Band's members":
-        return (
-          <BandMembers
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <BandMembers {...commonProps} />;
       case "Age range":
-        return (
-          <AgeRange
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <AgeRange {...commonProps} />;
       case "Instruments":
-        return (
-          <Instruments
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <Instruments {...commonProps} />;
       case "Level":
-        return (
-          <Level
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
+        return <Level {...commonProps} />;
       case "Genres":
-        return (
-          <Genres
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
+        return <Genres {...commonProps} />;
       case "Artists":
-        return (
-          <Artists
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <Artists {...commonProps} />;
       case "Firstname":
-        return (
-          <FirstName
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <FirstName {...commonProps} />;
       case "Surname":
-        return (
-          <SurName
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <SurName {...commonProps} />;
       case "Gender":
-        return (
-          <Gender
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <Gender {...commonProps} />;
       case "Addressing":
-        return (
-          <NameSelection
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <NameSelection {...commonProps} />;
       case "Email":
-        return (
-          <Email
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <Email {...commonProps} />;
       case "Verifying your email":
-        return (
-          <OtpCode
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <OtpCode {...commonProps} />;
       case "Creating a strong password":
-        return (
-          <Password
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <Password {...commonProps} />;
       case "Confirming password":
-        return (
-          <ResetPassword
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <ResetPassword {...commonProps} />;
       case "Pictures":
-        return (
-          <AddPictures
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <AddPictures {...commonProps} />;
       case "About you":
-        return (
-          <AddDescription
-            ref={stepRef}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            state={state}
-            setState={setState}
-          />
-        );
-
+        return <AddDescription {...commonProps} />;
       default:
         return <Text>No View</Text>;
     }
@@ -403,7 +260,7 @@ const SignUpScreens = () => {
           paddingHorizontal={12}
           onPress={() => stepRef.current?.submit?.()}
           onBackPress={() => stepRef.current?.back?.()}
-          btnDisabled={isButtonDisabled()}
+          // btnDisabled={isDisabled}
         />
       )}
     >

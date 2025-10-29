@@ -76,7 +76,7 @@ const Settings = () => {
       <FeedbackSection />
       <CustomButton
         title={"Logout"}
-        backgroundColor={COLORS.inputBg}
+        backgroundColor={COLORS.cardColor}
         marginBottom={8}
         onPress={() => dispatch(logout())}
         color={COLORS.white}
@@ -105,7 +105,7 @@ const Settings = () => {
           />
         }
       />
-      <CopyrightFooter paddingBottom={160} />
+      <CopyrightFooter />
     </ScreenWrapper>
   );
 };

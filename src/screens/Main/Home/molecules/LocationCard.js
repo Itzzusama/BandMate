@@ -38,6 +38,7 @@ const LocationCard = () => {
         }
         marginTop={12}
         color={COLORS.golden}
+        textColor={COLORS.golden}
       />
     </View>
   );

@@ -8,9 +8,9 @@ import { EventImages } from "../../../../assets/images/eventImages";
 import { PNGIcons } from "../../../../assets/images/icons";
 import Icons from "../../../../components/Icons";
 
-const EventDetailCard = () => {
+const EventDetailCard = ({ marginBottom }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom: marginBottom }]}>
       <View style={styles.dateContainer}>
         <CustomText
           label="MAR"
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderTopWidth: 4,
-    borderTopColor: COLORS.inputBg,
+    borderTopColor: COLORS.cardColor,
   },
   dateContainer: {
     alignItems: "center",
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   },
   remindBtn: {
     alignItems: "center",
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
 
     paddingVertical: 7,
     paddingHorizontal: 14,
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   infoBtn: {
     alignItems: "center",
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 10,

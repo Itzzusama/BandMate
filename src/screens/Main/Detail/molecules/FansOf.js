@@ -21,8 +21,6 @@ const artists = [
 const FansOf = () => {
   return (
     <>
-      <Divider />
-
       <View style={styles.container}>
         <CustomText
           label="Fans of"

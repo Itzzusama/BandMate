@@ -43,11 +43,17 @@ const StepOne = forwardRef(
 
     const handleDateChange = (val) => {
       setDob(val);
+
       if (val) {
-        setTimeout(() => {
-          validateDOB(val);
-        }, 100);
+        setError("");
+        const formatted = moment(val).format("YYYY-MM-DD");
+
+        setState((prev) => ({ ...prev, dob: formatted }));
+      } else {
+        setState((prev) => ({ ...prev, dob: "" }));
       }
+
+      setTimeout(() => validateDOB(val), 100);
     };
 
     const submit = () => {

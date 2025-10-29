@@ -12,7 +12,6 @@ import { Icon } from "react-native-vector-icons/Icon";
 const PopularRelease = ({ title, data, showDots }) => {
   return (
     <View>
-      <Divider />
       <View style={{ paddingHorizontal: 12 }}>
         <View style={[styles.row, { marginBottom: 8 }]}>
           <View style={[styles.row, { flex: 1 }]}>

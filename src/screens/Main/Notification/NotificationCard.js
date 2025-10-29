@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 1,
     borderColor: "#FFFFFF0A",
+    marginHorizontal: 12,
   },
   avatarWrap: {
     width: 38,

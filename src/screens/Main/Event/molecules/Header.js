@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 99,
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
   },
   icon: {
     height: 20,

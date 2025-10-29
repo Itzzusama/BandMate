@@ -22,7 +22,7 @@ export default InfoCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 12,

@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     tintColor: COLORS.white3,
   },
   crossIconWrapper: {
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     alignItems: "center",
     justifyContent: "center",
     height: 50,

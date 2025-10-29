@@ -19,7 +19,7 @@ import { COUNTRIES as COUNTRIES_DATA } from "../utils/COUNTRIES";
 import { PNGIcons } from "../assets/images/icons";
 import { COLORS } from "../utils/COLORS";
 import fonts from "../assets/fonts";
-
+import CountryFlag from "react-native-country-flag";
 // ✅ Format countries for dropdown
 const COUNTRIES = COUNTRIES_DATA.map((country) => ({
   label: country.name,
@@ -135,7 +135,12 @@ const CountryBottomSheet = ({
                   activeOpacity={0.6}
                 >
                   <View style={styles.countryContent}>
-                    <Text style={styles.flagText}>{item.flag}</Text>
+                    <View style={styles.flagWrapper}>
+                      <CountryFlag
+                        isoCode={item.code.toLowerCase()}
+                        style={styles.flagImage}
+                      />
+                    </View>
                     <View style={styles.countryInfo}>
                       <CustomText
                         label={item.label}
@@ -243,5 +248,20 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
+  },
+  flagWrapper: {
+    width: 22,
+    height: 22,
+    borderRadius: 20,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 15,
+  },
+
+  flagImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 20,
   },
 });

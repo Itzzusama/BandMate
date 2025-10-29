@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   hasConnection: true,
   layout: {},
-  onboardingCount: 14,
+  onboardingCount: 16,
 };
 
 export const navSlice = createSlice({

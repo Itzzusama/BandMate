@@ -59,7 +59,7 @@ const AddDescription = forwardRef(
           dispatch(setUserData(res?.data?.user));
           ToastMessage("Profile updated successfully!", "success");
 
-          navigation.navigate("VTCChauffeur");
+          navigation.navigate("PinOnBoarding");
         } else {
           setError("Failed to update profile. Please try again.");
         }

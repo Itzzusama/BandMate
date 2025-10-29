@@ -9,7 +9,7 @@ import fonts from "../../../../assets/fonts";
 const ExtrasCard = ({ onPress }) => {
   return (
     <LinearGradient
-      colors={["#FFFFFF14", "#948f8f14", "#FF4B4B", "#575093", "#007BFF"]}
+      colors={[COLORS.cardColor, "#948f8f14", "#FF4B4B", "#575093", "#007BFF"]}
       locations={[0.3867, 0.583, 0.7301, 0.8283, 0.9264]}
       angle={130}
       useAngle={true}

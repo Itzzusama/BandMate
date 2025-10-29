@@ -7,11 +7,12 @@ import SearchEventHeader from "./molecules/SearchEventHeader";
 import { COLORS } from "../../../utils/COLORS";
 import CustomText from "../../../components/CustomText";
 import fonts from "../../../assets/fonts";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const tabs = ["Rock", "Pop", "Jazz", "Blues", "Rap"];
 
 const SearchEvent = () => {
   const [selectedTab, setSelectedTab] = useState("Rock");
+  const insets = useSafeAreaInsets();
 
   return (
     <ScreenWrapper
@@ -48,7 +49,7 @@ const SearchEvent = () => {
       <View style={{ marginTop: 8 }}>
         <EventDetailCard />
         <EventDetailCard />
-        <EventDetailCard />
+        <EventDetailCard marginBottom={insets.bottom + 10} />
       </View>
     </ScreenWrapper>
   );
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   tabButtonSelected: {
-    backgroundColor: COLORS.inputBg,
-    borderColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
+    borderColor: COLORS.cardColor,
   },
 });

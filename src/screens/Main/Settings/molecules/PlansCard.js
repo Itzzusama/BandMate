@@ -128,7 +128,7 @@ const PlansCard = ({ plan, onPress }) => {
 
   if (isFree) {
     return (
-      <View style={[styles.container, { backgroundColor: COLORS.inputBg }]}>
+      <View style={[styles.container, { backgroundColor: COLORS.cardColor }]}>
         {renderContent()}
       </View>
     );

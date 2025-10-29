@@ -81,12 +81,8 @@ const ResetPassword = forwardRef(
             dispatch(setToken(response?.data?.tokens?.accessToken));
             dispatch(setRefreshToken(response?.data?.tokens?.refreshToken));
 
-            if (state.role === "band") {
-              if (currentIndex < onboardingCount) {
-                setCurrentIndex(currentIndex + 1);
-              }
-            } else {
-              navigation.navigate("Success");
+            if (currentIndex < onboardingCount) {
+              setCurrentIndex(currentIndex + 1);
             }
           }
 

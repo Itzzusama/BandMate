@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
     width: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
   },
 });

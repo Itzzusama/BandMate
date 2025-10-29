@@ -8,10 +8,11 @@ import EventDetailCard from "./molecules/EventDetailCard";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import FilterModal from "./molecules/FilterModal";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const Event = () => {
   const navigation = useNavigation();
   const [openFilter, setOpenFilter] = useState(false);
+  const insets = useSafeAreaInsets();
 
   return (
     <ScreenWrapper
@@ -25,17 +26,17 @@ const Event = () => {
           setOpenFilter={setOpenFilter}
         />
       )}
-      footerUnScrollable={() => (
-        <View style={{ padding: 12, paddingTop: 0 }}>
-          <CustomButton title={"Connect"} marginBottom={24} />
-        </View>
-      )}
+      // footerUnScrollable={() => (
+      //   <View style={{ padding: 12, paddingTop: 0 }}>
+      //     <CustomButton title={"Connect"} marginBottom={24} />
+      //   </View>
+      // )}
     >
       <ToggleButtons />
       <EventOrganizer />
       <EventDetailCard />
       <EventDetailCard />
-      <EventDetailCard />
+      <EventDetailCard marginBottom={insets.bottom + 70} />
 
       <FilterModal
         isVisible={openFilter}

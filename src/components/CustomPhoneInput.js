@@ -9,7 +9,7 @@ import { Images } from "../assets/images";
 import { COLORS } from "../utils/COLORS";
 import { COUNTRIES as COUNTRIES_DATA } from "../utils/COUNTRIES";
 import CountryBottomSheet from "./CountryBottomSheet";
-
+import CountryFlag from "react-native-country-flag";
 const COUNTRIES = COUNTRIES_DATA.map((country) => ({
   code: country.code,
   dialCode: country.dialCode,
@@ -172,11 +172,12 @@ const CustomPhoneInput = ({
             onPress={() => !isChange && setBottomSheetVisible(true)}
             disabled={isChange}
           >
-            <CustomText
-              label={selectedCountry.flag}
-              fontSize={16}
-              marginBottom={2}
-            />
+            <View style={styles.flagWrapper}>
+              <CountryFlag
+                isoCode={selectedCountry.code.toLowerCase()}
+                style={styles.flagImage}
+              />
+            </View>
             <CustomText
               label={selectedCountry.dialCode}
               fontSize={16}
@@ -275,6 +276,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
     justifyContent: "center",
+    paddingTop: 3,
   },
   inputWrapper: {
     flexDirection: "row",
@@ -284,6 +286,7 @@ const styles = StyleSheet.create({
   countrySelector: {
     flexDirection: "row",
     alignItems: "center",
+    paddingBottom: 6,
   },
   phoneInput: {
     flex: 1,
@@ -292,6 +295,22 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     height: "100%",
     paddingVertical: 0,
+    paddingBottom: 6,
+  },
+  flagWrapper: {
+    width: 16,
+    height: 16,
+    borderRadius: 20,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: -2,
+  },
+
+  flagImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 20,
   },
 });
 

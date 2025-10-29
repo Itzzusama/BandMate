@@ -167,14 +167,14 @@ const Notification = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <View style={{ paddingHorizontal: 12 }}>
+      <View>
         <CustomText
           label="Today"
           fontSize={18}
           marginBottom={12}
           lineHeight={18 * 1.4}
           fontFamily={fonts.medium}
-          style={styles.sectionTitle}
+          textStyle={styles.sectionTitle}
         />
         {NOTIFICATIONS.today.map((item, index) => (
           <NotificationCard
@@ -191,7 +191,7 @@ const Notification = ({ navigation }) => {
           fontSize={18}
           marginBottom={12}
           lineHeight={18 * 1.4}
-          style={styles.sectionTitle}
+          textStyle={styles.sectionTitle}
         />
         {NOTIFICATIONS.yesterday.map((item) => (
           <NotificationCard key={item.id} {...item} />
@@ -204,7 +204,7 @@ const Notification = ({ navigation }) => {
           fontSize={18}
           marginBottom={12}
           lineHeight={18 * 1.4}
-          style={styles.sectionTitle}
+          textStyle={styles.sectionTitle}
         />
         {NOTIFICATIONS.more.map((item) => (
           <NotificationCard key={item.id} {...item} />
@@ -274,8 +274,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginLeft: 12,
-    marginTop: 16,
-    marginBottom: 8,
   },
 });
 

@@ -32,7 +32,7 @@ const UsersInfo = () => {
         title={"View My Page"}
         width={128}
         height={40}
-        backgroundColor={COLORS.inputBg}
+        backgroundColor={COLORS.cardColor}
         marginTop={20}
         customText={{
           fontSize: 14,

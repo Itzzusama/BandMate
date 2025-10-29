@@ -38,8 +38,6 @@ const AuthStack = () => {
   const isToken = useSelector((state) => state.authConfig.token);
   const user = useSelector((state) => state.users.userData);
   const isBandIncomplete = () => {
-    if (user?.role !== "band") return false;
-
     const missingInstruments =
       !user?.Instruments || user.Instruments.length === 0;
     const missingArtists = !user?.Artists || user.Artists.length === 0;

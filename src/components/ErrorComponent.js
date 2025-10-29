@@ -14,6 +14,7 @@ const ErrorComponent = ({
   isValid,
   hideInfo,
   infoTop,
+  textColor,
 }) => {
   return (
     <View style={[styles.row, { marginBottom, alignSelf, marginTop }]}>
@@ -32,7 +33,14 @@ const ErrorComponent = ({
 
       {/* ✅ Single Text node with nested children */}
       <Text style={styles.text}>
-        <Text style={styles.errorTitle}>{errorTitle}</Text>
+        <Text
+          style={[
+            styles.errorTitle,
+            { color: textColor ? textColor : COLORS.white2 },
+          ]}
+        >
+          {errorTitle}
+        </Text>
         {secondTitle ? (
           <Text style={styles.secondTitle}> {secondTitle}</Text>
         ) : null}

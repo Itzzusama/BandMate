@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     padding: 4,
     borderRadius: 100,
     marginHorizontal: 12,

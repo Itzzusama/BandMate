@@ -26,7 +26,9 @@ const FeedbackSection = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.spaceBetween, { backgroundColor: COLORS.inputBg }]}>
+      <View
+        style={[styles.spaceBetween, { backgroundColor: COLORS.cardColor }]}
+      >
         <CustomText
           label={"Help us improve BandMate"}
           fontSize={16}

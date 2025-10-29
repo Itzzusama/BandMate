@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
   forwardRef,
   useImperativeHandle,
@@ -131,6 +131,16 @@ const OtpCode = forwardRef(({ state, currentIndex, setCurrentIndex }, ref) => {
     try {
       setResendLoad(true);
       const res = await post(`auth/send-otp`, body);
+      Alert.alert(
+        "OTP Received", // Title
+        res.data?.result?.toString(), // Message
+        [
+          {
+            text: "OK",
+            onPress: () => console.log("OK Pressed"),
+          },
+        ]
+      );
       setResendLoad(false);
       startTimer();
     } catch (error) {

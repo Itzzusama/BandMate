@@ -19,7 +19,7 @@ import { count } from "../../../store/reducer/appSlice";
 const Email = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const onboardingCount = useSelector(count);
-    console.log(state, "state---email");
+
     const dispatch = useDispatch();
     const [selected, setSelected] = useState(true);
     const [email, setEmail] = useState(state?.email || "");
@@ -117,7 +117,7 @@ const Email = forwardRef(
       try {
         setLoading(true);
         const res = await post(`auth/send-otp`, body);
-        if (res?.data) {
+        if (res?.data?.success) {
           Alert.alert(
             "OTP Received", // Title
             res.data?.result?.toString(), // Message
@@ -146,6 +146,7 @@ const Email = forwardRef(
 
         setLoading(false);
       } catch (error) {
+        console.log(error?.response?.data, "error response");
         setLoading(false);
       }
     };
@@ -172,7 +173,7 @@ const Email = forwardRef(
               <CustomButton
                 key={i}
                 title={item}
-                height={32}
+                height={34}
                 width="49%"
                 fontSize={14}
                 fontFamily={item == isType ? fonts.medium : fonts.regular}
@@ -319,7 +320,7 @@ const Email = forwardRef(
                     name={
                       verifyVia == "sms" ? "check-circle" : "radiobox-blank"
                     }
-                    size={22}
+                    size={24}
                     color={verifyVia == "sms" ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
@@ -362,7 +363,7 @@ const Email = forwardRef(
                         ? "check-circle"
                         : "radiobox-blank"
                     }
-                    size={22}
+                    size={24}
                     color={
                       verifyVia == "whatsapp" ? COLORS.btnColor : COLORS.white3
                     }
@@ -469,7 +470,7 @@ const Email = forwardRef(
                   <Icons
                     family="MaterialCommunityIcons"
                     name={selected ? "check-circle" : "radiobox-blank"}
-                    size={22}
+                    size={24}
                     color={selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>
@@ -497,7 +498,7 @@ const Email = forwardRef(
                   <Icons
                     family="MaterialCommunityIcons"
                     name={!selected ? "check-circle" : "radiobox-blank"}
-                    size={22}
+                    size={24}
                     color={!selected ? COLORS.btnColor : COLORS.white3}
                   />
                 </View>

@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   tabButtonSelected: {
-    backgroundColor: COLORS.inputBg,
-    borderColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
+    borderColor: COLORS.cardColor,
   },
   featureCard: {
     flexDirection: "row",
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 12,
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     marginBottom: 8,
     gap: 10,
   },

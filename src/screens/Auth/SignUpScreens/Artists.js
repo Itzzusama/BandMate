@@ -35,7 +35,7 @@ const Artists = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const { width } = useWindowDimensions();
     const dispatch = useDispatch();
-    const SPACING = 12;
+    const SPACING = 14;
     const MIN_CARD_SIZE = 100;
     const numColumns = Math.max(
       3,

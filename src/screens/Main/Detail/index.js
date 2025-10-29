@@ -69,13 +69,13 @@ const Detail = ({ navigation }) => {
         }
       />
       <LatestRelease />
-      <Divider />
+
       <MusicStyles />
-      <Divider />
+
       <Levels />
-      <Divider />
+
       <LookingFor />
-      <Divider />
+
       <Availability />
       <PopularRelease title={"Popular releases"} data={releaseData} />
       <PopularRelease title={"Popular releases"} data={releaseData} />

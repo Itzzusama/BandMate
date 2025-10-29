@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import CustomInput from "../../../components/CustomInput";
@@ -36,7 +36,13 @@ const BandStep1 = forwardRef(
         setCurrentIndex(currentIndex + 1);
       }
     };
+    // useEffect(() => {
+    //   const timeoutId = setTimeout(() => {
+    //     setState((prev) => ({ ...prev, bandName }));
+    //   }, 300);
 
+    //   return () => clearTimeout(timeoutId);
+    // }, [bandName]);
     const back = () => {
       if (currentIndex > 1) {
         setCurrentIndex(currentIndex - 1);
@@ -61,6 +67,7 @@ const BandStep1 = forwardRef(
             value={bandName}
             onChangeText={(text) => {
               setBandName(text);
+
               if (error) {
                 const newError = errorCheck(text);
                 if (!newError) {

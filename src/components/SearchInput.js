@@ -188,7 +188,7 @@ export default SearchInput;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
@@ -222,6 +222,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.cardColor,
   },
 });

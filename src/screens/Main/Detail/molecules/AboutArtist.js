@@ -26,7 +26,6 @@ const AboutArtist = ({ name, bio }) => {
           marginBottom={18}
         />
       </View>
-      <Divider />
     </>
   );
 };

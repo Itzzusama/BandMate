@@ -44,7 +44,7 @@ const FilterModal = ({ isVisible, onModalClose }) => {
           >
             <Image
               source={PNGIcons.white_cross}
-              style={{ height: 20, width: 20 }}
+              style={{ height: 18, width: 18, tintColor: COLORS.white2 }}
             />
           </TouchableOpacity>
         </View>
@@ -73,8 +73,8 @@ const FilterModal = ({ isVisible, onModalClose }) => {
               <Icons
                 family={"Ionicons"}
                 name={"chevron-forward"}
-                color={COLORS.white3}
-                size={24}
+                color={COLORS.white2}
+                size={22}
               />
             </TouchableOpacity>
           )
@@ -85,7 +85,7 @@ const FilterModal = ({ isVisible, onModalClose }) => {
             title={"Clear All"}
             width="48%"
             height={48}
-            backgroundColor={COLORS.inputBg}
+            backgroundColor={COLORS.cardColor}
             color={COLORS.white}
           />
           <CustomButton title={"Confirm"} width="48%" height={48} />
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     width: 35,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
   },
   row: {
     flexDirection: "row",

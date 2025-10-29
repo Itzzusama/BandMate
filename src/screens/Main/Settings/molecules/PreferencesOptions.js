@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 12,
     borderRadius: 12,
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     marginBottom: 8,
   },
   row: {

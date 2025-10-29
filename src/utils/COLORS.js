@@ -10,6 +10,7 @@ export const COLORS = {
   white2: "#FFFFFFA3",
   white3: "#FFFFFF7A",
   white4: "#FFFFFF29",
+  cardColor: "#FFFFFF0A",
   red: "#EE1045",
   red1: "#EE1045",
   green: "#64CD75",

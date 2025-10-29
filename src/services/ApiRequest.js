@@ -71,7 +71,7 @@ const handleApiError = async (error, operation, url) => {
 
     console.log(`${operation} Error Status:`, status);
     console.log(`${operation} Error Message:`, message);
-
+    ToastMessage(message, "error");
     // 🔁 If 401, attempt to renew token
     if (status === 401) {
       try {
