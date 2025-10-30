@@ -23,11 +23,18 @@ const TopTab = ({
   images, // New prop for array of images
   height,
   paddingVertical,
-  paddingHorizontal = 14,
-  fontFamily = fonts.semiBold,
+  paddingHorizontal = 10,
+  fontFamily = fonts.medium,
   scrollViewPaddingHorizontal = 0,
-  activeColor,
+  activeColor = "white",
   imgMarginRight,
+  borderRadius,
+  oval,
+  borderWidth,
+  borderColor,
+  ovalBg,
+  activeTintColor = COLORS.black,
+  inactiveTintColor = COLORS.white,
 }) => {
   return (
     <>
@@ -39,6 +46,7 @@ const TopTab = ({
             marginBottom,
             marginTop,
             paddingHorizontal: scrollViewPaddingHorizontal,
+            gap: 6,
           }}
         >
           {tabNames?.map((tabName, index) => (
@@ -48,10 +56,13 @@ const TopTab = ({
               style={[
                 styles.roundedContainer,
                 {
+                  borderWidth,
+                  borderColor,
+                  borderRadius: borderRadius || 99,
                   backgroundColor:
                     tab == index
-                      ? activeColor || COLORS.cardColor
-                      : "transparent",
+                      ? activeColor || COLORS.primaryColor
+                      : ovalBg || "#FFFFFF0A",
                   height: height || 34,
                   paddingVertical: paddingVertical,
                   paddingHorizontal: paddingHorizontal,
@@ -70,17 +81,28 @@ const TopTab = ({
                     width: 14,
                     marginRight: imgMarginRight,
                     tintColor:
-                      tab == index ? COLORS.white : COLORS.primaryColor,
+                      tab == index ? activeTintColor : inactiveTintColor,
                   }}
                 />
               )}
-              <CustomText
-                label={tabName}
-                lineHeight={14 * 1.4}
-                fontFamily={fontFamily}
-                textTransform="capitalize"
-                color={rounded && tab == index ? COLORS.white : COLORS.white2}
-              />
+              {tabName?.length > 0 ? (
+                <CustomText
+                  label={tabName}
+                  lineHeight={14 * 1.4}
+                  fontFamily={fontFamily}
+                  textTransform="capitalize"
+                  color={
+                    oval && tab == index
+                      ? COLORS.buttonColor
+                      : rounded && tab == index
+                      ? COLORS.black
+                      : oval
+                      ? COLORS.buttonColor
+                      : COLORS.white
+                  }
+                />
+              ) : null}
+
               {tab === index && !rounded && <View style={styles.indicator} />}
             </TouchableOpacity>
           ))}
@@ -116,7 +138,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   roundedContainer: {
-    marginRight: 8,
     // borderWidth: 1.2,
     // borderColor: COLORS.lightGray,
     alignItems: "center",
@@ -124,7 +145,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 4,
     paddingHorizontal: 14,
-    borderRadius: 99,
   },
   item: {
     flex: 1,

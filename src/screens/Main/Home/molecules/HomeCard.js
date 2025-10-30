@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  PanResponder,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import fonts from "../../../../assets/fonts";
@@ -32,6 +33,10 @@ const HomeCard = () => {
     "transparent",
     "transparent",
   ]);
+
+  // New animated values for gesture handling
+  const pan = useRef(new Animated.ValueXY()).current;
+  const rotate = useRef(new Animated.Value(0)).current;
 
   const buttonActions = [
     {
@@ -60,6 +65,24 @@ const HomeCard = () => {
       rotation: 15,
     },
   ];
+
+  const handleSwipe = (direction) => {
+    let index;
+    switch (direction) {
+      case "left":
+        index = 1; // Using the second left action for swipe left
+        break;
+      case "right":
+        index = 3; // Using the first right action for swipe right
+        break;
+      case "up":
+        index = 2; // Using the up action for swipe up
+        break;
+      default:
+        return;
+    }
+    handleButtonPress(index);
+  };
 
   const handleButtonPress = (index) => {
     const action = buttonActions[index];
@@ -150,31 +173,130 @@ const HomeCard = () => {
     gradientOpacity.setValue(0);
     gradientTranslateY.setValue(200);
     setCurrentGradientColors(["transparent", "transparent"]);
-
-    // Here you would typically load the next card
-    // onNextCard && onNextCard();
+    pan.setValue({ x: 0, y: 0 });
+    rotate.setValue(0);
   };
+
+  // PanResponder for gesture handling
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // Only respond to significant moves to avoid interfering with button presses
+        return Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        const { dx, dy } = gestureState;
+        
+        // Update position
+        pan.setValue({ x: dx, y: dy });
+        
+        // Add rotation based on horizontal movement for better visual feedback
+        const rotation = dx * 0.1; // Adjust this value for more/less rotation
+        rotate.setValue(rotation);
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        const { dx, dy, vx, vy } = gestureState;
+        const swipeThreshold = 50; // Minimum distance to consider it a swipe
+        const velocityThreshold = 0.5; // Minimum velocity to consider it a swipe
+
+        // Check if it's a left swipe
+        if (dx < -swipeThreshold || vx < -velocityThreshold) {
+          Animated.parallel([
+            Animated.timing(pan, {
+              toValue: { x: -screenWidth * 2, y: dy },
+              duration: 300,
+              useNativeDriver: true,
+            }),
+            Animated.timing(rotate, {
+              toValue: -15,
+              duration: 300,
+              useNativeDriver: true,
+            }),
+          ]).start(() => {
+            handleSwipe("left");
+          });
+        }
+        // Check if it's a right swipe
+        else if (dx > swipeThreshold || vx > velocityThreshold) {
+          Animated.parallel([
+            Animated.timing(pan, {
+              toValue: { x: screenWidth * 2, y: dy },
+              duration: 300,
+              useNativeDriver: true,
+            }),
+            Animated.timing(rotate, {
+              toValue: 15,
+              duration: 300,
+              useNativeDriver: true,
+            }),
+          ]).start(() => {
+            handleSwipe("right");
+          });
+        }
+        // Check if it's an upward swipe
+        else if (dy < -swipeThreshold || vy < -velocityThreshold) {
+          Animated.timing(pan, {
+            toValue: { x: dx, y: -screenHeight * 2 },
+            duration: 300,
+            useNativeDriver: true,
+          }).start(() => {
+            handleSwipe("up");
+          });
+        }
+        // If not a swipe, return to original position
+        else {
+          Animated.parallel([
+            Animated.spring(pan, {
+              toValue: { x: 0, y: 0 },
+              useNativeDriver: true,
+              friction: 5,
+              tension: 40,
+            }),
+            Animated.spring(rotate, {
+              toValue: 0,
+              useNativeDriver: true,
+              friction: 5,
+              tension: 40,
+            }),
+          ]).start();
+        }
+      },
+    })
+  ).current;
 
   const cardRotation = rotateCard.interpolate({
     inputRange: [-15, 0, 15],
     outputRange: ["-15deg", "0deg", "15deg"],
   });
 
+  // Combine gesture rotation with button press rotation
+  const combinedRotate = Animated.add(rotate, rotateCard).interpolate({
+    inputRange: [-30, 0, 30],
+    outputRange: ["-30deg", "0deg", "30deg"],
+    extrapolate: 'clamp',
+  });
+
   return (
     <View style={styles.container}>
       <Animated.View
+        {...panResponder.panHandlers}
         style={[
           styles.cardWrapper,
           {
             transform: [
-              { translateX },
-              { translateY },
-              { rotate: cardRotation },
+              { translateX: Animated.add(pan.x, translateX) },
+              { translateY: Animated.add(pan.y, translateY) },
+              { rotate: combinedRotate },
             ],
           },
         ]}
       >
-        <ImageFast source={PNGIcons.bandImage} style={styles.image}>
+        <ImageFast
+          source={PNGIcons.bandImage}
+          style={styles.image}
+          onPress={() => navigation.navigate("Detail")}
+        >
           <View style={styles.overlay} />
 
           <View style={styles.innerContainer}>
@@ -263,10 +385,7 @@ const HomeCard = () => {
                 </View>
               </View>
 
-              <Pressable
-                style={styles.footerRow}
-                onPress={() => navigation.navigate("Detail")}
-              >
+              <View style={styles.footerRow}>
                 <CustomText
                   label={
                     "Lead guitarist looking for a band. Into classic rock and blues."
@@ -276,9 +395,16 @@ const HomeCard = () => {
                   fontFamily={fonts.medium}
                 />
                 <Image source={PNGIcons.forward} style={styles.forwardIcon} />
-              </Pressable>
+              </View>
 
-              <AuthSlider min={1} max={3} marginBottom={20} marginTop={12} gap={8} height={6} />
+              <AuthSlider
+                min={1}
+                max={3}
+                marginBottom={20}
+                marginTop={12}
+                gap={8}
+                height={6}
+              />
             </View>
           </View>
 
@@ -347,7 +473,6 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF29",
     borderRadius: 34,
     borderWidth: 1,
-    // marginHorizontal:6
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

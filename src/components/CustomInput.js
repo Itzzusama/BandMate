@@ -18,11 +18,11 @@ const CustomInput = ({
   keyboardType,
   multiline,
   maxLength,
-  placeholderTextColor = COLORS.white2,
+  placeholderTextColor = COLORS.gray2,
   editable,
   textAlignVertical,
   marginBottom,
-  height = 48,
+  height = 56,
   autoCapitalize,
   error,
   isFocus,
@@ -42,9 +42,10 @@ const CustomInput = ({
   isClear,
   paddingVertical,
   Isicon,
-  isValid,
-  paddingBottom = 6,
-  backgroundColor,
+  iconSrc,
+  paddingBottom = 0,
+  returnKeyType,
+  onSubmitEditing,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hidePass, setHidePass] = useState(true);
@@ -78,9 +79,9 @@ const CustomInput = ({
       <View
         style={{
           marginBottom: marginBottom || 8,
+          paddingBottom: withLabel ? 6 : paddingBottom,
           marginTop,
-          height: withLabel ? 56 : height ? height : multiline ? 180 : 70,
-
+          height: height ? height : multiline ? 180 : 70,
           width: "100%",
           borderRadius: borderRadius || 12,
           paddingLeft: 12,
@@ -89,11 +90,9 @@ const CustomInput = ({
             ? "#EE10450A"
             : showSuccessColor
             ? "#64CD750A"
-            : backgroundColor
-            ? backgroundColor
             : COLORS.inputBg,
           borderColor: error
-            ? "#EE1045CC"
+            ? "#EE1045"
             : showSuccessColor
             ? "#64CD75"
             : borderColor,
@@ -105,18 +104,13 @@ const CustomInput = ({
             label={withLabel}
             color={
               labelColor ||
-              (error
-                ? "#EE1045CC"
-                : showSuccessColor
-                ? "#64CD75"
-                : COLORS.white3)
+              (error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.white3)
             }
             fontFamily={fonts.medium}
             fontSize={12}
             textTransform={"uppercase"}
             marginTop={8}
             lineHeight={12 * 1.4}
-            marginBottom={-4}
           />
         )}
         <View style={[styles.mainContainer]}>
@@ -125,24 +119,22 @@ const CustomInput = ({
               family="MaterialIcons"
               name="search"
               size={26}
-              color={COLORS.white3}
+              color={COLORS.white2}
             />
           ) : null}
 
           <TextInput
             ref={ref}
-            cursorColor="white"
+            cursorColor="#A19375"
             placeholder={placeholder}
+            returnKeyType={returnKeyType}
+            onSubmitEditing={onSubmitEditing}
             style={[
               styles.input,
               {
                 width: secureTextEntry ? "91%" : isSwitch ? "80%" : "99%",
                 paddingVertical: paddingVertical,
-                paddingBottom: !withLabel ? 0 : paddingBottom,
-                bottom: withLabel || secureTextEntry || height == 44 ? 0 : 2,
-                // paddingTop: multiline ? 10 : 0,
                 paddingLeft: search ? 8 : 0,
-                paddingRight: 8,
                 color: error
                   ? "#EE1045"
                   : showSuccessColor
@@ -188,7 +180,7 @@ const CustomInput = ({
                 width: 22,
                 height: 22,
                 marginRight: 10,
-                top: -2,
+                backgroundColor: COLORS.white,
               }}
               onPress={() => {
                 onChangeText?.("");
@@ -197,54 +189,44 @@ const CustomInput = ({
             />
           )}
         </View>
-
         {secureTextEntry && (
-          <ImageFast
-            source={!hidePass ? Images.eye : Images.eyeLine}
-            resizeMode="contain"
-            style={{
-              position: "absolute",
-              right: isValid ? 40 : 17,
-              width: 16,
-              height: 16,
-            }}
-            onPress={() => setHidePass(!hidePass)}
-          />
-        )}
-        {isValid && (
           <Icons
-            family={"Ionicons"}
-            name={"checkmark-circle"}
-            color={"#64CD75"}
-            size={18}
+            name={hidePass ? "eye" : "eye-off"}
+            family={"Feather"}
+            color={COLORS.gray2}
             style={{
               position: "absolute",
               right: 17,
+              top: 21,
+              width: 16,
+              height: 16,
+              zIndex: 999,
             }}
+            size={16}
+            onPress={() => setHidePass(!hidePass)}
           />
         )}
-
         {Isicon ? (
           <View
             style={{
-              backgroundColor: "#4347FF29",
+              backgroundColor: iconSrc ? "#A1937529" : "transparent",
               height: 32,
               width: 32,
               borderRadius: 100,
               position: "absolute",
               right: 10,
               zIndex: 999,
-              top: withLabel ? 7 : 17,
+              top: withLabel ? 12 : 17,
               justifyContent: "center",
               alignItems: "center",
             }}
           >
             <ImageFast
               resizeMode={"contain"}
-              source={Images.ChatBlue}
+              source={iconSrc || Images.Arrow}
               style={{
-                width: 20,
-                height: 20,
+                width: iconSrc ? 16 : 6,
+                height: iconSrc ? 16 : 11,
               }}
             />
           </View>
@@ -256,7 +238,8 @@ const CustomInput = ({
           errorTitle={error}
           color="#EE1045"
           error={error}
-          marginBottom={8}
+          marginBottom={6}
+          font={fonts.regular}
         />
       )}
     </View>
@@ -271,7 +254,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     flex: 1,
-    marginBottom: -4,
   },
   input: {
     height: "100%",

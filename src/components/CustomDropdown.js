@@ -1,5 +1,5 @@
 import { BlurView } from "@react-native-community/blur";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
   FlatList,
   Platform,
@@ -49,7 +49,9 @@ const CustomDropdown = ({
   const [searchText, setSearchText] = useState("");
   const [filteredData, setFilteredData] = useState(data || []);
   const [showSuccessColor, setShowSuccessColor] = useState(false);
-  const [prevError, setPrevError] = useState(error);
+  const prevErrorRef = useRef(error);
+  const prevDataLengthRef = useRef((data || []).length);
+  const prevDataStringRef = useRef(JSON.stringify(data || []));
 
   useEffect(() => {
     if (value) {
@@ -63,17 +65,35 @@ const CustomDropdown = ({
     }
   }, [value]);
 
+  // Combined effect that handles both data and searchText changes
   useEffect(() => {
-    if (!data || data.length === 0) {
+    const currentData = data || [];
+    const currentLength = currentData.length;
+    const currentString = JSON.stringify(currentData);
+    
+    // Check if data actually changed
+    const hasDataChanged = 
+      currentLength !== prevDataLengthRef.current ||
+      currentString !== prevDataStringRef.current;
+    
+    if (hasDataChanged) {
+      prevDataLengthRef.current = currentLength;
+      prevDataStringRef.current = currentString;
+    }
+    
+    // Always filter based on current searchText
+    if (currentLength === 0) {
       setFilteredData([]);
+      setPage(1);
       return;
     }
 
     if (searchText.trim() === "") {
-      setFilteredData(data);
+      setFilteredData(currentData);
+      setPage(1);
     } else {
       const lowerSearch = searchText.toLowerCase();
-      const filtered = data.filter((item) => {
+      const filtered = currentData.filter((item) => {
         if (!item) return false;
         const title = item._id ? item.title : item;
         return (
@@ -81,9 +101,9 @@ const CustomDropdown = ({
         );
       });
       setFilteredData(filtered);
+      setPage(1);
     }
-    setPage(1);
-  }, [searchText, data]);
+  }, [searchText]);
 
   useEffect(() => {
     if (isModalVisible) {
@@ -93,14 +113,14 @@ const CustomDropdown = ({
   }, [isModalVisible, filteredData]);
 
   useEffect(() => {
-    if (prevError && !error && !isError) {
+    if (prevErrorRef.current && !error && !isError) {
       setShowSuccessColor(true);
       const timer = setTimeout(() => {
         setShowSuccessColor(false);
       }, 2000);
       return () => clearTimeout(timer);
     }
-    setPrevError(error);
+    prevErrorRef.current = error;
   }, [error, isError]);
 
   const loadMoreData = () => {
@@ -212,7 +232,7 @@ const CustomDropdown = ({
                     ? "#EE1045CC"
                     : showSuccessColor
                     ? "#64CD75"
-                    : COLORS.subtitle
+                    : COLORS.white2
                 }
                 style={styles.floatingLabel}
               />

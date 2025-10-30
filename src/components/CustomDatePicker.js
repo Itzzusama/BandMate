@@ -26,6 +26,7 @@ const CustomDatePicker = ({
   marginBottom,
   height,
   isIcon = false,
+  isIcon1 = false,
 }) => {
   const [isModal, setModal] = useState(false);
   const [showSuccessColor, setShowSuccessColor] = useState(false);
@@ -77,22 +78,23 @@ const CustomDatePicker = ({
               label={withLabel}
               textTransform="uppercase"
               color={
-                error
-                  ? "#EE1045"
-                  : showSuccessColor
-                  ? "#64CD75"
-                  : COLORS.subtitle
+                error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.white2
               }
               fontFamily={fonts.medium}
               fontSize={12}
             />
           )}
 
-          <View style={isIcon ? styles.dateRow : null}>
-            {isIcon && (
+          <View style={isIcon1 ? styles.dateRow : null}>
+            {isIcon1 && (
               <Image
                 source={Images.smallCalender}
-                style={{ height: 16, width: 16, marginRight: 4 }}
+                style={{
+                  height: 16,
+                  width: 16,
+                  marginRight: 4,
+                  tintColor: COLORS.btnColor,
+                }}
               />
             )}
             <CustomText

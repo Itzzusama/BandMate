@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { COLORS } from "../../../../utils/COLORS";
 import CustomText from "../../../../components/CustomText";
@@ -23,8 +23,8 @@ const PostCard = ({
   commentText = "With the most liked comment",
   commentsCount = 919,
   timeAgo = "9 hours ago",
-  activeIndex = 0, // ✅ which indicator is active
-  totalIndicators = 4, // ✅ how many dots to show
+  activeIndex = 0,
+  totalIndicators = 4,
 }) => {
   return (
     <View style={styles.container}>
@@ -103,6 +103,19 @@ const PostCard = ({
         />
       </View>
 
+      <View style={styles.wrapper}>
+        {[1, 2, 3].map((i, index) => (
+          <View style={styles.cardBg}>
+            <CustomText
+              label={`#${"Crypto"}`}
+              fontSize={12}
+              color={COLORS.gray2}
+              fontFamily={fonts.medium}
+            />
+          </View>
+        ))}
+      </View>
+
       {/* Image + Blur + Gradient */}
       <View style={styles.imageWrapper}>
         <ImageFast source={imageSource} style={styles.image} resizeMode="cover">
@@ -148,63 +161,34 @@ const PostCard = ({
           />
         ))}
       </View>
-      <View style={styles.actionsRow}>
-        <View style={styles.leftActions}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Image source={PNGIcons.heart} style={styles.reactionIocns} />
-            <CustomText
-              label={stats.likes}
-              fontSize={14}
-              color={COLORS.white}
-              fontFamily={fonts.medium}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Icons
-              family="MaterialIcons"
-              name="chat-bubble-outline"
-              size={20}
-              color={COLORS.white}
-            />
-            <CustomText
-              label={stats.comments}
-              fontSize={14}
-              color={COLORS.white}
-              fontFamily={fonts.medium}
-              marginLeft={4}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Image source={Images.trending} style={styles.reactionIocns} />
-            <CustomText
-              label={stats.shares}
-              fontSize={14}
-              color={COLORS.white}
-              fontFamily={fonts.medium}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Icons
-              family="MaterialIcons"
-              name="repeat"
-              size={24}
-              color={COLORS.white}
-            />
-            <CustomText
-              label={stats.shares}
-              fontSize={14}
-              color={COLORS.white}
-              fontFamily={fonts.medium}
-              marginLeft={4}
-            />
-          </TouchableOpacity>
+      <View style={[styles.rowButtons, {}]}>
+        <View style={[styles.rowbtn]}>
+          <Image source={Images.heart} style={{ height: 20, width: 20 }} />
+          <CustomText label={"1.4k"} fontFamily={fonts.medium} fontSize={12} />
         </View>
-        <TouchableOpacity>
-          <Image
-            source={PNGIcons.save}
-            style={[styles.reactionIocns, { marginRight: 0.1 }]}
-          />
+
+        <TouchableOpacity
+          // onPress={onCommentPress}
+          style={styles.rowbtn}
+        >
+          <Image source={Images.chat} style={{ height: 16, width: 16 }} />
+          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
         </TouchableOpacity>
+        <View style={styles.rowbtn}>
+          <Image
+            source={Images.arrowUpRight}
+            style={{ height: 16, width: 16 }}
+          />
+          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
+        </View>
+        <View style={styles.rowbtn}>
+          <Image source={Images.repost} style={{ height: 16, width: 16 }} />
+          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
+        </View>
+        <View style={styles.rowbtn}>
+          <Image source={Images.savePlus} style={{ height: 16, width: 16 }} />
+          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
+        </View>
       </View>
       {/* Post Details */}
       <View style={styles.postDetails}>
@@ -223,37 +207,29 @@ const PostCard = ({
           />
         </View>
 
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <CustomText
-            label={postTitle}
-            fontSize={14}
-            color={COLORS.white}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            fontFamily={fonts.medium}
-          />
-          <CustomText
-            label={"more"}
-            fontSize={14}
-            color={COLORS.white3}
-            fontFamily={fonts.medium}
-            marginLeft={16}
-          />
-        </View>
+        <CustomText marginTop={8} color={COLORS.white2} marginBottom={6}>
+          <Text style={{ color: COLORS.white }}>Google</Text>
+          <Text numberOfLines={1}>
+            {" "}
+            Fonts makes it easy to bring personality...
+          </Text>
+        </CustomText>
 
         <View style={[styles.commentRow]}>
-          <View style={[styles.commentRow, { flex: 1, marginTop: 0 }]}>
+          <View style={[styles.commentRow, { flex: 1 }]}>
             <CustomText
               label={`${commentUser} `}
               fontSize={14}
               color={COLORS.white}
               fontFamily={fonts.medium}
             />
-            <CustomText
-              label={`· `}
-              fontSize={14}
-              color={COLORS.white3}
-              fontFamily={fonts.medium}
+            <View
+              style={{
+                height: 3,
+                width: 3,
+                backgroundColor: "#FFFFFF29",
+                borderRadius: 99,
+              }}
             />
             <CustomText
               label={`${commentText}`}
@@ -264,7 +240,7 @@ const PostCard = ({
           </View>
 
           <Image
-            source={PNGIcons.heart}
+            source={Images.heart}
             style={{ height: 16, width: 16, marginLeft: 6 }}
           />
         </View>
@@ -322,7 +298,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 2,
     paddingHorizontal: 12,
-    paddingBottom: 7,
   },
   headerRight: { flexDirection: "row", alignItems: "center", gap: 10 },
   followButton: {
@@ -391,8 +366,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginBottom: 9,
     borderBottomColor: "#FFFFFF0A",
-    borderBottomWidth: 1,
-    paddingBottom: 10,
     marginHorizontal: 12,
   },
   indicatorDot: {
@@ -412,7 +385,7 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingBottom: 10,
   },
-  commentRow: { flexDirection: "row", marginTop: 2 },
+  commentRow: { flexDirection: "row", alignItems: "center" },
   reactionIocns: {
     height: 26,
     width: 26,
@@ -436,4 +409,35 @@ const styles = StyleSheet.create({
   },
   leftActions: { flexDirection: "row", alignItems: "center", gap: 12 },
   actionButton: { flexDirection: "row", alignItems: "center" },
+  wrapper: {
+    gap: 4,
+    flexWrap: "wrap",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  cardBg: {
+    backgroundColor: "#FFFFFF0A",
+    padding: 10,
+    paddingVertical: 4,
+    borderRadius: 99,
+  },
+  rowbtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+    backgroundColor: "#FFFFFF0A",
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  rowButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+  },
 });

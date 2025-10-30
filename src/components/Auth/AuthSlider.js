@@ -15,6 +15,7 @@ const AuthSlider = ({ min, max, marginTop, marginBottom, gap, height = 4 }) => {
               {
                 backgroundColor: index < min ? COLORS.authHeader : "#FFFFFF17",
                 height,
+                borderRadius: gap && 99,
               },
             ]}
           />
