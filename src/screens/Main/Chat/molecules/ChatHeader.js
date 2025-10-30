@@ -19,7 +19,7 @@ const ChatHeader = ({ title, source, showIcons = true }) => {
     <View style={[styles.mainContainer]}>
       <TouchableOpacity
         activeOpacity={0.6}
-        style={[styles.backIcon]}
+        style={[styles.backIcon, { marginRight: 16 }]}
         onPress={() => navigation.goBack()}
       >
         <Icons
@@ -69,7 +69,7 @@ const ChatHeader = ({ title, source, showIcons = true }) => {
             <ImageFast
               resizeMode="contain"
               source={Images.ChatSetting}
-              style={{ height: 15, width: 15, marginLeft: -3 }}
+              style={{ height: 15, width: 15 }}
             />
           </TouchableOpacity>
 
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: COLORS.inputBg,
     // backgroundColor: "rgba(38, 38, 38, 0.64)",
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
   },
   backIcon: {
     width: 40,
@@ -150,7 +150,6 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
   },
   userImage: {
     width: 24,
