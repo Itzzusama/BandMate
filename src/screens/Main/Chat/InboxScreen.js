@@ -151,7 +151,7 @@ const InboxScreen = ({ route }) => {
     <ScreenWrapper
       scrollEnabled
       statusBarColor="rgba(38, 38, 38, 0.64)"
-      paddingHorizontal={10}
+      paddingHorizontal={12}
       headerUnScrollable={() => (
         <ChatHeader source={Images.user} title={"Catie, 24" || "Chat"} />
       )}

@@ -17,7 +17,7 @@ const GoldPlanGift = () => {
           family="Ionicons"
           name="checkmark-circle"
           color="#64CD75"
-          size={14}
+          size={15}
         />
         <Image source={SettingIcons.timer} style={{ height: 12, width: 12 }} />
         <Text style={styles.giftText}>2 months as a gift !</Text>
