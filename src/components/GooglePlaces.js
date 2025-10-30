@@ -703,23 +703,6 @@ const GooglePlaces = ({
     }
   };
 
-  const handleLocationFromMap = (locationData) => {
-    setSelectedLocationData(locationData);
-    setValue(locationData.address);
-    setSearchQuery(locationData.address);
-
-    addToRecentSearches(locationData);
-
-    setState?.(locationData.state);
-    setCity?.(locationData.city);
-    setZipCode?.(locationData.zipCode);
-    setCountry?.(locationData.country);
-    setLatLong?.({
-      latitude: locationData.latitude,
-      longitude: locationData.longitude,
-    });
-  };
-
   const renderPredictionItem = (
     { item },
     isRecent = false,
@@ -1026,28 +1009,6 @@ const GooglePlaces = ({
     } finally {
       setLoadingNearbyPlaces(false);
     }
-  };
-
-  // Function to get icon for place type
-  const getPlaceIcon = (types) => {
-    if (types.includes("airport")) return PNGIcons.plane;
-    if (types.includes("train_station")) return PNGIcons.bus;
-    if (types.includes("lodging")) return PNGIcons.bed;
-    if (types.includes("restaurant")) return PNGIcons.restaurant;
-    if (types.includes("gym")) return PNGIcons.gym || PNGIcons.fitness;
-    if (types.includes("cafe")) return PNGIcons.coffee || PNGIcons.cafe;
-    return PNGIcons.pin; // default icon
-  };
-
-  // Function to get category label
-  const getCategoryLabel = (types) => {
-    if (types.includes("airport")) return "AIRPORTS";
-    if (types.includes("train_station")) return "TRAIN STATIONS";
-    if (types.includes("lodging")) return "HOTELS";
-    if (types.includes("restaurant")) return "RESTAURANTS";
-    if (types.includes("gym")) return "GYMS";
-    if (types.includes("cafe")) return "COFFEE SHOPS";
-    return "RECOMMENDED";
   };
 
   return (

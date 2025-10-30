@@ -53,12 +53,12 @@ const ConfirmPinCode = ({ route }) => {
           setError(res?.data?.message);
         }
         setLoading(false);
-        if (biometricAvailable) {
-          setShowBiometricModal(true);
-        } else {
-          setGoogleModalVisible(true);
-          // navigation.navigate("OnBoarding1");
-        }
+        // if (biometricAvailable) {
+        //   setShowBiometricModal(true);
+        // } else {
+        //   setGoogleModalVisible(true);
+        //   // navigation.navigate("OnBoarding1");
+        // }
       } catch (error) {
         setLoading(false);
       }
@@ -69,116 +69,116 @@ const ConfirmPinCode = ({ route }) => {
       setError("");
     }
   }, [otp?.length]);
-  useEffect(() => {
-    checkBiometricSupport();
-  }, []);
+  // useEffect(() => {
+  //   checkBiometricSupport();
+  // }, []);
 
-  const checkBiometricSupport = async () => {
-    try {
-      const rnBiometrics = new ReactNativeBiometrics();
-      const { available, biometryType } =
-        await rnBiometrics.isSensorAvailable();
+  // const checkBiometricSupport = async () => {
+  //   try {
+  //     const rnBiometrics = new ReactNativeBiometrics();
+  //     const { available, biometryType } =
+  //       await rnBiometrics.isSensorAvailable();
 
-      setBiometricAvailable(available);
-      setBiometricType(biometryType);
-    } catch (error) {
-      console.log("Biometric check error:", error);
-      setBiometricAvailable(false);
-    }
-  };
-  const getBiometricText = () => {
-    if (biometricType === BiometryTypes.TouchID) {
-      return "Do you want to setup Touch ID?";
-    } else if (biometricType === BiometryTypes.FaceID) {
-      return "Do you want to setup Face ID?";
-    } else if (biometricType === BiometryTypes.Biometrics) {
-      return "Do you want to setup fingerprint?";
-    } else {
-      return "Do you want to setup biometric authentication?";
-    }
-  };
+  //     setBiometricAvailable(available);
+  //     setBiometricType(biometryType);
+  //   } catch (error) {
+  //     console.log("Biometric check error:", error);
+  //     setBiometricAvailable(false);
+  //   }
+  // };
+  // const getBiometricText = () => {
+  //   if (biometricType === BiometryTypes.TouchID) {
+  //     return "Do you want to setup Touch ID?";
+  //   } else if (biometricType === BiometryTypes.FaceID) {
+  //     return "Do you want to setup Face ID?";
+  //   } else if (biometricType === BiometryTypes.Biometrics) {
+  //     return "Do you want to setup fingerprint?";
+  //   } else {
+  //     return "Do you want to setup biometric authentication?";
+  //   }
+  // };
 
-  const onLaterModal = () => {
-    setShowBiometricModal(false);
-    setTimeout(() => {
-      navigation.navigate("OnBoarding1");
-    }, 500);
-  };
-  const onContinueModal = async () => {
-    setBiometricLoading(true);
-    setShowBiometricModal(false);
+  // const onLaterModal = () => {
+  //   setShowBiometricModal(false);
+  //   // setTimeout(() => {
+  //   //   navigation.navigate("OnBoarding1");
+  //   // }, 500);
+  // };
+  // const onContinueModal = async () => {
+  //   setBiometricLoading(true);
+  //   setShowBiometricModal(false);
 
-    try {
-      const deviceId = await DeviceInfo.getUniqueId();
-      const deviceName = await DeviceInfo.getDeviceName();
+  //   try {
+  //     const deviceId = await DeviceInfo.getUniqueId();
+  //     const deviceName = await DeviceInfo.getDeviceName();
 
-      const body = {
-        deviceId: deviceId,
-        os: Platform.OS,
-        name: deviceName,
-        biometricType: biometricType == "Biometrics" ? "fingerprint" : "face",
-      };
-      const createBiometricKeys = await put("user/update-biometric", body);
-      const biometricToken = createBiometricKeys?.data?.data;
+  //     const body = {
+  //       deviceId: deviceId,
+  //       os: Platform.OS,
+  //       name: deviceName,
+  //       biometricType: biometricType == "Biometrics" ? "fingerprint" : "face",
+  //     };
+  //     const createBiometricKeys = await put("user/update-biometric", body);
+  //     const biometricToken = createBiometricKeys?.data?.data;
 
-      const rnBiometrics = new ReactNativeBiometrics();
+  //     const rnBiometrics = new ReactNativeBiometrics();
 
-      const { available, biometryType } =
-        await rnBiometrics.isSensorAvailable();
+  //     const { available, biometryType } =
+  //       await rnBiometrics.isSensorAvailable();
 
-      if (available) {
-        const { keysExist } = await rnBiometrics.biometricKeysExist();
+  //     if (available) {
+  //       const { keysExist } = await rnBiometrics.biometricKeysExist();
 
-        if (!keysExist) {
-          const { publicKey } = await rnBiometrics.createKeys();
-          console.log("Biometric keys created:", publicKey);
-        }
+  //       if (!keysExist) {
+  //         const { publicKey } = await rnBiometrics.createKeys();
+  //         console.log("Biometric keys created:", publicKey);
+  //       }
 
-        const { success, error } = await rnBiometrics.simplePrompt({
-          promptMessage: `Setup ${
-            biometricType === BiometryTypes.TouchID
-              ? "Touch ID"
-              : biometricType === BiometryTypes.FaceID
-              ? "Face ID"
-              : "Fingerprint"
-          }`,
-          cancelButtonText: "Cancel",
-        });
+  //       const { success, error } = await rnBiometrics.simplePrompt({
+  //         promptMessage: `Setup ${
+  //           biometricType === BiometryTypes.TouchID
+  //             ? "Touch ID"
+  //             : biometricType === BiometryTypes.FaceID
+  //             ? "Face ID"
+  //             : "Fingerprint"
+  //         }`,
+  //         cancelButtonText: "Cancel",
+  //       });
 
-        if (success) {
-          console.log("Biometric setup successful");
+  //       if (success) {
+  //         console.log("Biometric setup successful");
 
-          if (biometricToken) {
-            try {
-              await Keychain.setGenericPassword(
-                "biometric_token",
-                biometricToken,
-                {
-                  accessControl: Keychain.ACCESS_CONTROL.BIOMETRIC_ANY,
-                  accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
-                  authenticationType: Keychain.AUTHENTICATION_TYPE.BIOMETRICS,
-                  securityLevel: Keychain.SECURITY_LEVEL.SECURE_HARDWARE,
-                }
-              );
-              console.log("Biometric token stored in Keychain successfully");
-            } catch (keychainError) {
-              console.log("Keychain storage error:", keychainError);
-            }
-          }
-        } else {
-          console.log("Biometric setup failed:", error);
-        }
-      }
-    } catch (error) {
-      console.log("Biometric setup error:", error);
-    } finally {
-      setBiometricLoading(false);
-    }
+  //         if (biometricToken) {
+  //           try {
+  //             await Keychain.setGenericPassword(
+  //               "biometric_token",
+  //               biometricToken,
+  //               {
+  //                 accessControl: Keychain.ACCESS_CONTROL.BIOMETRIC_ANY,
+  //                 accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
+  //                 authenticationType: Keychain.AUTHENTICATION_TYPE.BIOMETRICS,
+  //                 securityLevel: Keychain.SECURITY_LEVEL.SECURE_HARDWARE,
+  //               }
+  //             );
+  //             console.log("Biometric token stored in Keychain successfully");
+  //           } catch (keychainError) {
+  //             console.log("Keychain storage error:", keychainError);
+  //           }
+  //         }
+  //       } else {
+  //         console.log("Biometric setup failed:", error);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log("Biometric setup error:", error);
+  //   } finally {
+  //     setBiometricLoading(false);
+  //   }
 
-    setTimeout(() => {
-      navigation.navigate("OnBoarding1");
-    }, 500);
-  };
+  //   // setTimeout(() => {
+  //   //   navigation.navigate("OnBoarding1");
+  //   // }, 500);
+  // };
   return (
     <ScreenWrapper
       scrollEnabled
@@ -204,7 +204,7 @@ const ConfirmPinCode = ({ route }) => {
       />
 
       <OTPComponent value={otp} setValue={setOtp} error={error} />
-      <BiometricModal
+      {/* <BiometricModal
         isVisible={showBiometricModal}
         onDisable={() => setShowBiometricModal(false)}
         title={getBiometricText()}
@@ -214,7 +214,7 @@ const ConfirmPinCode = ({ route }) => {
         onBtnOne={onContinueModal}
         loading={biometricLoading}
         onBtnTwo={onLaterModal}
-      />
+      /> */}
       <CustomModalGooglePlaces
         isVisible={googleModalVisible}
         onClose={() => {

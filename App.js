@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { PersistGate } from "redux-persist/integration/react";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import NetInfo from "@react-native-community/netinfo";
+import BootSplash from "react-native-bootsplash";
 import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import {
@@ -204,6 +205,14 @@ const App = () => {
     }
   };
 
+  useEffect(() => {
+    if (!isCheckingConnection && !showNetworkError) {
+      setTimeout(() => {
+        BootSplash.hide({ fade: true });
+      }, 200);
+    }
+  }, [isCheckingConnection, showNetworkError]);
+
   const retryConnection = async () => {
     setIsCheckingConnection(true);
 
@@ -361,7 +370,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-
   loadingContainer: {
     flex: 1,
     justifyContent: "center",

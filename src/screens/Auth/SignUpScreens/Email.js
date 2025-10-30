@@ -1,4 +1,11 @@
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -41,11 +48,21 @@ const Email = forwardRef(
     }, [state]);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const errorCheck = (val, cond) => {
+    useEffect(() => {
+      if (email) {
+        const newError = errorCheck(email, false);
+        setError(newError);
+      }
+    }, [email]);
+
+    // Modify errorCheck function to not set email directly
+    const errorCheck = (val, updateEmail = false) => {
       let newErrors = "";
-      if (cond) {
+
+      if (updateEmail) {
         setEmail(val);
       }
+
       if (!val.trim()) {
         newErrors = "Please enter your email";
       } else if (!emailRegex.test(val.trim())) {
@@ -60,16 +77,25 @@ const Email = forwardRef(
       return newErrors;
     };
 
+    useEffect(() => {
+      if (phone) {
+        const newError = phoneValidationCheck(phone);
+        setPhoneError(newError);
+      }
+    }, [phone]);
+
     const phoneValidationCheck = (phoneValue) => {
       let newErrors = "";
       if (!phoneValue || phoneValue.trim().length === 0) {
         newErrors = "Please enter your phone number";
+      } else if (phoneValue.length < 7) {
+        newErrors = "Please enter a valid phone number";
       } else {
-        if (phoneValue.length < 7) {
-          newErrors = "Please enter a valid phone number";
-        } else {
-          newErrors = "";
-        }
+        newErrors = "";
+        setShowPhoneSuccessColor(true);
+        setTimeout(() => {
+          setShowPhoneSuccessColor(false);
+        }, 2000);
       }
       return newErrors;
     };
@@ -118,16 +144,12 @@ const Email = forwardRef(
         setLoading(true);
         const res = await post(`auth/send-otp`, body);
         if (res?.data?.success) {
-          Alert.alert(
-            "OTP Received", // Title
-            res.data?.result?.toString(), // Message
-            [
-              {
-                text: "OK",
-                onPress: () => console.log("OK Pressed"),
-              },
-            ]
-          );
+          Alert.alert("OTP Received", res.data?.result?.toString(), [
+            {
+              text: "OK",
+              onPress: () => console.log("OK Pressed"),
+            },
+          ]);
 
           if (currentIndex < onboardingCount) {
             setCurrentIndex(currentIndex + 1);
@@ -377,12 +399,12 @@ const Email = forwardRef(
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
-                  if (error) {
-                    const newError = errorCheck(text, true);
-                    if (!newError) {
-                      setError("");
-                    }
-                  }
+                  // if (error) {
+                  //   const newError = errorCheck(text, true);
+                  //   if (!newError) {
+                  //     setError("");
+                  //   }
+                  // }
                 }}
                 withLabel={"EMAIL ADDRESS"}
                 error={error}
@@ -391,6 +413,7 @@ const Email = forwardRef(
                 placeholder="E.g. abc@email.com"
                 autoCapitalize="none"
                 keyboardType="email-address"
+                showErrorMessage={false}
               />
 
               <ErrorComponent
@@ -413,9 +436,7 @@ const Email = forwardRef(
               />
               <ErrorComponent
                 errorTitle={
-                  showSuccessColor
-                    ? "Valid verification code."
-                    : "We will later use this email to verify your account."
+                  "We will later use this email to verify your account."
                 }
                 error={error}
                 isValid={showSuccessColor}
@@ -461,7 +482,10 @@ const Email = forwardRef(
                       color={COLORS.gray2}
                     >
                       receive the latest news about{" "}
-                      <CustomText color={COLORS.white} marginBottom={-5.2}>
+                      <CustomText
+                        color={COLORS.white}
+                        marginBottom={Platform.OS == "iod" ? -5.2 : -7.2}
+                      >
                         BandMate
                       </CustomText>
                       , and promotional offers.

@@ -4,7 +4,7 @@ import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import Firebase
 import GoogleMaps
-
+import RNBootSplash
 
 
 @main

@@ -106,26 +106,26 @@ const SignUpScreens = () => {
 
   const totalSteps = steps.length;
 
-  // useEffect(() => {
-  //   if (token) {
-  //     const missingInstruments =
-  //       !user?.Instruments || user.Instruments.length === 0;
-  //     const missingGenres = !user?.Genres || user.Genres.length === 0;
-  //     const missingArtists = !user?.Artists || user.Artists.length === 0;
-  //     const missingImages = !user?.pictures || user.pictures.length === 0;
-  //     let targetStepName = null;
+  useEffect(() => {
+    if (token) {
+      const missingInstruments =
+        !user?.Instruments || user.Instruments.length === 0;
+      const missingGenres = !user?.Genres || user.Genres.length === 0;
+      const missingArtists = !user?.Artists || user.Artists.length === 0;
+      const missingImages = !user?.pictures || user.pictures.length === 0;
+      let targetStepName = null;
 
-  //     if (missingInstruments) targetStepName = "Instruments";
-  //     else if (missingGenres) targetStepName = "Genres";
-  //     else if (missingArtists) targetStepName = "Artists";
-  //     else if (missingImages) targetStepName = "Pictures";
+      if (missingInstruments) targetStepName = "Instruments";
+      else if (missingGenres) targetStepName = "Genres";
+      else if (missingArtists) targetStepName = "Artists";
+      else if (missingImages) targetStepName = "Pictures";
 
-  //     if (targetStepName) {
-  //       const targetIndex = steps.indexOf(targetStepName);
-  //       if (targetIndex !== -1) setCurrentIndex(targetIndex + 1);
-  //     }
-  //   }
-  // }, [token, user, steps]);
+      if (targetStepName) {
+        const targetIndex = steps.indexOf(targetStepName);
+        if (targetIndex !== -1) setCurrentIndex(targetIndex + 1);
+      }
+    }
+  }, [token, user, steps]);
 
   // useEffect(() => {
   //   const currentStep = steps[currentIndex - 1];

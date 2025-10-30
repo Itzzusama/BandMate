@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  useWindowDimensions,
   ScrollView,
   Image,
 } from "react-native";
@@ -18,10 +17,11 @@ import { ArtistImgs } from "../../../assets/images/artistImgs";
 import { put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { useDispatch } from "react-redux";
+import { sortAlphabetically } from "../../../utils/constants";
 
 const artists = [
-  { name: "Arctic Monkeys", img: ArtistImgs.img6 },
   { name: "Blur", img: ArtistImgs.img2 },
+  { name: "Arctic Monkeys", img: ArtistImgs.img6 },
   { name: "Beastie Boys", img: ArtistImgs.img3 },
   { name: "Coldplay", img: ArtistImgs.img4 },
   { name: "David Bowie", img: ArtistImgs.img5 },
@@ -30,21 +30,10 @@ const artists = [
   { name: "Linkin Park", img: ArtistImgs.img2 },
   { name: "Oasis", img: ArtistImgs.img3 },
 ];
-
+const sortedArtists = sortAlphabetically(artists);
 const Artists = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
-    const { width } = useWindowDimensions();
     const dispatch = useDispatch();
-
-    const SPACING = width < 360 ? 8 : width < 400 ? 10 : width < 480 ? 12 : 14;
-
-    const MIN_CARD_SIZE = width < 360 ? 85 : width < 400 ? 95 : 100;
-
-    const numColumns = Math.max(
-      3,
-      Math.floor(width / (MIN_CARD_SIZE + SPACING * 2))
-    );
-    const CARD_SIZE = (width - SPACING * (numColumns + 1)) / numColumns;
 
     const [selectedArtists, setSelectedArtists] = useState([]);
     const [error, setError] = useState("");
@@ -66,8 +55,7 @@ const Artists = forwardRef(
           ? prev.filter((a) => a !== name)
           : [...prev, name];
 
-        if (updated.length < 3) {
-        } else {
+        if (updated.length >= 3) {
           setError("");
         }
 
@@ -92,9 +80,7 @@ const Artists = forwardRef(
         const res = await put("user/profile", {
           Artists: selectedArtists,
         });
-        console.log(res?.data);
         if (res?.data?.success) {
-          console.log(res?.data);
           setState({ ...state, artists: selectedArtists });
           setCurrentIndex(currentIndex + 1);
           dispatch(setUserData(res?.data?.user));
@@ -137,88 +123,62 @@ const Artists = forwardRef(
           marginTop={4}
         />
 
-        {/* ✅ Dynamic counter + color feedback */}
         <ErrorComponent
           errorTitle={`Choose at least ${selectedArtists.length}/3`}
-          color={
-            error
-              ? "#EE1045" // red when not enough
-              : showSuccessColor
-              ? "#64CD75" // green briefly when success
-              : "" // neutral
-          }
+          color={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
           isValid={showSuccessColor}
           error={error}
           color1={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
         />
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: 60,
-            alignItems: "center",
-            marginTop: 20,
-          }}
-        >
-          <View
-            style={[
-              styles.grid,
-              {
-                gap: SPACING,
-                justifyContent: "center",
-              },
-            ]}
-          >
-            {artists.map((artist) => {
-              const isSelected = selectedArtists.includes(artist.name);
-              return (
-                <TouchableOpacity
-                  key={artist.name}
-                  style={[styles.card, { width: CARD_SIZE }]}
-                  onPress={() => toggleArtist(artist.name)}
-                  activeOpacity={0.8}
+        <View style={styles.grid}>
+          {sortedArtists.map((artist) => {
+            const isSelected = selectedArtists.includes(artist.name);
+            return (
+              <TouchableOpacity
+                key={artist.name}
+                style={styles.card}
+                onPress={() => toggleArtist(artist.name)}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={[
+                    styles.imageWrapper,
+                    {
+                      borderColor: isSelected ? COLORS.btnColor : COLORS.black,
+                      borderWidth: isSelected ? 3 : 0,
+                    },
+                  ]}
                 >
-                  <View
-                    style={[
-                      styles.imageWrapper,
-                      {
-                        borderColor: isSelected
-                          ? COLORS.btnColor
-                          : COLORS.black,
-                        borderWidth: isSelected ? 2 : 0,
-                      },
-                    ]}
-                  >
-                    <Image
-                      source={artist.img}
-                      style={styles.artistImage}
-                      resizeMode="cover"
-                    />
-                    {isSelected && (
-                      <View style={styles.overlay}>
-                        <Icons
-                          family="MaterialCommunityIcons"
-                          name={"check-circle"}
-                          size={36}
-                          color={COLORS.btnColor}
-                        />
-                      </View>
-                    )}
-                  </View>
-
-                  <CustomText
-                    label={artist.name}
-                    fontSize={12}
-                    color={COLORS.white}
-                    fontFamily={fonts.medium}
-                    textAlign="center"
-                    marginTop={2}
+                  <Image
+                    source={artist.img}
+                    style={styles.artistImage}
+                    resizeMode="cover"
                   />
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </ScrollView>
+                  {isSelected && (
+                    <View style={styles.overlay}>
+                      <Icons
+                        family="MaterialCommunityIcons"
+                        name={"check-circle"}
+                        size={36}
+                        color={COLORS.btnColor}
+                      />
+                    </View>
+                  )}
+                </View>
+
+                <CustomText
+                  label={artist.name}
+                  fontSize={12}
+                  color={COLORS.white}
+                  fontFamily={fonts.medium}
+                  textAlign="center"
+                  marginTop={4}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
     );
   }
@@ -233,16 +193,22 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
   },
   card: {
+    width: "33.33%",
     alignItems: "center",
-    marginBottom: 0,
+    marginBottom: 12,
   },
   imageWrapper: {
     borderRadius: 100,
     overflow: "hidden",
-    height: 108,
-    width: 108,
+    height: 116,
+    width: 116,
+    justifyContent: "center",
+    alignItems: "center",
   },
   artistImage: {
     width: "100%",

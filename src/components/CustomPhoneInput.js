@@ -195,6 +195,8 @@ const CustomPhoneInput = ({
             style={[
               styles.phoneInput,
               {
+                top: phoneNumber ? 0 : 1,
+                fontFamily: phoneNumber ? fonts.medium : fonts.regular,
                 color: error
                   ? "#EE1045"
                   : showSuccessColor
@@ -292,7 +294,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     lineHeight: 16 * 1.4,
-    fontFamily: fonts.medium,
+
     height: "100%",
     paddingVertical: 0,
     paddingBottom: 6,

@@ -6,7 +6,6 @@ import {
   useWindowDimensions,
   ScrollView,
 } from "react-native";
-
 import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
 import SearchInput from "../../../components/SearchInput";
@@ -25,7 +24,6 @@ const instrumentCategories = [
       { name: "Cello", color: "#608109" },
       { name: "Double Bass", color: "#26856B" },
       { name: "Harp", color: "#503751" },
-      // { name: "Guitar", color: "#477D94" },
       { name: "Banjo", color: "#477D95" },
       { name: "Mandolin", color: "#0F73EC" },
       { name: "Ukulele", color: "#8E66AC" },
@@ -68,7 +66,7 @@ const instrumentCategories = [
     name: "Keyboard Instruments",
     instruments: [
       { name: "Organ", color: "#DC158C" },
-      // { name: "Piano", color: "#006450" },
+
       { name: "Harpsichord", color: "#8400E7" },
       { name: "Chabichord", color: "#1D3264" },
       { name: "Celesta", color: "#608109" },
@@ -133,6 +131,20 @@ const instrumentCategories = [
     ],
   },
 ];
+const COLORS_PALETTE = [
+  "#DC158C",
+  "#006450",
+  "#8400E7",
+  "#1D3264",
+  "#608109",
+  "#26856B",
+  "#503751",
+  "#477D94",
+  "#0F73EC",
+  "#8E66AC",
+  "#E81529",
+  "#64CD75",
+];
 
 const Instruments = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
@@ -146,21 +158,33 @@ const Instruments = forwardRef(
     const [error, setError] = useState("");
     const [prevError, setPrevError] = useState("");
     const [showSuccessColor, setShowSuccessColor] = useState(false);
+
     useEffect(() => {
-      if (prevError && !error) {
+      const newError = errorCheck(selectedInstruments);
+      setError(newError);
+
+      if (selectedInstruments.length > 0) {
         setShowSuccessColor(true);
         const timer = setTimeout(() => setShowSuccessColor(false), 2000);
         return () => clearTimeout(timer);
       }
-      setPrevError(error);
-    }, [error]);
+    }, [selectedInstruments]);
 
-    const errorCheck = () => {
-      let newErrors = "";
-      if (selectedInstruments.length === 0) {
-        newErrors = "Please choose at least one instrument";
+    const errorCheck = (instruments) => {
+      if (instruments?.length === 0) {
+        return "Please choose at least one instrument";
       }
-      return newErrors;
+      return "";
+    };
+
+    const toggleInstrument = (instrumentName) => {
+      setSelectedInstruments((prev) => {
+        const updated = prev.includes(instrumentName)
+          ? prev.filter((i) => i !== instrumentName)
+          : [...prev, instrumentName];
+        setState({ ...state, instruments: updated }); // Update parent state
+        return updated;
+      });
     };
 
     const submit = () => {
@@ -180,22 +204,20 @@ const Instruments = forwardRef(
 
     useImperativeHandle(ref, () => ({ submit, back }));
 
-    const toggleInstrument = (instrumentName) => {
-      let updatedList = [];
-      if (selectedInstruments.includes(instrumentName)) {
-        updatedList = selectedInstruments.filter((i) => i !== instrumentName);
-      } else {
-        updatedList = [...selectedInstruments, instrumentName];
-      }
+    const coloredInstrumentCategories = instrumentCategories.map((category) => {
+      const sortedInstruments = [...category.instruments].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
 
-      setSelectedInstruments(updatedList);
+      const instrumentsWithColors = sortedInstruments.map(
+        (instrument, index) => {
+          const colorIndex = index % COLORS_PALETTE.length;
+          return { ...instrument, color: COLORS_PALETTE[colorIndex] };
+        }
+      );
 
-      if (updatedList.length === 0) {
-        setError("Please choose at least one instrument");
-      } else {
-        setError("");
-      }
-    };
+      return { ...category, instruments: instrumentsWithColors };
+    });
 
     const renderInstrumentCard = (instrument) => {
       const isSelected = selectedInstruments.includes(instrument.name);
@@ -225,7 +247,7 @@ const Instruments = forwardRef(
             <View style={styles.icon}>
               <Icons
                 family="MaterialCommunityIcons"
-                name={"check-circle"}
+                name="check-circle"
                 size={20}
                 color={COLORS.white}
               />
@@ -246,7 +268,7 @@ const Instruments = forwardRef(
             marginTop={8}
             marginBottom={6}
           />
-          <SearchInput placeholder={"Enter an instrument"} />
+          <SearchInput placeholder="Enter an instrument" />
           <CustomText
             label="Just enter a name."
             fontSize={12}
@@ -256,27 +278,23 @@ const Instruments = forwardRef(
             marginTop={4}
           />
 
-          {/* ✅ Dynamic error color */}
           <ErrorComponent
             errorTitle={`Choose at least ${
               selectedInstruments.length > 1 ? 1 : selectedInstruments.length
             }/1`}
             error={error}
+            isValid={showSuccessColor}
             color={
-              error
-                ? "#EE1045" // red
-                : showSuccessColor
-                ? "#64CD75" // green
-                : "" // neutral
+              showSuccessColor ? "#64CD75" : error ? "#EE1045CC" : COLORS.gray2
             }
-            color1={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
+            marginBottom={12}
           />
 
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 20, marginTop: 12 }}
           >
-            {instrumentCategories.map((category) => (
+            {coloredInstrumentCategories.map((category) => (
               <View key={category.name} style={{ marginBottom: 12 }}>
                 <CustomText
                   label={category.name}
@@ -286,7 +304,6 @@ const Instruments = forwardRef(
                   color={COLORS.white}
                   fontFamily={fonts.medium}
                 />
-
                 <View style={styles.row}>
                   {category.instruments.map((instrument) =>
                     renderInstrumentCard(instrument)

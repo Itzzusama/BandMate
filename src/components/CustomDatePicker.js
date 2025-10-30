@@ -5,8 +5,6 @@ import moment from "moment";
 
 import ErrorComponent from "./ErrorComponent";
 import CustomText from "./CustomText";
-import Icons from "./Icons";
-
 import { COLORS } from "../utils/COLORS";
 import fonts from "../assets/fonts";
 import { PNGIcons } from "../assets/images/icons";
@@ -41,6 +39,14 @@ const CustomDatePicker = ({
     }
     setPrevError(error);
   }, [error]);
+
+  // ✅ Choose formatted text for display
+  const formattedLabel = value
+    ? moment(value).format(
+        type === "date" ? "MMMM DD, YYYY" : "h:mm A" // 🧠 "April 10, 2027"
+      )
+    : placeholder;
+
   return (
     <>
       <TouchableOpacity
@@ -96,13 +102,8 @@ const CustomDatePicker = ({
               />
             )}
             <CustomText
-              label={
-                value
-                  ? moment(value).format(
-                      type == "date" ? "DD/MM/YYYY" : "h:mm A"
-                    )
-                  : placeholder
-              }
+              label={formattedLabel}
+              fontFamily={value ? fonts.medium : fonts.regular}
               fontSize={16}
               lineHeight={16 * 1.4}
               color={
@@ -127,6 +128,7 @@ const CustomDatePicker = ({
           </TouchableOpacity>
         )}
       </TouchableOpacity>
+
       {(error || defaultError) && (
         <ErrorComponent
           error={error}
@@ -179,12 +181,5 @@ const styles = StyleSheet.create({
   calendarButton: {
     width: 32,
     height: 32,
-  },
-  rightIcon: {
-    width: 20,
-    height: 20,
-    position: "absolute",
-    right: 15,
-    resizeMode: "contain",
   },
 });

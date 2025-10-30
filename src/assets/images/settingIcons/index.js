@@ -18,4 +18,5 @@ export const SettingIcons = {
   platinum: require("./platinum.png"),
   pro: require("./pro.png"),
   silver: require("./silver.png"),
+  timer: require("./timer.png"),
 };

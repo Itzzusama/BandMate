@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
   },
   subtitle: {
-    color: COLORS.white,
+    color: COLORS.white2,
     fontSize: 14,
     fontFamily: fonts.regular,
     marginTop: 3,

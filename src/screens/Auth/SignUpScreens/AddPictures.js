@@ -111,25 +111,25 @@ const AddPictures = forwardRef(
       if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
-      // try {
-      //   setError("");
-      //   const res = await put("user/profile", {
-      //     pictures: images,
-      //   });
+      try {
+        setError("");
+        const res = await put("user/profile", {
+          pictures: images,
+        });
 
-      //   if (res?.data?.success) {
-      //     dispatch(setUserData(res?.data?.user));
-      //     setState({ ...state, images });
-      //     if (currentIndex < onboardingCount) {
-      //       setCurrentIndex(currentIndex + 1);
-      //     }
-      //   } else {
-      //     setError("Failed to update profile. Please try again.");
-      //   }
-      // } catch (err) {
-      //   console.log("Submit error:", err);
-      //   setError("Something went wrong while saving.");
-      // }
+        if (res?.data?.success) {
+          dispatch(setUserData(res?.data?.user));
+          setState({ ...state, images });
+          if (currentIndex < onboardingCount) {
+            setCurrentIndex(currentIndex + 1);
+          }
+        } else {
+          setError("Failed to update profile. Please try again.");
+        }
+      } catch (err) {
+        console.log("Submit error:", err);
+        setError("Something went wrong while saving.");
+      }
     };
 
     const back = () => {

@@ -33,6 +33,7 @@ import {
   resetLocationRequestState,
 } from "../utils/LocationUtils";
 import ImageFast from "./ImageFast";
+import Icons from "./Icons";
 
 const API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 
@@ -165,7 +166,13 @@ const CustomModalGooglePlaces = ({
   const { recentSearches, savedLocations } = useSelector(
     (state) => state.users
   );
-
+  const [address, setAddress] = useState("");
+  const [latLong, setLatLong] = useState(null);
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [country, setCountry] = useState("");
+  const [value, setValue] = useState("");
   const [searchQuery, setSearchQuery] = useState(initialValue);
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -788,12 +795,18 @@ const CustomModalGooglePlaces = ({
         </View>
 
         {distanceText ? (
-          <View style={{ alignItems: "flex-end", justifyContent: "center" }}>
+          <View
+            style={{
+              alignItems: "flex-end",
+              justifyContent: "center",
+            }}
+          >
             <CustomText
               label={distanceText}
               fontFamily={fonts.medium}
               fontSize={14}
               color={COLORS.white2}
+              marginTop={4}
             />
           </View>
         ) : loadingDistances && currentUserLocation ? (
@@ -962,14 +975,53 @@ const CustomModalGooglePlaces = ({
                 height: 20,
                 width: 20,
 
-                tintColor: COLORS.white3,
+                tintColor: COLORS.white2,
               }}
             />
           </TouchableOpacity>
         </View>
+
         <TouchableOpacity
           activeOpacity={0.6}
-          style={[styles.selectMap]}
+          style={[styles.selectMap, { borderTopWidth: 2 }]}
+          onPress={() => {
+            setTimeout(() => {
+              navigation.navigate("PicLocation", {
+                setValue,
+                setLatLong,
+                setState,
+                setCity,
+                setZipCode,
+                setCountry,
+                shouldOpenModalOnReturn: true,
+              });
+            }, 500);
+          }}
+        >
+          <View style={styles.row}>
+            <Image
+              source={PNGIcons.map}
+              style={{ height: 24, width: 24, tintColor: COLORS.white }}
+            />
+            <CustomText
+              label={"Select On The Map"}
+              fontSize={16}
+              fontFamily={fonts.medium}
+              marginLeft={8}
+              marginBottom={-2}
+            />
+          </View>
+          <Icons
+            family={"Ionicons"}
+            name={"chevron-forward-outline"}
+            color={COLORS.white2}
+            size={18}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={[styles.selectMap, { borderBottomWidth: 0 }]}
           onPress={handleCurrentLocationSelection}
           disabled={isLoadingCurrentLocation}
         >
@@ -1188,6 +1240,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     resizeMode: "contain",
+    tintColor: COLORS.white2,
   },
   divider: {
     flexDirection: "row",
