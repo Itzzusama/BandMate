@@ -1,7 +1,10 @@
 import { StyleSheet, View, Text } from "react-native";
+
+import CustomText from "./CustomText";
 import Icons from "./Icons";
-import { COLORS } from "../utils/COLORS";
+
 import fonts from "../assets/fonts";
+import { COLORS } from "../utils/COLORS";
 
 const ErrorComponent = ({
   errorTitle,
@@ -11,14 +14,18 @@ const ErrorComponent = ({
   marginTop,
   secondTitle,
   error,
+  color1,
   isValid,
   hideInfo,
+  numberOfLines,
+  TextWidth,
   infoTop,
-  textColor,
+  highlight,
+  font
 }) => {
   return (
     <View style={[styles.row, { marginBottom, alignSelf, marginTop }]}>
-      {!hideInfo && (
+      {hideInfo ? null : (
         <Icons
           family={isValid ? "Ionicons" : error ? "Entypo" : "Feather"}
           name={
@@ -26,25 +33,41 @@ const ErrorComponent = ({
           }
           size={12}
           marginRight={4}
-          color={color || COLORS.white2}
-          marginTop={infoTop || 3}
+          color={color || "rgba(255, 255, 255, 0.64)"}
+          marginTop={infoTop || 2}
         />
       )}
 
-      {/* ✅ Single Text node with nested children */}
-      <Text style={styles.text}>
+      <Text
+        numberOfLines={numberOfLines}
+        style={{
+          fontSize: 12,
+          color: color || "rgba(255, 255, 255, 0.64)",
+          width: TextWidth,
+          textTransform: "none",
+        }}
+      >
+        {errorTitle}
         <Text
-          style={[
-            styles.errorTitle,
-            { color: textColor ? textColor : COLORS.white2 },
-          ]}
+          style={{
+            fontSize: 12,
+            fontFamily:font|| fonts.medium,
+            color: "white",
+            width: TextWidth,
+            textTransform: "none",
+          }}
         >
-          {errorTitle}
+          {highlight}
         </Text>
-        {secondTitle ? (
-          <Text style={styles.secondTitle}> {secondTitle}</Text>
-        ) : null}
       </Text>
+
+      <CustomText
+        label={secondTitle}
+        fontSize={12}
+        color={color1 || COLORS.white}
+        fontFamily={fonts.medium}
+        lineHeight={12 * 1.4}
+      />
     </View>
   );
 };
@@ -54,22 +77,6 @@ export default ErrorComponent;
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  text: {
-    flexShrink: 1,
-    flexWrap: "wrap",
-  },
-  errorTitle: {
-    fontSize: 12,
-    color: COLORS.white2,
-    lineHeight: 12 * 1.4,
-    fontFamily: fonts.regular,
-  },
-  secondTitle: {
-    fontSize: 12,
-    color: COLORS.white,
-    lineHeight: 12 * 1.4,
-    fontFamily: fonts.medium,
+    borderRadius: 8,
   },
 });

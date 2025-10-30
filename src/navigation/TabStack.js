@@ -11,6 +11,7 @@ import Home from "../screens/Main/Home";
 import Event from "../screens/Main/Event";
 import SocialFeeds from "../screens/Main/SocialFeeds";
 import Settings from "../screens/Main/Settings";
+import Icons from "../components/Icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -114,6 +115,14 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           })}
         </View>
       </View>
+
+      <TouchableOpacity
+        style={[styles.plusButton, { bottom: 20 + insets.bottom }]}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("PublishPost")}
+      >
+        <Icons family="Feather" name="plus" size={20} color={COLORS.white} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -139,42 +148,33 @@ export default TabStack;
 
 const styles = StyleSheet.create({
   icon: {
-    width: 26,
-    height: 26,
-    resizeMode: "contain",
-  },
-  icon2: {
-    width: 21,
-    height: 21,
-    resizeMode: "contain",
-  },
-  icon3: {
-    width: 28,
-    height: 28,
+    width: 22,
+    height: 22,
     resizeMode: "contain",
   },
   buzz: {
-    width: 48,
-    height: 48,
-    borderRadius: 100,
+    width: 46,
+    height: 46,
+    borderRadius: 99,
   },
   customButtonContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   iconMainContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 100,
+    width: 48,
+    height: 48,
+    borderRadius: 99,
     justifyContent: "center",
     alignItems: "center",
   },
   tabContentContainer: {
     backgroundColor: "#252525",
     borderRadius: 100,
-    alignSelf: "center",
+    alignSelf: "flex-start",
     marginTop: 10,
-    height: 64,
+    marginLeft: 20,
+    height: 56,
     overflow: "hidden",
   },
   tabMainContainer: {
@@ -182,6 +182,24 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     zIndex: 999,
+    bottom: 0,
+  },
+  plusButton: {
+    position: "absolute",
+    right: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#FFFFFF35",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.16)",
+  },
+  tabBG: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
     bottom: 0,
   },
 });

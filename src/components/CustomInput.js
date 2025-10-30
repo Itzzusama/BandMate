@@ -43,7 +43,6 @@ const CustomInput = ({
   paddingVertical,
   Isicon,
   iconSrc,
-  paddingBottom = 0,
   returnKeyType,
   onSubmitEditing,
   isValid,

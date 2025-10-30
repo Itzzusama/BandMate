@@ -199,4 +199,5 @@ export const Images = {
   heart: require("./heart.png"),
   savePlus: require("./savePlus.png"),
   repost: require("./repost.png"),
+  PostSample: require("./PostSample.png"),
 };

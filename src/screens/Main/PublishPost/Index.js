@@ -778,34 +778,40 @@ const PublishPost = ({ route }) => {
             )}
           </View>
         )}
-
-        {uploadedImages?.length > 0 && (
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              marginVertical: 16,
-            }}
-          >
-            {["1:1 ratio", "4:5 ratio", "16:9 ratio"].map((item, index) => {
-              return (
-                <TouchableOpacity
-                  key={`ratio-${index}`}
-                  onPress={() => setSize(item)}
-                  style={[styles.ratio, size === item && styles.selected]}
-                >
-                  <CustomText
-                    label={item}
-                    fontSize={14}
-                    fontFamily={fonts.medium}
-                    color={size === item ? COLORS.black : COLORS.white}
-                  />
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+        {uploadedImages?.length == 0 && (
+          <ImageFast
+            source={Images.PostSample}
+            style={{ height: 350, width: "100%", borderRadius: 16 }}
+            resizeMode={"contain"}
+          />
         )}
+        {/* {uploadedImages?.length > 0 && ( */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 16,
+          }}
+        >
+          {["1:1 ratio", "4:5 ratio", "16:9 ratio"].map((item, index) => {
+            return (
+              <TouchableOpacity
+                key={`ratio-${index}`}
+                onPress={() => setSize(item)}
+                style={[styles.ratio, size === item && styles.selected]}
+              >
+                <CustomText
+                  label={item}
+                  fontSize={14}
+                  fontFamily={fonts.medium}
+                  color={size === item ? COLORS.black : COLORS.white}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {/* )} */}
         {errors.size && (
           <ErrorComponent errorTitle={errors.size} color="#EE1045" />
         )}
@@ -904,7 +910,7 @@ const PublishPost = ({ route }) => {
           />
         )}
 
-        <Divider marginVertical={16} color="rgba(255, 255, 255, 0.04)" />
+        <Divider marginVertical={16}  color="rgba(255, 255, 255, 0.04)" />
 
         <CustomInputTextOnly
           onPress={() => setIsFilterModalVisible(true)}
