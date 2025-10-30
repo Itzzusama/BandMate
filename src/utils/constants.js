@@ -705,3 +705,12 @@ export const pro_fearures = [
   "Fine tune your Matches",
   "Ad-free experience",
 ];
+export const sortAlphabetically = (array, key = "name") => {
+  if (!Array.isArray(array)) return [];
+  return [...array].sort((a, b) =>
+    (a[key] || "")
+      .toString()
+      .toLowerCase()
+      .localeCompare((b[key] || "").toString().toLowerCase())
+  );
+};

@@ -46,6 +46,10 @@ const CustomInput = ({
   paddingBottom = 0,
   returnKeyType,
   onSubmitEditing,
+  isValid,
+  paddingBottom = 6,
+  backgroundColor,
+  showErrorMessage = true,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hidePass, setHidePass] = useState(true);
@@ -140,6 +144,7 @@ const CustomInput = ({
                   : showSuccessColor
                   ? "#64CD75"
                   : COLORS.white,
+                fontFamily: value ? fonts.medium : fonts.regular,
               },
             ]}
             secureTextEntry={
@@ -233,7 +238,7 @@ const CustomInput = ({
         ) : null}
       </View>
       {cardInfo && <ErrorComponent errorTitle={cardInfo} />}
-      {error && (
+      {showErrorMessage && error && (
         <ErrorComponent
           errorTitle={error}
           color="#EE1045"
@@ -259,7 +264,7 @@ const styles = StyleSheet.create({
     height: "100%",
     padding: 0,
     margin: 0,
-    fontFamily: fonts.regular,
+    fontFamily: fonts.medium,
     fontSize: 16,
     color: COLORS.white,
     flex: 1,

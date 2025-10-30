@@ -120,7 +120,7 @@ const PlansCard = ({ plan, onPress }) => {
           label={"Everything you need to start!"}
           fontSize={12}
           lineHeight={12 * 1.4}
-          color={"#FFFFFFE0"}
+          color={"#FFFFFFCC"}
         />
       </View>
     </View>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     height: 135,
     borderRadius: 12,
     borderColor: "#FFFFFF0A",
-    marginTop: 20,
+    marginTop: 10,
   },
   contentContainer: {
     flex: 1,

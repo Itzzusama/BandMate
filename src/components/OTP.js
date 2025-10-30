@@ -64,9 +64,9 @@ const OTPComponent = ({
             ]}
           >
             <CustomText
-              color={!symbol ? COLORS.white2 : COLORS.white2}
+              color={!symbol ? COLORS.white2 : COLORS.white}
               fontSize={32}
-              fontFamily={fonts.medium}
+              fontFamily={!symbol ? fonts.regular : fonts.medium}
               lineHeight={32 * 1.4}
             >
               {symbol || (isFocused ? <Cursor /> : (index + 1).toString())}

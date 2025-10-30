@@ -16,6 +16,8 @@ const StepOne = forwardRef(
     const navigation = useNavigation();
     const eighteensYearsAgo = new Date();
     eighteensYearsAgo.setFullYear(eighteensYearsAgo.getFullYear() - 18);
+    const formattedEighteenYearsAgo =
+      moment(eighteensYearsAgo).format("MMMM D, YYYY");
     const onboardingCount = useSelector(count);
     const [dob, setDob] = useState(state?.dob ? new Date(state.dob) : null);
     const [error, setError] = useState("");
@@ -60,7 +62,7 @@ const StepOne = forwardRef(
       const isValid = validateDOB(dob);
       if (!isValid) return;
 
-      setState({ ...state, dob: moment(dob).format("YYYY-MM-DD") }); // 1990-01-01
+      setState({ ...state, dob: moment(dob).format("YYYY-MM-DD") });
       if (currentIndex < onboardingCount) {
         setCurrentIndex(currentIndex + 1);
       }
@@ -92,7 +94,7 @@ const StepOne = forwardRef(
           <CustomDatePicker
             value={dob}
             setValue={handleDateChange}
-            placeholder="18 years old"
+            placeholder={formattedEighteenYearsAgo}
             maxDate={eighteensYearsAgo}
             error={error}
             defaultError="You must be at least 18 years old to use "

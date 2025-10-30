@@ -15,7 +15,7 @@ const StepFive = forwardRef(
     const onboardingCount = useSelector(count);
     const [gender, setGender] = useState(state?.gender || "");
     const [showSuccessColor, setShowSuccessColor] = useState(false);
-    const genderOptions = ["Male", "Female", "Unisex"];
+    const genderOptions = ["Female", "Male", "Do not Specify"];
 
     const [error, setError] = useState("");
     const errorCheck = (val) => {
@@ -71,6 +71,7 @@ const StepFive = forwardRef(
             setValue={setGender}
             error={error}
             placeholder="E.g. Male"
+            modalTitle="Select Gender"
           />
           {error ? null : (
             <ErrorComponent

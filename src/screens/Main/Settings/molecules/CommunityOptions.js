@@ -89,6 +89,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 99,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.cardColor,
   },
 });

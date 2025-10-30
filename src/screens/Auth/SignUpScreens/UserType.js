@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   box: {
     width: "100%",
     height: 160,
-    borderRadius: 7.89,
+    borderRadius: 12,
     padding: 16,
     marginBottom: 8,
   },

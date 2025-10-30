@@ -81,6 +81,7 @@ const BandStep2 = forwardRef(
               }
             }}
             error={error}
+            keyboardType={"numeric"}
           />
           {!error && (
             <ErrorComponent errorTitle="Please only mention fixed members." />

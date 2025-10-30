@@ -2,6 +2,7 @@ import { BlurView } from "@react-native-community/blur";
 import { useEffect, useState, useRef, useMemo } from "react";
 import {
   FlatList,
+  Image,
   Platform,
   StyleSheet,
   TextInput,
@@ -14,7 +15,7 @@ import CustomText from "./CustomText";
 import ErrorComponent from "./ErrorComponent";
 import Icons from "./Icons";
 import ImageFast from "./ImageFast";
-
+import CustomButton from "./CustomButton";
 import fonts from "../assets/fonts";
 import { PNGIcons } from "../assets/images/icons";
 import { COLORS } from "../utils/COLORS";
@@ -151,7 +152,7 @@ const CustomDropdown = ({
       setValue(option);
       setText(option);
     }
-    setIsModalVisible(false);
+    // setIsModalVisible(false);
   };
 
   const renderItem = ({ item }) => {
@@ -171,7 +172,6 @@ const CustomDropdown = ({
           label={itemText || ""}
           fontSize={16}
           fontFamily={fonts.medium}
-          color={isSelected ? COLORS.btnColor : COLORS.white3}
           style={{ flex: 1 }}
         />
         <Icons
@@ -252,7 +252,9 @@ const CustomDropdown = ({
                     ? COLORS.white
                     : COLORS.gray2
                 }
-                fontFamily={fonts.regular}
+                fontFamily={
+                  text || value?.title || value ? fonts.medium : fonts.regular
+                }
                 fontSize={16}
                 lineHeight={16 * 1.4}
                 style={withLabel ? styles.valueWithLabel : {}}
@@ -271,7 +273,7 @@ const CustomDropdown = ({
           </View>
           {!showIcon ? (
             <Icons
-              style={{ color: COLORS.white3, fontSize: 20 }}
+              style={{ color: COLORS.white2, fontSize: 20 }}
               family="Entypo"
               name="chevron-down"
             />
@@ -282,7 +284,7 @@ const CustomDropdown = ({
       </View>
 
       {/* Modal for options */}
-      <CustomModal isChange isVisible={isModalVisible} onDisable={closeModal}>
+      <CustomModal isChange isVisible={isModalVisible}>
         <View
           style={{
             padding: 5,
@@ -291,7 +293,7 @@ const CustomDropdown = ({
             borderRadius: 24,
             marginBottom: Platform.OS == "android" ? 12 : 32,
             maxHeight: "100%",
-            borderWidth: 1,
+
             backgroundColor: "#FFFFFF29",
             borderColor: "rgba(255, 255, 255, 0.16)",
           }}
@@ -319,11 +321,9 @@ const CustomDropdown = ({
                 onPress={closeModal}
                 activeOpacity={0.6}
               >
-                <Icons
-                  family="Entypo"
-                  name={"cross"}
-                  size={24}
-                  color={COLORS.white3}
+                <Image
+                  source={PNGIcons.white_cross}
+                  style={{ height: 16, width: 16, tintColor: COLORS.white2 }}
                 />
               </TouchableOpacity>
             </View>
@@ -340,17 +340,24 @@ const CustomDropdown = ({
             )}
 
             {displayData && displayData.length > 0 ? (
-              <FlatList
-                data={displayData}
-                keyExtractor={(item, index) =>
-                  item && item._id ? item._id.toString() : index.toString()
-                }
-                renderItem={renderItem}
-                onEndReached={loadMoreData}
-                onEndReachedThreshold={0.5}
-                style={{ maxHeight: 400, marginTop: 10 }}
-                showsVerticalScrollIndicator={false}
-              />
+              <>
+                <FlatList
+                  data={displayData}
+                  keyExtractor={(item, index) =>
+                    item && item._id ? item._id.toString() : index.toString()
+                  }
+                  renderItem={renderItem}
+                  onEndReached={loadMoreData}
+                  onEndReachedThreshold={0.5}
+                  style={{ maxHeight: 400, marginTop: 10 }}
+                  showsVerticalScrollIndicator={false}
+                />
+                <CustomButton
+                  title={"Confirm"}
+                  marginTop={20}
+                  onPress={closeModal}
+                />
+              </>
             ) : (
               <View style={styles.noDataContainer}>
                 <CustomText
@@ -424,7 +431,7 @@ const styles = StyleSheet.create({
   },
   crossContainer: {
     borderRadius: 100,
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     width: 32,
     height: 32,
     justifyContent: "center",
@@ -442,11 +449,11 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     marginVertical: 2,
   },
   selectedItem: {
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
   },
   searchInput: {
     height: 45,

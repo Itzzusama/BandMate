@@ -30,6 +30,7 @@ import TakePhoto from "../screens/Auth/VTCChauffeur/TakePhoto";
 import TakeIDFront from "../screens/Auth/VTCChauffeur/TakeIDFront";
 import TakeIDBack from "../screens/Auth/VTCChauffeur/TakeIDBack";
 import CompleteProfile from "../screens/Auth/VTCChauffeur/CompleteProfile";
+import PicLocation from "../screens/Auth/PicLocation";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,7 +49,7 @@ const AuthStack = () => {
     );
   };
 
-  let initialRoute = "OnBoarding"; //"OnBoarding";
+  let initialRoute = "OnBoarding";
   if (isToken && isBandIncomplete()) {
     initialRoute = "SignUpScreens";
   }
@@ -86,6 +87,7 @@ const AuthStack = () => {
       <Stack.Screen name="TakeIDBack" component={TakeIDBack} />
       <Stack.Screen name="TakeIDFront" component={TakeIDFront} />
       <Stack.Screen name="CompleteProfile" component={CompleteProfile} />
+      <Stack.Screen name="PicLocation" component={PicLocation} />
     </Stack.Navigator>
   );
 };

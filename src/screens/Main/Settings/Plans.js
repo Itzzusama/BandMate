@@ -17,6 +17,7 @@ import {
   platinum_fearures,
   pro_fearures,
 } from "../../../utils/constants";
+import GoldPlanGift from "./molecules/GoldPlanGift";
 
 const tabs = ["Free", "Silver", "Gold", "Platinum", "Pro"];
 
@@ -46,43 +47,51 @@ const Plans = () => {
     <ScreenWrapper
       paddingBottom={0.1}
       scrollEnabled
-      headerUnScrollable={() => <Header title={"Select Plan"} />}
+      headerUnScrollable={() => (
+        <View>
+          <Header title={"Select Plan"} />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.tabContainer}
+          >
+            {tabs.map((tab) => {
+              const isSelected = tab === selectedTab;
+              return (
+                <TouchableOpacity
+                  key={tab}
+                  onPress={() => setSelectedTab(tab)}
+                  activeOpacity={0.8}
+                  style={[
+                    styles.tabButton,
+                    isSelected && styles.tabButtonSelected,
+                  ]}
+                >
+                  <CustomText
+                    label={tab}
+                    color={isSelected ? COLORS.white : COLORS.white3}
+                    fontFamily={fonts.medium}
+                    fontSize={14}
+                    marginTop={2}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
       footerUnScrollable={() => (
         <View style={{ padding: 12 }}>
-          <CopyrightFooter paddingBottom={30} paddingTop={0} />
+          {selectedTab == "Gold" && <GoldPlanGift />}
           <CustomButton
             title={`Upgrade to ${selectedTab}`}
             textTransform={"none"}
-            marginBottom={24}
+            marginBottom={12}
           />
+          <CopyrightFooter paddingBottom={30} paddingTop={0} />
         </View>
       )}
     >
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.tabContainer}
-      >
-        {tabs.map((tab) => {
-          const isSelected = tab === selectedTab;
-          return (
-            <TouchableOpacity
-              key={tab}
-              onPress={() => setSelectedTab(tab)}
-              activeOpacity={0.8}
-              style={[styles.tabButton, isSelected && styles.tabButtonSelected]}
-            >
-              <CustomText
-                label={tab}
-                color={isSelected ? COLORS.white : COLORS.white3}
-                fontFamily={fonts.medium}
-                fontSize={14}
-              />
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
       <PlansCard plan={selectedTab === "Free" ? "Free Tier" : selectedTab} />
 
       {selectedTab === "Pro" && <ProPlanInfo />}
@@ -125,10 +134,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 2,
     gap: 8,
+    paddingHorizontal: 12,
   },
   tabButton: {
     paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     borderRadius: 100,
     backgroundColor: "transparent",
   },

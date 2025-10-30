@@ -4,16 +4,20 @@ import CustomText from "../../../components/CustomText";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import ErrorComponent from "../../../components/ErrorComponent";
-import { put, renewToken } from "../../../services/ApiRequest";
-import Instruments from "./Instruments";
-import { useDispatch, useSelector } from "react-redux";
+import { put } from "../../../services/ApiRequest";
+import { useDispatch } from "react-redux";
 import { setUserData } from "../../../store/reducer/usersSlice";
+
 const LEVELS = ["Beginner", "Intermediate", "Advanced", "Legend"];
 
 const Level = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
-    const instruments = state?.instruments || [];
     const dispatch = useDispatch();
+
+    const normalizeName = (name) => name?.replace(/\n/g, " ").trim();
+
+    const instruments = (state?.instruments || []).map(normalizeName);
+
     const [selectedLevels, setSelectedLevels] = useState({});
     const [error, setError] = useState("");
 
@@ -21,7 +25,8 @@ const Level = forwardRef(
       if (state?.instrumentWithLevel?.length) {
         const prefill = {};
         state.instrumentWithLevel.forEach((item) => {
-          prefill[item.instrument] = item.level;
+          const normalized = normalizeName(item.instrument);
+          prefill[normalized] = item.level;
         });
         setSelectedLevels(prefill);
       }
@@ -49,20 +54,18 @@ const Level = forwardRef(
         instrument: inst,
         level: selectedLevels[inst],
       }));
-      console.log(instrumentWithLevel);
+
       try {
         const res = await put("user/profile", {
           Instruments: instrumentWithLevel,
         });
-        console.log(res?.data);
         if (res?.data?.success) {
-          console.log(res?.data);
           setState({ ...state, instrumentWithLevel });
           setCurrentIndex(currentIndex + 1);
           dispatch(setUserData(res?.data?.user));
         }
       } catch (err) {
-        console.log(err);
+        console.log("Error saving instruments:", err);
       }
     };
 
