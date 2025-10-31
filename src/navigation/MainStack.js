@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator();
 const MainStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName="SampleScreen"
+      initialRouteName="TabStack"
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
