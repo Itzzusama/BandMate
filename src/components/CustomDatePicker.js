@@ -22,7 +22,7 @@ const CustomDatePicker = ({
   defaultError,
   width,
   marginBottom,
-  height,
+  height=56,
   isIcon = false,
   isIcon1 = false,
 }) => {
