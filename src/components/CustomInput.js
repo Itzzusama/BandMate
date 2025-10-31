@@ -46,7 +46,7 @@ const CustomInput = ({
   returnKeyType,
   onSubmitEditing,
   isValid,
-  paddingBottom = 6,
+  paddingBottom = 0,
   backgroundColor,
   showErrorMessage = true,
 }) => {
