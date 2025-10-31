@@ -2579,6 +2579,11 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz#821f8442f4175d8f0467b9daf26e3a18e2d02af2"
   integrity sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==
 
+"@somesoap/react-native-image-palette@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@somesoap/react-native-image-palette/-/react-native-image-palette-1.2.2.tgz#30fb6576ce9101d846ca9bf9a7b30dd242b18792"
+  integrity sha512-91O9pDEeYrA5vJzZs8x5h50uwTTAvqSrAnu5sWs4jeHiRXeGDgDY0keVB0s3RrIlbeF61KBK7OZpXxymSMyz5Q==
+
 "@standard-schema/spec@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.0.0.tgz#f193b73dc316c4170f2e82a881da0f550d551b9c"

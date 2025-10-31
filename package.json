@@ -29,6 +29,7 @@
     "@react-navigation/native-stack": "^7.3.21",
     "@reduxjs/toolkit": "^2.8.2",
     "@shopify/react-native-skia": "^2.2.9",
+    "@somesoap/react-native-image-palette": "^1.2.2",
     "@stripe/stripe-react-native": "^0.44.0",
     "axios": "^1.10.0",
     "formik": "^2.4.6",
