@@ -3185,6 +3185,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNSensors (7.3.6):
+    - React-Core
   - RNSnackbar (2.9.0):
     - React-Core
   - RNSVG (15.13.0):
@@ -3414,6 +3416,7 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSensors (from `../node_modules/react-native-sensors`)
   - RNSnackbar (from `../node_modules/react-native-snackbar`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SocketRocket (~> 0.7.1)
@@ -3664,6 +3667,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSensors:
+    :path: "../node_modules/react-native-sensors"
   RNSnackbar:
     :path: "../node_modules/react-native-snackbar"
   RNSVG:
@@ -3804,6 +3809,7 @@ SPEC CHECKSUMS:
   RNPermissions: 9c40a882be3c9b13381a62f93a82f8fe570c92be
   RNReanimated: 1fc076ab0b4d40b56de45b06b631ea6e590c93b1
   RNScreens: 8132b09d1edf29ba411894b19bb05f25277b2c64
+  RNSensors: 111159597ac51505df10413c61b28bcd28e88983
   RNSnackbar: c1b235eb606b03938c693ce769ed3059c31dff9b
   RNSVG: 940dde1beb1ad95699c711596627a663977037be
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
