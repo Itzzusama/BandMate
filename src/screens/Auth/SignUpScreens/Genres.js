@@ -18,6 +18,7 @@ import Icons from "../../../components/Icons";
 import { put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { useDispatch } from "react-redux";
+import { ToastMessage } from "../../../utils/ToastMessage";
 
 const instrumentCategories = [
   { name: "Afrobeat", color: "#B16138", img: GenresImgs.img21 },
@@ -53,7 +54,7 @@ const instrumentCategories = [
 ];
 
 const Genres = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const { width } = useWindowDimensions();
     const CARD_WIDTH = (width - 36) / 2;
     const CARD_HEIGHT = 100;
@@ -104,20 +105,22 @@ const Genres = forwardRef(
         return;
       }
       setError("");
-
+      setIsLoading(true);
       try {
         const res = await put("user/profile", {
           Genres: selectedGenres,
         });
         console.log(res?.data);
         if (res?.data?.success) {
-          console.log(res?.data);
           setState({ ...state, genres: selectedGenres });
           setCurrentIndex(currentIndex + 1);
           dispatch(setUserData(res?.data?.user));
+          ToastMessage("Your music genres have been saved!", "success");
         }
       } catch (err) {
         console.log(err);
+      } finally {
+        setIsLoading(false);
       }
     };
 

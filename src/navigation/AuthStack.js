@@ -49,7 +49,7 @@ const AuthStack = () => {
     );
   };
 
-  let initialRoute = "PinOnBoarding";
+  let initialRoute = "OnBoarding";
   if (isToken && isBandIncomplete()) {
     initialRoute = "SignUpScreens";
   }

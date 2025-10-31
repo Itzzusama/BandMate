@@ -62,7 +62,7 @@ const SignUpScreens = () => {
   };
 
   const [state, setState] = useState(init);
-
+  const [isLoading, setIsLoading] = useState(false);
   const steps = useMemo(() => {
     if (state.role === "band") {
       return [
@@ -205,6 +205,7 @@ const SignUpScreens = () => {
       setCurrentIndex,
       state,
       setState,
+      setIsLoading,
     };
 
     switch (stepName) {
@@ -260,6 +261,7 @@ const SignUpScreens = () => {
           paddingHorizontal={12}
           onPress={() => stepRef.current?.submit?.()}
           onBackPress={() => stepRef.current?.back?.()}
+          btnLoading={isLoading}
           // btnDisabled={isDisabled}
         />
       )}

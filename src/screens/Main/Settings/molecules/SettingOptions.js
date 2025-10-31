@@ -26,7 +26,7 @@ const data = [
   },
   {
     title: "Change my password",
-    screen: "",
+    screen: "ChangePassword",
     icon: SettingIcons.noti,
   },
   {

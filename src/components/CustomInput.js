@@ -169,13 +169,7 @@ const CustomInput = ({
             autoCapitalize={autoCapitalize}
             autoFocus={autoFocus}
           />
-          {/* {isSwitch && (
-              <CustomSwitch
-                value={switchValue}
-                setValue={setSwitchValue}
-                marginRight={12}
-              />
-          )} */}
+
           {isClear && value?.length > 0 && (
             <ImageFast
               source={Images.clear}
@@ -201,7 +195,7 @@ const CustomInput = ({
             style={{
               position: "absolute",
               right: 17,
-              top: 21,
+              top: 19,
               width: 16,
               height: 16,
               zIndex: 999,

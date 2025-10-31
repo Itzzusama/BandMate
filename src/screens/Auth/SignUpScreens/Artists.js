@@ -18,6 +18,7 @@ import { put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { useDispatch } from "react-redux";
 import { sortAlphabetically } from "../../../utils/constants";
+import { ToastMessage } from "../../../utils/ToastMessage";
 
 const artists = [
   { name: "Blur", img: ArtistImgs.img2 },
@@ -32,7 +33,7 @@ const artists = [
 ];
 const sortedArtists = sortAlphabetically(artists);
 const Artists = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const dispatch = useDispatch();
 
     const [selectedArtists, setSelectedArtists] = useState([]);
@@ -76,6 +77,7 @@ const Artists = forwardRef(
         return;
       }
       setError("");
+      setIsLoading(true);
       try {
         const res = await put("user/profile", {
           Artists: selectedArtists,
@@ -84,9 +86,12 @@ const Artists = forwardRef(
           setState({ ...state, artists: selectedArtists });
           setCurrentIndex(currentIndex + 1);
           dispatch(setUserData(res?.data?.user));
+          ToastMessage("Your favorite artists have been added!", "success");
         }
       } catch (err) {
         console.log(err);
+      } finally {
+        setIsLoading(false);
       }
     };
 

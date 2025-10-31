@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { count } from "../../../store/reducer/appSlice";
 
 const ResetPassword = forwardRef(
-  ({ currentIndex, setCurrentIndex, state }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setIsLoading }, ref) => {
     const onboardingCount = useSelector(count);
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -41,7 +41,7 @@ const ResetPassword = forwardRef(
         return;
       } else {
         setError("Password match");
-
+        setIsLoading(true);
         const { verifyVia, ...cleanState } = state;
         let finalState = cleanState;
 
@@ -72,11 +72,11 @@ const ResetPassword = forwardRef(
             ...forBand,
           }),
         };
-        console.log("📌 Final Payload Sent to API:", payload);
+
         try {
           setLoading(true);
           const response = await post("auth/register", payload);
-          if (response?.data) {
+          if (response?.data?.success) {
             dispatch(setUserData(response?.data?.user));
             dispatch(setToken(response?.data?.tokens?.accessToken));
             dispatch(setRefreshToken(response?.data?.tokens?.refreshToken));
@@ -91,6 +91,8 @@ const ResetPassword = forwardRef(
           setLoading(false);
           setError(error?.response?.data?.message);
           setIsError(true);
+        } finally {
+          setIsLoading(false);
         }
       }
     };

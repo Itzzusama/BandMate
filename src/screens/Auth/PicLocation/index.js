@@ -21,7 +21,7 @@ import { getLocationWithPermission } from "../../../utils/LocationUtils";
 import { PNGIcons } from "../../../assets/images/icons";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const GOOGLE_API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 const darkMapStyle = [
   { elementType: "geometry", stylers: [{ color: "#212121" }] },
@@ -78,6 +78,7 @@ const PicLocation = () => {
   const currentLocation = useSelector((state) => state.users.location);
   const navigation = useNavigation();
   const route = useRoute();
+  const insets = useSafeAreaInsets();
   const isCustom = route.params?.isCustom;
   const item = route.params?.item;
 
@@ -279,7 +280,7 @@ const PicLocation = () => {
       paddingHorizontal={0.1}
       headerUnScrollable={() => (
         <>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, { marginTop: insets.top }]}>
             <TouchableOpacity
               style={{
                 width: "87%",
@@ -484,7 +485,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
 
-    marginTop: 56,
     padding: 12,
   },
   crossContainer: {

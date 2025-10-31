@@ -34,7 +34,7 @@ import {
 } from "../utils/LocationUtils";
 import ImageFast from "./ImageFast";
 import Icons from "./Icons";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 
 // Custom Skeleton Loader Component
@@ -162,7 +162,7 @@ const CustomModalGooglePlaces = ({
 }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
+  const insets = useSafeAreaInsets();
   const { recentSearches, savedLocations } = useSelector(
     (state) => state.users
   );
@@ -222,6 +222,7 @@ const CustomModalGooglePlaces = ({
         );
         // Don't show alert on initial load, just log for debugging
         if (error.code === "LOCATION_REQUEST_IN_PROGRESS") {
+          console.log(error.code);
           // Reset state and try again after a delay
           setTimeout(() => {
             resetLocationRequestState();
@@ -582,12 +583,17 @@ const CustomModalGooglePlaces = ({
 
   const handleMapSelection = () => {
     closeModal();
-    setTimeout(() => {
-      navigation.navigate("PicLocation", {
-        onLocationSelect,
-        shouldOpenModalOnReturn: true,
-      });
-    }, 500);
+    // Pass the necessary props to PicLocation screen
+    navigation.navigate("PicLocation", {
+      setValue,
+      setLatLong,
+      setState,
+      setCity,
+      setZipCode,
+      setCountry,
+      onLocationSelect,
+      shouldOpenModalOnReturn: true,
+    });
   };
 
   const handleCurrentLocationSelection = async () => {
@@ -949,7 +955,7 @@ const CustomModalGooglePlaces = ({
 
   return (
     <CustomModal isChange isVisible={isVisible} onDisable={closeModal}>
-      <View style={styles.modalContainer}>
+      <View style={[styles.modalContainer, { paddingTop: insets.top }]}>
         <View style={styles.modalHeader}>
           <CustomInput
             search
@@ -984,19 +990,7 @@ const CustomModalGooglePlaces = ({
         <TouchableOpacity
           activeOpacity={0.6}
           style={[styles.selectMap, { borderTopWidth: 2 }]}
-          onPress={() => {
-            setTimeout(() => {
-              navigation.navigate("PicLocation", {
-                setValue,
-                setLatLong,
-                setState,
-                setCity,
-                setZipCode,
-                setCountry,
-                shouldOpenModalOnReturn: true,
-              });
-            }, 500);
-          }}
+          onPress={handleMapSelection}
         >
           <View style={styles.row}>
             <Image
@@ -1184,7 +1178,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.black,
     width: "100%",
     height: "100%",
-    paddingTop: 20,
   },
   modalHeader: {
     flexDirection: "row",

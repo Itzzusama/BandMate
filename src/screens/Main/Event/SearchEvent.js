@@ -19,34 +19,40 @@ const SearchEvent = () => {
       paddingHorizontal={0.1}
       paddingBottom={0.1}
       scrollEnabled
-      headerUnScrollable={() => <SearchEventHeader />}
+      headerUnScrollable={() => (
+        <View>
+          <SearchEventHeader />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.tabContainer}
+          >
+            {tabs.map((tab) => {
+              const isSelected = tab === selectedTab;
+              return (
+                <TouchableOpacity
+                  key={tab}
+                  onPress={() => setSelectedTab(tab)}
+                  activeOpacity={0.8}
+                  style={[
+                    styles.tabButton,
+                    isSelected && styles.tabButtonSelected,
+                  ]}
+                >
+                  <CustomText
+                    label={tab}
+                    color={isSelected ? COLORS.white : COLORS.white3}
+                    fontFamily={fonts.medium}
+                    fontSize={14}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
     >
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.tabContainer}
-      >
-        {tabs.map((tab) => {
-          const isSelected = tab === selectedTab;
-          return (
-            <TouchableOpacity
-              key={tab}
-              onPress={() => setSelectedTab(tab)}
-              activeOpacity={0.8}
-              style={[styles.tabButton, isSelected && styles.tabButtonSelected]}
-            >
-              <CustomText
-                label={tab}
-                color={isSelected ? COLORS.white : COLORS.white3}
-                fontFamily={fonts.medium}
-                fontSize={14}
-              />
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
-      <View style={{ marginTop: 8 }}>
+      <View>
         <EventDetailCard />
         <EventDetailCard />
         <EventDetailCard marginBottom={insets.bottom + 10} />
@@ -63,6 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 2,
     gap: 8,
+    marginBottom: 8,
   },
   tabButton: {
     paddingVertical: 6,

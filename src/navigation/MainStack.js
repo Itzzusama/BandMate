@@ -15,7 +15,9 @@ import Preferences from "../screens/Main/Settings/Preferences";
 import Settings from "../screens/Main/Settings";
 import PublishPost from "../screens/Main/PublishPost/Index";
 import AdvancedNotification from "../screens/Main/Settings/AdvancedNotification";
+import ChangePassword from "../screens/Main/Settings/ChangePassword";
 
+import AppLanguage from "../screens/Main/Settings/AppLanguage";
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
@@ -44,6 +46,8 @@ const MainStack = () => {
         name="AdvancedNotification"
         component={AdvancedNotification}
       />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen name="AppLanguage" component={AppLanguage} />
     </Stack.Navigator>
   );
 };

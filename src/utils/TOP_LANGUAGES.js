@@ -1,0 +1,17 @@
+export const TOP_LANGUAGES = [
+  { code: "AL", language: "Albanian", native: "Shqiptar" },
+  { code: "CN", language: "Mandarin Chinese", native: "普通话 (Pǔtōnghuà)" },
+  { code: "US", language: "English (US)", native: "English (US)" },
+  { code: "IN", language: "Hindi", native: "हिंदी (Hindi)" },
+  { code: "BD", language: "Bengali", native: "বাংলা (Bānlā)" },
+  { code: "PT", language: "Portuguese", native: "Português" },
+  { code: "RU", language: "Russian", native: "Русский (Russkiy)" },
+  { code: "JP", language: "Japanese", native: "日本語 (Nihongo)" },
+  { code: "SA", language: "Standard Arabic", native: "العربية (Al-ʿArabīyah)" },
+  { code: "FR", language: "French", native: "Français" },
+  { code: "DE", language: "German", native: "Deutsch" },
+  { code: "KR", language: "Korean", native: "한국어 (Hangugeo)" },
+  { code: "IT", language: "Italian", native: "Italiano" },
+  { code: "ES", language: "Spanish", native: "Español" },
+  { code: "TH", language: "Thai", native: "ไทย (Phasa Thai)" },
+];

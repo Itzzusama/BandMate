@@ -7,11 +7,12 @@ import ErrorComponent from "../../../components/ErrorComponent";
 import { put } from "../../../services/ApiRequest";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../../store/reducer/usersSlice";
+import { ToastMessage } from "../../../utils/ToastMessage";
 
 const LEVELS = ["Beginner", "Intermediate", "Advanced", "Legend"];
 
 const Level = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const dispatch = useDispatch();
 
     const normalizeName = (name) => name?.replace(/\n/g, " ").trim();
@@ -49,7 +50,7 @@ const Level = forwardRef(
       }
 
       setError("");
-
+      setIsLoading(true);
       const instrumentWithLevel = instruments.map((inst) => ({
         instrument: inst,
         level: selectedLevels[inst],
@@ -63,9 +64,15 @@ const Level = forwardRef(
           setState({ ...state, instrumentWithLevel });
           setCurrentIndex(currentIndex + 1);
           dispatch(setUserData(res?.data?.user));
+          ToastMessage(
+            "Your instruments have been updated successfully!",
+            "success"
+          );
         }
       } catch (err) {
         console.log("Error saving instruments:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 

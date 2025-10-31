@@ -16,7 +16,7 @@ export const ToastMessage = (message, type = "text") => {
 
     Snackbar.show({
       text: message,
-      duration: 5000, // You can use LENGTH_LONG or LENGTH_INDEFINITE as needed
+      duration: 3000, // You can use LENGTH_LONG or LENGTH_INDEFINITE as needed
       backgroundColor, // Dynamic background color
     });
   } else {

@@ -7,8 +7,10 @@ import fonts from "../../../../assets/fonts";
 import Icons from "../../../../components/Icons";
 import CustomSwitch from "../../../../components/CustomSwitch";
 import { COLORS } from "../../../../utils/COLORS";
+import { useNavigation } from "@react-navigation/native";
 
 const PreferencesOptions = () => {
+  const navigation = useNavigation();
   const [data, setData] = useState([
     {
       id: "mode",
@@ -58,7 +60,15 @@ const PreferencesOptions = () => {
     );
   };
   return data.map((item, index) => (
-    <Pressable style={styles.container} key={index}>
+    <Pressable
+      style={styles.container}
+      key={index}
+      onPress={() => {
+        if (item.id == "language") {
+          navigation.navigate("AppLanguage");
+        }
+      }}
+    >
       <View style={styles.row}>
         <Image source={item.icon} style={styles.icon} />
         <View>

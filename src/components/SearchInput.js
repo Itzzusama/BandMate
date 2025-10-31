@@ -111,7 +111,12 @@ const SearchInput = ({
         <TextInput
           ref={ref}
           placeholder={placeholder}
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              fontFamily: value ? fonts.medium : fonts.regular,
+            },
+          ]}
           onFocus={handleFocus}
           onBlur={handleBlur}
           value={value}
@@ -135,9 +140,9 @@ const SearchInput = ({
             },
           ]}
           activeOpacity={0.6}
-          onPress={onPress}
+          onPress={() => onChangeText("")}
         >
-          {isCross && (
+          {isCross && value && (
             <Image
               source={PNGIcons.crossBg}
               style={{

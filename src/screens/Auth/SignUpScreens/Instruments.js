@@ -147,7 +147,7 @@ const COLORS_PALETTE = [
 ];
 
 const Instruments = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const { width } = useWindowDimensions();
     const CARD_WIDTH = (width - 34) / 2;
     const CARD_HEIGHT = 100;
@@ -156,22 +156,19 @@ const Instruments = forwardRef(
       state?.instruments || []
     );
     const [error, setError] = useState("");
-    const [prevError, setPrevError] = useState("");
+
     const [showSuccessColor, setShowSuccessColor] = useState(false);
 
     useEffect(() => {
-      const newError = errorCheck(selectedInstruments);
-      setError(newError);
-
-      if (selectedInstruments.length > 0) {
+      if (selectedInstruments.length == 1) {
         setShowSuccessColor(true);
         const timer = setTimeout(() => setShowSuccessColor(false), 2000);
         return () => clearTimeout(timer);
       }
-    }, [selectedInstruments]);
+    }, []);
 
     const errorCheck = (instruments) => {
-      if (instruments?.length === 0) {
+      if (instruments?.length == 0) {
         return "Please choose at least one instrument";
       }
       return "";
@@ -182,13 +179,13 @@ const Instruments = forwardRef(
         const updated = prev.includes(instrumentName)
           ? prev.filter((i) => i !== instrumentName)
           : [...prev, instrumentName];
-        setState({ ...state, instruments: updated }); // Update parent state
+        setState({ ...state, instruments: updated });
         return updated;
       });
     };
 
     const submit = () => {
-      const err = errorCheck();
+      const err = errorCheck(selectedInstruments);
       if (err) {
         setError(err);
         return;

@@ -81,12 +81,13 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     marginBottom: 8,
+    marginTop: 6,
   },
   giftRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   giftText: {
     fontSize: 12,
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
   unselectedButton: {
     flex: 1,
     borderRadius: 30,
-
+    marginTop: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -126,6 +127,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
     fontFamily: fonts.medium,
+    marginTop: 4,
   },
   priceTextUnselected: {
     fontSize: 16,

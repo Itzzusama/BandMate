@@ -17,7 +17,7 @@ import { ToastMessage } from "../../../utils/ToastMessage";
 const MAX_LENGTH = 150;
 
 const AddDescription = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const onboardingCount = useSelector(count);
@@ -42,10 +42,9 @@ const AddDescription = forwardRef(
         setError(err);
         return;
       }
-
+      setError("");
       try {
-        setLoading(true);
-        setError("");
+        setIsLoading(true);
 
         setState({ ...state, description: description.trim() });
 
@@ -58,7 +57,6 @@ const AddDescription = forwardRef(
         if (res?.data?.success) {
           dispatch(setUserData(res?.data?.user));
           ToastMessage("Profile updated successfully!", "success");
-
           navigation.navigate("PinOnBoarding", { state: state });
         } else {
           setError("Failed to update profile. Please try again.");
@@ -67,7 +65,7 @@ const AddDescription = forwardRef(
         console.log("Error updating bio:", err);
         setError("Something went wrong while saving description.");
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 

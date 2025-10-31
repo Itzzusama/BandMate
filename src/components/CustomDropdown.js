@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 12,
     width: "100%",
-    height: 48,
+    height: 56,
   },
   labelAndValueContainer: {
     flex: 1,

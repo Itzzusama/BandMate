@@ -20,11 +20,12 @@ import { put } from "../../../services/ApiRequest";
 import { uploadAndGetUrl } from "../../../utils/constants";
 import UploadImageCustom from "../../../components/UploadImageCustom"; // ✅ your advanced picker/camera component
 import Icons from "../../../components/Icons";
+import { ToastMessage } from "../../../utils/ToastMessage";
 
 const MAX_IMAGES = 4;
 
 const AddPictures = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const onboardingCount = useSelector(count);
     const dispatch = useDispatch();
     const { width } = useWindowDimensions();
@@ -95,7 +96,6 @@ const AddPictures = forwardRef(
       }
     };
 
-    // ✅ Delete image
     const onDelete = (index) => {
       if (index === null || index === undefined) return;
       setImages((prev) => prev.filter((_, i) => i !== index));
@@ -106,11 +106,8 @@ const AddPictures = forwardRef(
         setError(`Please upload all ${MAX_IMAGES} pictures.`);
         return;
       }
-      console.log(currentIndex, onboardingCount);
-      dispatch(setOnboardingCount(16));
-      if (currentIndex < onboardingCount) {
-        setCurrentIndex(currentIndex + 1);
-      }
+      setIsLoading(true);
+
       try {
         setError("");
         const res = await put("user/profile", {
@@ -120,6 +117,10 @@ const AddPictures = forwardRef(
         if (res?.data?.success) {
           dispatch(setUserData(res?.data?.user));
           setState({ ...state, images });
+          ToastMessage(
+            "Your photos have been uploaded successfully!",
+            "success"
+          );
           if (currentIndex < onboardingCount) {
             setCurrentIndex(currentIndex + 1);
           }
@@ -129,6 +130,8 @@ const AddPictures = forwardRef(
       } catch (err) {
         console.log("Submit error:", err);
         setError("Something went wrong while saving.");
+      } finally {
+        setIsLoading(false);
       }
     };
 
