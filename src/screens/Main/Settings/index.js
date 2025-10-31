@@ -50,7 +50,7 @@ const Settings = () => {
         fontSize={24}
         lineHeight={24 * 1.4}
         fontFamily={fonts.abril}
-        marginTop={16}
+        marginTop={20}
         marginBottom={18}
       />
       <SettingOptions />
@@ -59,7 +59,7 @@ const Settings = () => {
         fontSize={24}
         lineHeight={24 * 1.4}
         fontFamily={fonts.abril}
-        marginTop={16}
+        marginTop={12}
         marginBottom={18}
       />
       <PreferencesOptions />
@@ -68,8 +68,8 @@ const Settings = () => {
         fontSize={24}
         lineHeight={24 * 1.4}
         fontFamily={fonts.abril}
-        marginTop={16}
-        marginBottom={18}
+        marginTop={12}
+        marginBottom={10}
       />
       <CommunityOptions />
       <RateApp />

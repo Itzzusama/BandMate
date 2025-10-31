@@ -6,6 +6,7 @@ import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import Icons from "../../../../components/Icons";
 import { COLORS } from "../../../../utils/COLORS";
+import { useNavigation } from "@react-navigation/native";
 
 const data = [
   {
@@ -20,7 +21,7 @@ const data = [
   },
   {
     title: "Notifications",
-    screen: "",
+    screen: "AdvancedNotification",
     icon: SettingIcons.noti,
   },
   {
@@ -36,8 +37,13 @@ const data = [
 ];
 
 const SettingOptions = () => {
+  const navigation = useNavigation();
   return data.map((item, index) => (
-    <Pressable style={styles.container} key={index}>
+    <Pressable
+      style={styles.container}
+      key={index}
+      onPress={() => navigation.navigate(item.screen)}
+    >
       <View style={styles.row}>
         <Image source={item.icon} style={styles.icon} />
         <View>

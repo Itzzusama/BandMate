@@ -71,17 +71,17 @@ const CustomDropdown = ({
     const currentData = data || [];
     const currentLength = currentData.length;
     const currentString = JSON.stringify(currentData);
-    
+
     // Check if data actually changed
-    const hasDataChanged = 
+    const hasDataChanged =
       currentLength !== prevDataLengthRef.current ||
       currentString !== prevDataStringRef.current;
-    
+
     if (hasDataChanged) {
       prevDataLengthRef.current = currentLength;
       prevDataStringRef.current = currentString;
     }
-    
+
     // Always filter based on current searchText
     if (currentLength === 0) {
       setFilteredData([]);
@@ -293,7 +293,7 @@ const CustomDropdown = ({
             borderRadius: 24,
             marginBottom: Platform.OS == "android" ? 12 : 32,
             maxHeight: "100%",
-
+            borderWidth: 1,
             backgroundColor: "#FFFFFF29",
             borderColor: "rgba(255, 255, 255, 0.16)",
           }}

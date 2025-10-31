@@ -7,7 +7,9 @@ import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import { PNGIcons } from "../../../../assets/images/icons";
 import CustomButton from "../../../../components/CustomButton";
+import { useNavigation } from "@react-navigation/native";
 const UsersInfo = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <Image source={Images.user3} style={styles.avatar} />
@@ -32,6 +34,7 @@ const UsersInfo = () => {
         title={"View My Page"}
         width={128}
         height={40}
+        onPress={() => navigation.navigate("Detail")}
         backgroundColor={COLORS.cardColor}
         marginTop={20}
         customText={{

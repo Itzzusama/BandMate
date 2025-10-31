@@ -23,9 +23,7 @@ const GoldPlanGift = () => {
         <Text style={styles.giftText}>2 months as a gift !</Text>
       </View>
 
-      {/* Plan Options */}
       <View style={styles.planContainer}>
-        {/* Yearly */}
         <TouchableOpacity
           activeOpacity={0.9}
           style={[styles.planButton, { flex: 1 }]}
@@ -57,10 +55,9 @@ const GoldPlanGift = () => {
           )}
         </TouchableOpacity>
 
-        {/* Monthly */}
         <TouchableOpacity
           activeOpacity={0.9}
-          style={[styles.planButton, { flex: 1 }]}
+          style={[styles.planButton, { flex: 1.2 }]}
         >
           <View style={[styles.unselectedButton]}>
             <Text
@@ -149,12 +146,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 20,
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 2,
   },
   discountBadgeUnselected: {
     backgroundColor: "#333",
     borderRadius: 20,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 3,
   },
   discountText: {

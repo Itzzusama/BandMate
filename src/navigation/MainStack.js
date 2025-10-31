@@ -14,13 +14,14 @@ import AdvancedSettings from "../screens/Main/Settings/AdvancedSettings";
 import Preferences from "../screens/Main/Settings/Preferences";
 import Settings from "../screens/Main/Settings";
 import PublishPost from "../screens/Main/PublishPost/Index";
+import AdvancedNotification from "../screens/Main/Settings/AdvancedNotification";
 
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
   return (
     <Stack.Navigator
-    initialRouteName="TabStack"
+      initialRouteName="TabStack"
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
@@ -39,6 +40,10 @@ const MainStack = () => {
       <Stack.Screen name="Preferences" component={Preferences} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="PublishPost" component={PublishPost} />
+      <Stack.Screen
+        name="AdvancedNotification"
+        component={AdvancedNotification}
+      />
     </Stack.Navigator>
   );
 };
