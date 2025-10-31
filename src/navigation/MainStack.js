@@ -5,17 +5,18 @@ import Notification from "../screens/Main/Notification";
 
 import TermsConditions from "../screens/Main/TermsConditions";
 
-import AddSocials from "../screens/Main/Notification/AddSocials";
-import TabStack from "./TabStack";
 import Detail from "../screens/Main/Detail";
 import SearchEvent from "../screens/Main/Event/SearchEvent";
-import Plans from "../screens/Main/Settings/Plans";
-import AdvancedSettings from "../screens/Main/Settings/AdvancedSettings";
-import Preferences from "../screens/Main/Settings/Preferences";
-import Settings from "../screens/Main/Settings";
+import SampleScreen from "../screens/Main/Home/molecules/SampleScreen";
+import AddSocials from "../screens/Main/Notification/AddSocials";
 import PublishPost from "../screens/Main/PublishPost/Index";
+import Settings from "../screens/Main/Settings";
 import AdvancedNotification from "../screens/Main/Settings/AdvancedNotification";
 import ChangePassword from "../screens/Main/Settings/ChangePassword";
+import AdvancedSettings from "../screens/Main/Settings/AdvancedSettings";
+import Plans from "../screens/Main/Settings/Plans";
+import Preferences from "../screens/Main/Settings/Preferences";
+import TabStack from "./TabStack";
 
 import AppLanguage from "../screens/Main/Settings/AppLanguage";
 const Stack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ const MainStack = () => {
       <Stack.Screen name="Preferences" component={Preferences} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="PublishPost" component={PublishPost} />
+      <Stack.Screen name="SampleScreen" component={SampleScreen} />
       <Stack.Screen
         name="AdvancedNotification"
         component={AdvancedNotification}

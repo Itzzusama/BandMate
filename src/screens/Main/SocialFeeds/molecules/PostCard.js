@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { COLORS } from "../../../../utils/COLORS";
@@ -9,6 +9,7 @@ import { PNGIcons } from "../../../../assets/images/icons";
 import ImageFast from "../../../../components/ImageFast";
 import { BlurView } from "@react-native-community/blur";
 import { Images } from "../../../../assets/images";
+import { getPalette } from "@somesoap/react-native-image-palette";
 
 const PostCard = ({
   displayName = "Display Name",
@@ -26,6 +27,18 @@ const PostCard = ({
   activeIndex = 0,
   totalIndicators = 4,
 }) => {
+  const [bgColor, setBgColor] = useState("");
+
+  useEffect(() => {
+    const uri = imageSource;
+    if (!uri) return;
+    getPalette(uri)
+      .then((palette) => {
+        if (palette?.vibrant) setBgColor(palette.vibrant);
+      })
+      .catch(() => {});
+  }, [imageSource]);
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -116,7 +129,16 @@ const PostCard = ({
         ))}
       </View>
 
-      {/* Image + Blur + Gradient */}
+
+      <View
+        style={[
+          styles.glowBg,
+          {
+            backgroundColor: bgColor,
+            shadowColor: bgColor,
+          },
+        ]}
+      />
       <View style={styles.imageWrapper}>
         <ImageFast source={imageSource} style={styles.image} resizeMode="cover">
           <View style={styles.bottomOverlay}>
@@ -320,6 +342,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     paddingHorizontal: 12,
+  },
+  glowBg: {
+    position: "absolute",
+    top: "19%",
+    left: 12,
+    right: 12,
+    height: "54%",
+    borderRadius: 12,
+    opacity: 0.7,
+    shadowOpacity: 0.9,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 0 },
+    elevation:50,
   },
   image: {
     width: "100%",

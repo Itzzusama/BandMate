@@ -176,7 +176,7 @@ const CustomInputTextOnly = ({
           ) : (
             <CustomText
               label={value?.length ? value : placeholder || ""}
-              color={value?.length ? displayColor : COLORS.white2}
+              color={error?"#EE1045": value?.length ? displayColor : COLORS.white2}
               fontFamily={fonts.regular}
               fontSize={16}
               marginLeft={search ? 8 : 0}

@@ -2579,6 +2579,11 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz#821f8442f4175d8f0467b9daf26e3a18e2d02af2"
   integrity sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==
 
+"@somesoap/react-native-image-palette@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@somesoap/react-native-image-palette/-/react-native-image-palette-1.2.2.tgz#30fb6576ce9101d846ca9bf9a7b30dd242b18792"
+  integrity sha512-91O9pDEeYrA5vJzZs8x5h50uwTTAvqSrAnu5sWs4jeHiRXeGDgDY0keVB0s3RrIlbeF61KBK7OZpXxymSMyz5Q==
+
 "@standard-schema/spec@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.0.0.tgz#f193b73dc316c4170f2e82a881da0f550d551b9c"
@@ -7562,6 +7567,13 @@ react-native-screens@^4.11.1:
     react-native-is-edge-to-edge "^1.2.1"
     warn-once "^0.1.0"
 
+react-native-sensors@^7.3.6:
+  version "7.3.6"
+  resolved "https://registry.yarnpkg.com/react-native-sensors/-/react-native-sensors-7.3.6.tgz#147dea0d33227e46d3c2b34802b6945f5ce56dc6"
+  integrity sha512-h3ispHU6BqhVsMMBIMfJWdwoqHNoSae1wv2RNl2hVOoV1rbFuSbQluQsuZirva6uRDaZVeVwaE5th3HIf+9ykQ==
+  dependencies:
+    rxjs ">= 6"
+
 react-native-snackbar@^2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-native-snackbar/-/react-native-snackbar-2.9.0.tgz#281baef51163715042c5c2c9d63ff8a6250ed583"
@@ -7900,6 +7912,13 @@ run-parallel@^1.1.9:
   integrity sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==
   dependencies:
     queue-microtask "^1.2.2"
+
+"rxjs@>= 6":
+  version "7.8.2"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.2.tgz#955bc473ed8af11a002a2be52071bf475638607b"
+  integrity sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==
+  dependencies:
+    tslib "^2.1.0"
 
 safe-array-concat@^1.1.3:
   version "1.1.3"

@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -19,6 +19,11 @@ import AuthSlider from "../../../../components/Auth/AuthSlider";
 import CustomText from "../../../../components/CustomText";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
+import {
+  gyroscope,
+  setUpdateIntervalForType,
+  SensorTypes,
+} from "react-native-sensors";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -187,10 +192,10 @@ const HomeCard = () => {
       },
       onPanResponderMove: (_, gestureState) => {
         const { dx, dy } = gestureState;
-        
+
         // Update position
         pan.setValue({ x: dx, y: dy });
-        
+
         // Add rotation based on horizontal movement for better visual feedback
         const rotation = dx * 0.1; // Adjust this value for more/less rotation
         rotate.setValue(rotation);
@@ -274,8 +279,30 @@ const HomeCard = () => {
   const combinedRotate = Animated.add(rotate, rotateCard).interpolate({
     inputRange: [-30, 0, 30],
     outputRange: ["-30deg", "0deg", "30deg"],
-    extrapolate: 'clamp',
+    extrapolate: "clamp",
   });
+
+  const gyroX = useRef(new Animated.Value(0)).current;
+  const gyroY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    setUpdateIntervalForType(SensorTypes.gyroscope, 60);
+
+    const subscription = gyroscope.subscribe(({ x, y }) => {
+      // Map gyro movement to small subtle translations
+      Animated.spring(gyroX, {
+        toValue: x * 25, // adjust sensitivity
+        useNativeDriver: true,
+      }).start();
+
+      Animated.spring(gyroY, {
+        toValue: y * 25,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -285,8 +312,18 @@ const HomeCard = () => {
           styles.cardWrapper,
           {
             transform: [
-              { translateX: Animated.add(pan.x, translateX) },
-              { translateY: Animated.add(pan.y, translateY) },
+              {
+                translateX: Animated.add(
+                  Animated.add(pan.x, translateX),
+                  gyroX
+                ),
+              },
+              {
+                translateY: Animated.add(
+                  Animated.add(pan.y, translateY),
+                  gyroY
+                ),
+              },
               { rotate: combinedRotate },
             ],
           },

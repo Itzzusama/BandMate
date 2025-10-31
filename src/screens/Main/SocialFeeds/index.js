@@ -91,7 +91,7 @@ const SocialFeeds = () => {
         displayName="Display Name"
         isVerified={true}
         partnershipWith="ClubHouse"
-        imageSource={FeedsImages.post}
+        imageSource={FeedsImages.imageBG}
         stats={{
           likes: "1.4k",
           comments: "1.5M",
