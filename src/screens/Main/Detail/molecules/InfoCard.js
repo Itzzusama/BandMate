@@ -8,7 +8,12 @@ import { PNGIcons } from "../../../../assets/images/icons";
 const InfoCard = ({ name, showIcon, type, marginBottom = 20 }) => {
   return (
     <View style={[styles.container, { marginBottom: marginBottom }]}>
-      {showIcon && <Image source={PNGIcons.note} style={styles.icon} />}
+      {showIcon && (
+        <Image
+          source={type == "music" ? PNGIcons.note : PNGIcons.globeOutline}
+          style={[styles.icon, type == "language" && styles.lang]}
+        />
+      )}
       <CustomText
         label={name}
         fontFamily={fonts.medium}
@@ -40,5 +45,10 @@ const styles = StyleSheet.create({
     tintColor: COLORS.white,
     resizeMode: "contain",
     marginRight: 4,
+  },
+  lang: {
+    height: 17,
+    width: 17,
+    resizeMode: "cover",
   },
 });

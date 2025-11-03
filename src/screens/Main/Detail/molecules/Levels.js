@@ -4,6 +4,7 @@ import InfoCard from "./InfoCard";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
+import EditButton from "./EditButton";
 
 const data = [
   { name: "Bass", level: "Beginner" },
@@ -12,9 +13,14 @@ const data = [
   { name: "Voice", level: "Advanced" },
 ];
 
-const Levels = () => {
+const Levels = ({ myPage }) => {
   return (
     <View style={{ paddingHorizontal: 12 }}>
+      {myPage && (
+        <View style={styles.editBtn}>
+          <EditButton />
+        </View>
+      )}
       {data.map((item, index) => (
         <>
           <CustomText
@@ -40,5 +46,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
     gap: 4,
+  },
+  editBtn: {
+    right: 12,
+    position: "absolute",
   },
 });

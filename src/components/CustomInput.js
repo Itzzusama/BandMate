@@ -196,17 +196,17 @@ const CustomInput = ({
         {secureTextEntry && (
           <Icons
             name={hidePass ? "eye" : "eye-off"}
-            family={"Feather"}
+            family={"Ionicons"}
             color={COLORS.gray2}
             style={{
               position: "absolute",
               right: 17,
-              top: 21,
-              width: 16,
-              height: 16,
+              top: 17,
+              width: 22,
+              height: 22,
               zIndex: 999,
             }}
-            size={16}
+            size={22}
             onPress={() => setHidePass(!hidePass)}
           />
         )}

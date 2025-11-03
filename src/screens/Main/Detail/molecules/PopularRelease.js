@@ -8,6 +8,7 @@ import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import CustomText from "../../../../components/CustomText";
 import { Icon } from "react-native-vector-icons/Icon";
+import ConnentAccount from "./ConnentAccount";
 
 const PopularRelease = ({ title, data, showDots }) => {
   return (
@@ -32,6 +33,7 @@ const PopularRelease = ({ title, data, showDots }) => {
             lineHeight={12 * 1.4}
           />
         </View>
+        <ConnentAccount bottom={16} />
         {data?.map((item, index) => (
           <View style={[styles.row, { marginBottom: 16 }]} key={index}>
             <Image

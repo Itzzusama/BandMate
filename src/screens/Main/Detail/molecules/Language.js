@@ -8,14 +8,14 @@ import Icons from "../../../../components/Icons";
 import { PNGIcons } from "../../../../assets/images/icons";
 import EditButton from "./EditButton";
 
-const data = ["Blues", "Rock", "Soul"];
+const data = ["English", "French", "German"];
 
-const MusicStyles = ({ myPage }) => {
+const Language = ({ myPage }) => {
   return (
     <View style={{ paddingHorizontal: 12 }}>
       <View style={styles.flexRow}>
         <CustomText
-          label="Music style"
+          label="Language"
           fontFamily={fonts.medium}
           color={COLORS.white}
           fontSize={17}
@@ -30,14 +30,14 @@ const MusicStyles = ({ myPage }) => {
         showsHorizontalScrollIndicator={false}
       >
         {data.map((item, index) => (
-          <InfoCard key={index} name={item} showIcon type="music" />
+          <InfoCard key={index} name={item} showIcon type="language" />
         ))}
       </ScrollView>
     </View>
   );
 };
 
-export default MusicStyles;
+export default Language;
 
 const styles = StyleSheet.create({
   row: {

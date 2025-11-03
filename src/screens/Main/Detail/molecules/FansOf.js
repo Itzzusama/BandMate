@@ -11,6 +11,7 @@ import CustomText from "../../../../components/CustomText";
 import { ArtistImgs } from "../../../../assets/images/artistImgs";
 import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
+import EditButton from "./EditButton";
 
 const artists = [
   { name: "Arctic Monkeys", img: ArtistImgs.img6 },
@@ -18,18 +19,20 @@ const artists = [
   { name: "Beastie Boys", img: ArtistImgs.img3 },
 ];
 
-const FansOf = () => {
+const FansOf = ({ myPage }) => {
   return (
     <>
       <View style={styles.container}>
-        <CustomText
-          label="Fan of"
-          fontFamily={fonts.medium}
-          fontSize={17}
-          color={COLORS.white}
-          marginBottom={15}
-          marginLeft={12}
-        />
+        <View style={styles.row}>
+          <CustomText
+            label="Fan of"
+            fontFamily={fonts.medium}
+            fontSize={17}
+            color={COLORS.white}
+            marginLeft={12}
+          />
+          {myPage && <EditButton />}
+        </View>
 
         <ScrollView
           horizontal
@@ -78,5 +81,11 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 100,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 15,
   },
 });

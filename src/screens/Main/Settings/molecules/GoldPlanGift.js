@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   unselectedButton: {
     flex: 1,
     borderRadius: 30,
-    marginTop: 8,
+    marginTop: 3,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
     fontFamily: fonts.medium,
-    marginTop: 4,
   },
   priceTextUnselected: {
     fontSize: 16,

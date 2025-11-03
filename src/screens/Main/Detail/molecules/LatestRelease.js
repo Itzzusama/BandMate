@@ -7,17 +7,26 @@ import ImageFast from "../../../../components/ImageFast";
 import LinearGradient from "react-native-linear-gradient";
 import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
-const LatestRelease = () => {
+import EditButton from "./EditButton";
+const LatestRelease = ({ myPage }) => {
   return (
     <View style={styles.container}>
-      <CustomText
-        label={"Latest release"}
-        fontFamily={fonts.medium}
-        color={COLORS.white}
-        fontSize={17}
-        lineHeight={17 * 1.4}
-        marginBottom={8}
-      />
+      <View
+        style={[
+          styles.row,
+          { marginBottom: 8, justifyContent: "space-between" },
+        ]}
+      >
+        <CustomText
+          label={"Latest release"}
+          fontFamily={fonts.medium}
+          color={COLORS.white}
+          fontSize={17}
+          lineHeight={17 * 1.4}
+        />
+        {myPage && <EditButton />}
+      </View>
+
       <ImageFast source={Images.latest_rel} style={styles.imgStyle}>
         <LinearGradient
           colors={["#14141499", "#14141440", "#14141499"]}
@@ -76,7 +85,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 261,
     resizeMode: "cover",
-    borderRadius: 4,
+    borderRadius: 12,
   },
   bottomGradient: {
     ...StyleSheet.absoluteFillObject,

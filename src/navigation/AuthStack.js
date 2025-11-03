@@ -44,9 +44,7 @@ const AuthStack = () => {
     const missingArtists = !user?.Artists || user.Artists.length === 0;
     const missingGenres = !user?.Genres || user.Genres.length === 0;
     const missingImages = !user?.pictures || user.pictures.length === 0;
-    return (
-      missingInstruments || missingArtists || missingGenres || missingImages
-    );
+    return missingInstruments || missingArtists || missingGenres;
   };
 
   let initialRoute = "OnBoarding";

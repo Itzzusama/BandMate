@@ -4,20 +4,23 @@ import InfoCard from "./InfoCard";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
+import EditButton from "./EditButton";
 
 const data = ["Weekdays", "Weekends"];
 
-const Availability = () => {
+const Availability = ({ myPage }) => {
   return (
     <View style={{ paddingHorizontal: 12 }}>
-      <CustomText
-        label="Availability"
-        fontFamily={fonts.medium}
-        color={COLORS.white}
-        fontSize={17}
-        lineHeight={17 * 1.4}
-        marginBottom={10}
-      />
+      <View style={styles.rowContainer}>
+        <CustomText
+          label="Availability"
+          fontFamily={fonts.medium}
+          color={COLORS.white}
+          fontSize={17}
+          lineHeight={17 * 1.4}
+        />
+        {myPage && <EditButton />}
+      </View>
 
       <View style={styles.row}>
         {data.map((item, index) => (
@@ -31,6 +34,12 @@ const Availability = () => {
 export default Availability;
 
 const styles = StyleSheet.create({
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",

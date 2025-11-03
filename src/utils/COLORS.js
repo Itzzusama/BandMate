@@ -7,10 +7,10 @@ export const COLORS = {
   borderColor: "#ececec",
   inputBorder: "#DDE2E4",
   white: "#FFFFFF",
-  white2: "#FFFFFFA3",
-  white3: "#FFFFFF7A",
+  white2: "#FFFFFFA3", //white 64%
+  white3: "#FFFFFF7A", //white 48%
   white4: "#FFFFFF29",
-  cardColor: "#FFFFFF0A",
+  cardColor: "#FFFFFF0A", //white 4%
   red: "#EE1045",
   red1: "#EE1045",
   green: "#64CD75",
@@ -35,7 +35,7 @@ export const COLORS = {
   lightGray: "#f6f6f6",
   bgGray: "#ECECEC",
   iconCOLOR: "#041b08",
-  inputBg: "#FFFFFF14",
+  inputBg: "#FFFFFF14", //white 8%
   darkGreen: "#006450",
   darkPurple: "#4347FF",
   low: "#4347FF29",

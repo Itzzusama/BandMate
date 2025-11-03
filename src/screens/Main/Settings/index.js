@@ -78,6 +78,7 @@ const Settings = () => {
         title={"Logout"}
         backgroundColor={COLORS.cardColor}
         marginBottom={8}
+        fontSize={16}
         onPress={() => {
           dispatch(logout());
           navigation.reset({
@@ -101,6 +102,7 @@ const Settings = () => {
         backgroundColor={"#EE1045"}
         color={COLORS.white}
         textTransform={"none"}
+        fontSize={16}
         leftView={
           <Icons
             family={"MaterialCommunityIcons"}

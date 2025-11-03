@@ -24,7 +24,7 @@ import fonts from "../../../assets/fonts";
 import { count } from "../../../store/reducer/appSlice";
 
 const Email = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const onboardingCount = useSelector(count);
 
     const dispatch = useDispatch();
@@ -141,7 +141,7 @@ const Email = forwardRef(
         };
       }
       try {
-        setLoading(true);
+        setIsLoading(true);
         const res = await post(`auth/send-otp`, body);
         if (res?.data?.success) {
           Alert.alert("OTP Received", res.data?.result?.toString(), [
@@ -165,11 +165,10 @@ const Email = forwardRef(
             });
           }
         }
-
-        setLoading(false);
       } catch (error) {
         console.log(error?.response?.data, "error response");
-        setLoading(false);
+      } finally {
+        setIsLoading(false);
       }
     };
 

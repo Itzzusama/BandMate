@@ -216,4 +216,5 @@ export const PNGIcons = {
   rewind: require("./rewind.png"),
   blot: require("./blot.png"),
   star_blue: require("./star_blue.png"),
+  attach: require("./attach.png"),
 };

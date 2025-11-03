@@ -22,7 +22,6 @@ import { count } from "../../../store/reducer/appSlice";
 
 const OtpCode = forwardRef(
   ({ state, currentIndex, setCurrentIndex, setIsLoading }, ref) => {
-    console.log(state);
     const onboardingCount = useSelector(count);
     const [otp, setOtp] = useState(state?.otp || "");
     const [error, setError] = useState("");
@@ -30,7 +29,6 @@ const OtpCode = forwardRef(
     const [resendLoad, setResendLoad] = useState(false);
     const [timer, setTimer] = useState(30);
     const [isTimerActive, setIsTimerActive] = useState(true);
-    const [loading, setLoading] = useState(false);
     const timerRef = useRef(null);
 
     const otpRegex = /^[0-9]{6,}$/;
@@ -131,16 +129,12 @@ const OtpCode = forwardRef(
       try {
         setResendLoad(true);
         const res = await post(`auth/send-otp`, body);
-        Alert.alert(
-          "OTP Received", // Title
-          res.data?.result?.toString(), // Message
-          [
-            {
-              text: "OK",
-              onPress: () => console.log("OK Pressed"),
-            },
-          ]
-        );
+        Alert.alert("OTP Received", res.data?.result?.toString(), [
+          {
+            text: "OK",
+            onPress: () => console.log("OK Pressed"),
+          },
+        ]);
         setResendLoad(false);
         startTimer();
       } catch (error) {

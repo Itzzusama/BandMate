@@ -34,7 +34,7 @@ const UsersInfo = () => {
         title={"View My Page"}
         width={128}
         height={40}
-        // onPress={() => navigation.navigate("Detail", { myPage: true })}
+        onPress={() => navigation.navigate("Detail", { myPage: true })}
         backgroundColor={COLORS.cardColor}
         marginTop={20}
         customText={{

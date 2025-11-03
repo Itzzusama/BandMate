@@ -118,7 +118,6 @@ const SignUpScreens = () => {
       if (missingInstruments) targetStepName = "Instruments";
       else if (missingGenres) targetStepName = "Genres";
       else if (missingArtists) targetStepName = "Artists";
-      else if (missingImages) targetStepName = "Pictures";
 
       if (targetStepName) {
         const targetIndex = steps.indexOf(targetStepName);

@@ -64,7 +64,10 @@ const UserType = forwardRef(
 
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => handleRoleSelection("solo")}
+            onPress={() => {
+              dispatch(setOnboardingCount(16));
+              handleRoleSelection("solo");
+            }}
             style={[
               styles.box,
               {
