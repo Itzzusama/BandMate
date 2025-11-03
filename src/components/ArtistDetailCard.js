@@ -21,7 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const ArtistDetailCard = () => {
+const ArtistDetailCard = ({source}) => {
   // --- animation refs ---
   const navigation = useNavigation();
   const translateX = useRef(new Animated.Value(0)).current;
@@ -144,7 +144,7 @@ const ArtistDetailCard = () => {
           },
         ]}
       >
-        <ImageFast source={Images.artist} style={styles.imgStyle}>
+        <ImageFast source={source} style={styles.imgStyle}>
           <LinearGradient
             colors={["#14141499", "#14141440", "#60606000"]}
             start={{ x: 0.5, y: 1 }}

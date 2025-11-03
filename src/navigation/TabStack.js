@@ -218,6 +218,7 @@ import Event from "../screens/Main/Event";
 import Icons from "../components/Icons";
 import SocialFeeds from "../screens/Main/SocialFeeds";
 import Chat from "../screens/Main/Chat/Chat";
+import SampleScreen from "../screens/Main/Home/molecules/SampleScreen";
 
 const Tab = createBottomTabNavigator();
 

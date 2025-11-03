@@ -200,4 +200,5 @@ export const Images = {
   savePlus: require("./savePlus.png"),
   repost: require("./repost.png"),
   PostSample: require("./PostSample.png"),
+  goldenVerified: require("./goldenVerified.png"),
 };
