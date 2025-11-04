@@ -27,26 +27,48 @@ import {
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-// Sample image array - replace with your actual images
 const profileImages = [
-  { id: 1, image: PNGIcons.bandImage, premium: true },
-  { id: 2, image: PNGIcons.bandImage, premium: false },
-  { id: 3, image: PNGIcons.bandImage, premium: true },
-  { id: 4, image: PNGIcons.bandImage, premium: false },
-  { id: 5, image: PNGIcons.bandImage, premium: true },
+  {
+    id: 1,
+    images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
+    premium: true,
+  },
+  {
+    id: 2,
+    images: [PNGIcons.dala, PNGIcons.ProductCard, PNGIcons.bandImage],
+    premium: true,
+  },
+  {
+    id: 3,
+    images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
+    premium: true,
+  },
+  {
+    id: 4,
+    images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
+    premium: true,
+  },
+  {
+    id: 5,
+    images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
+    premium: true,
+  },
 ];
 
 const HomeCard = () => {
   const navigation = useNavigation();
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const sliderAnimation = useRef(new Animated.Value(0)).current;
+  const imageTranslateX = useRef(new Animated.Value(0)).current;
+
   // Current card animations
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
   const gradientOpacity = useRef(new Animated.Value(0)).current;
   const gradientTranslateY = useRef(new Animated.Value(200)).current;
-  
+
   // Gesture animations
   const pan = useRef(new Animated.ValueXY()).current;
   const rotate = useRef(new Animated.Value(0)).current;
@@ -84,17 +106,69 @@ const HomeCard = () => {
     },
   ];
 
+  // Auto-advance slider every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      goToNextImage();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentImageIndex, currentIndex]);
+
+  // Start slider animation when image changes
+  useEffect(() => {
+    startSliderAnimation();
+  }, [currentImageIndex, currentIndex]);
+
+  const startSliderAnimation = () => {
+    // Reset animation
+    sliderAnimation.setValue(0);
+
+    // Start the fill animation
+    Animated.timing(sliderAnimation, {
+      toValue: 1,
+      duration: 3000, // 3 seconds
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const goToNextImage = () => {
+    const currentProfile = profileImages[currentIndex];
+    const nextIndex = (currentImageIndex + 1) % currentProfile.images.length;
+
+    if (nextIndex === 0) {
+      // If we're going back to first image, don't animate
+      setCurrentImageIndex(nextIndex);
+    } else {
+      // Animate image transition
+      Animated.timing(imageTranslateX, {
+        toValue: -screenWidth,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setCurrentImageIndex(nextIndex);
+        imageTranslateX.setValue(screenWidth); // Start from right for next image
+
+        Animated.timing(imageTranslateX, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+    }
+  };
+
   const handleSwipe = (direction) => {
     let index;
     switch (direction) {
       case "left":
-        index = 1; // Using the second left action for swipe left
+        index = 1;
         break;
       case "right":
-        index = 3; 
+        index = 3;
         break;
       case "up":
-        index = 2; // Using the up action for swipe up
+        index = 2;
         break;
       default:
         return;
@@ -185,8 +259,9 @@ const HomeCard = () => {
   };
 
   const goToNextCard = () => {
-    setCurrentIndex(prev => {
+    setCurrentIndex((prev) => {
       const nextIndex = (prev + 1) % profileImages.length;
+      setCurrentImageIndex(0); // Reset to first image when changing cards
       return nextIndex;
     });
     resetCardPosition();
@@ -201,6 +276,8 @@ const HomeCard = () => {
     setCurrentGradientColors(["transparent", "transparent"]);
     pan.setValue({ x: 0, y: 0 });
     rotate.setValue(0);
+    imageTranslateX.setValue(0);
+    sliderAnimation.setValue(0);
   };
 
   // PanResponder for gesture handling
@@ -328,11 +405,26 @@ const HomeCard = () => {
   const nextProfile = profileImages[(currentIndex + 1) % profileImages.length];
 
   const renderCard = (profile, isCurrent = true) => (
-    <ImageFast
-      source={profile.image}
-      style={styles.image}
-      onPress={() => navigation.navigate("Detail")}
-    >
+    <View style={styles.imageContainer}>
+      {/* Image Carousel */}
+      <Animated.View
+        style={[
+          styles.imageCarousel,
+          {
+            transform: [{ translateX: isCurrent ? imageTranslateX : 0 }],
+          },
+        ]}
+      >
+        {profile?.images?.map((image, index) => (
+          <ImageFast
+            key={index}
+            source={image}
+            style={styles.image}
+            onPress={() => navigation.navigate("Detail")}
+          />
+        ))}
+      </Animated.View>
+
       <View style={styles.overlay} />
 
       <View style={styles.innerContainer}>
@@ -501,14 +593,49 @@ const HomeCard = () => {
             <Image source={PNGIcons.forward} style={styles.forwardIcon} />
           </View>
 
-          <AuthSlider
-            min={1}
-            max={3}
-            marginBottom={20}
-            marginTop={12}
-            gap={8}
-            height={6}
-          />
+          {/* Dynamic Slider */}
+          <View style={styles.sliderContainer}>
+            <View style={styles.sliderTrack}>
+              {Array.from({ length: profile.images.length }).map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.block,
+                    {
+                      backgroundColor: "#FFFFFF17",
+                      borderRadius: 99,
+                      overflow: "hidden",
+                    },
+                  ]}
+                >
+                  {index === currentImageIndex && isCurrent && (
+                    <Animated.View
+                      style={[
+                        StyleSheet.absoluteFill,
+                        {
+                          backgroundColor: COLORS.authHeader,
+                          width: sliderAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["0%", "100%"],
+                          }),
+                        },
+                      ]}
+                    />
+                  )}
+                  {index < currentImageIndex && isCurrent && (
+                    <View
+                      style={[
+                        StyleSheet.absoluteFill,
+                        {
+                          backgroundColor: COLORS.authHeader,
+                        },
+                      ]}
+                    />
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
         </View>
       </View>
 
@@ -532,7 +659,7 @@ const HomeCard = () => {
           />
         </Animated.View>
       )}
-    </ImageFast>
+    </View>
   );
 
   return (
@@ -627,19 +754,34 @@ const styles = StyleSheet.create({
     zIndex: 1,
     marginTop: 10,
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.12)",
-  },
-  image: {
+  imageContainer: {
     height: Platform.OS == "ios" ? screenHeight * 0.56 : screenHeight * 0.55,
     width: "100%",
     borderRadius: 32,
+    overflow: "hidden",
+  },
+  imageCarousel: {
+    flexDirection: "row",
+    height: "100%",
+    width: "100%",
+  },
+  image: {
+    height: "100%",
+    width: "100%",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.12)",
   },
   innerContainer: {
     padding: 14,
     justifyContent: "space-between",
     flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   row: {
     flexDirection: "row",
@@ -698,7 +840,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: Platform.OS == "ios" ? screenHeight * 0.56 + 30 : screenHeight * 0.55 + 30,
+    marginTop:
+      Platform.OS == "ios"
+        ? screenHeight * 0.56 + 30
+        : screenHeight * 0.55 + 30,
     padding: 12,
     gap: 16,
   },
@@ -707,7 +852,7 @@ const styles = StyleSheet.create({
   },
   smallBtn: {
     height: 48,
-    width: 48, 
+    width: 48,
   },
   largeBtn: {
     height: 56,
@@ -725,5 +870,24 @@ const styles = StyleSheet.create({
   },
   gradientFill: {
     flex: 1,
+  },
+  sliderContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 12,
+    marginBottom: 20,
+  },
+  sliderTrack: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderRadius: 100,
+    overflow: "hidden",
+    gap: 8,
+  },
+  block: {
+    flex: 1,
+    height: 6,
+    position: "relative",
   },
 });
