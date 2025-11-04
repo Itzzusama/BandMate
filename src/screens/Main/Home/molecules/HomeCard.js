@@ -91,7 +91,7 @@ const HomeCard = () => {
         index = 1; // Using the second left action for swipe left
         break;
       case "right":
-        index = 3; // Using the first right action for swipe right
+        index = 3; 
         break;
       case "up":
         index = 2; // Using the up action for swipe up
