@@ -57,7 +57,10 @@ const songsData = [
 const Detail = ({ navigation }) => {
   const route = useRoute();
   const isFocus = useIsFocused();
-  const img = Images.artist;
+
+  const images = route.params?.images;
+
+  const img = images[0];
 
   const { myPage } = route?.params || {};
 
@@ -88,7 +91,7 @@ const Detail = ({ navigation }) => {
         )
       }
     >
-      <ArtistDetailCard source={img} />
+      <ArtistDetailCard images={images} color={bgColor} />
       <SummaryCard match={64} inCommon={4} monthlyViews={528} />
       <AboutArtist
         name={"About Viktor"}

@@ -4,26 +4,24 @@ import {
   Animated,
   Dimensions,
   Image,
+  PanResponder,
   Platform,
-  Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
-  PanResponder,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import {
+  gyroscope,
+  SensorTypes,
+  setUpdateIntervalForType,
+} from "react-native-sensors";
 import fonts from "../../../../assets/fonts";
 import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
-import AuthSlider from "../../../../components/Auth/AuthSlider";
 import CustomText from "../../../../components/CustomText";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
-import {
-  gyroscope,
-  setUpdateIntervalForType,
-  SensorTypes,
-} from "react-native-sensors";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -60,7 +58,6 @@ const HomeCard = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const sliderAnimation = useRef(new Animated.Value(0)).current;
-  const imageTranslateX = useRef(new Animated.Value(0)).current;
 
   // Current card animations
   const translateX = useRef(new Animated.Value(0)).current;
@@ -136,26 +133,16 @@ const HomeCard = () => {
     const currentProfile = profileImages[currentIndex];
     const nextIndex = (currentImageIndex + 1) % currentProfile.images.length;
 
-    if (nextIndex === 0) {
-      // If we're going back to first image, don't animate
-      setCurrentImageIndex(nextIndex);
-    } else {
-      // Animate image transition
-      Animated.timing(imageTranslateX, {
-        toValue: -screenWidth,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
-        setCurrentImageIndex(nextIndex);
-        imageTranslateX.setValue(screenWidth); // Start from right for next image
+    // Update the image index first
+    setCurrentImageIndex(nextIndex);
 
-        Animated.timing(imageTranslateX, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      });
-    }
+    // Reset and restart slider animation
+    sliderAnimation.setValue(0);
+    Animated.timing(sliderAnimation, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start();
   };
 
   const handleSwipe = (direction) => {
@@ -276,7 +263,6 @@ const HomeCard = () => {
     setCurrentGradientColors(["transparent", "transparent"]);
     pan.setValue({ x: 0, y: 0 });
     rotate.setValue(0);
-    imageTranslateX.setValue(0);
     sliderAnimation.setValue(0);
   };
 
@@ -405,25 +391,16 @@ const HomeCard = () => {
   const nextProfile = profileImages[(currentIndex + 1) % profileImages.length];
 
   const renderCard = (profile, isCurrent = true) => (
-    <View style={styles.imageContainer}>
-      {/* Image Carousel */}
-      <Animated.View
-        style={[
-          styles.imageCarousel,
-          {
-            transform: [{ translateX: isCurrent ? imageTranslateX : 0 }],
-          },
-        ]}
-      >
-        {profile?.images?.map((image, index) => (
-          <ImageFast
-            key={index}
-            source={image}
-            style={styles.image}
-            onPress={() => navigation.navigate("Detail")}
-          />
-        ))}
-      </Animated.View>
+    <TouchableOpacity
+      activeOpacity={0.6}
+      onPress={() => navigation.navigate("Detail", { images: profile?.images })}
+      style={styles.imageContainer}
+    >
+      {/* Simple Image Display - No Carousel Animation */}
+      <ImageFast
+        source={profile.images[isCurrent ? currentImageIndex : 0]}
+        style={styles.image}
+      />
 
       <View style={styles.overlay} />
 
@@ -659,7 +636,7 @@ const HomeCard = () => {
           />
         </Animated.View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -759,11 +736,6 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 32,
     overflow: "hidden",
-  },
-  imageCarousel: {
-    flexDirection: "row",
-    height: "100%",
-    width: "100%",
   },
   image: {
     height: "100%",
