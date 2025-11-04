@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -7,141 +7,151 @@ import {
   ActivityIndicator,
   useWindowDimensions,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 
 import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
-import fonts from "../../../assets/fonts";
-import { useDispatch, useSelector } from "react-redux";
-import { count, setOnboardingCount } from "../../../store/reducer/appSlice";
 import { COLORS } from "../../../utils/COLORS";
+import fonts from "../../../assets/fonts";
 import { PNGIcons } from "../../../assets/images/icons";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { put } from "../../../services/ApiRequest";
 import { uploadAndGetUrl } from "../../../utils/constants";
-import UploadImageCustom from "../../../components/UploadImageCustom"; // ✅ your advanced picker/camera component
+import UploadImageCustom from "../../../components/UploadImageCustom";
 import Icons from "../../../components/Icons";
 import { ToastMessage } from "../../../utils/ToastMessage";
+import ScreenWrapper from "../../../components/ScreenWrapper";
+import AuthHeader from "../../../components/Auth/AuthHeader";
+import AuthFooter from "../../../components/Auth/AuthFooter";
 
 const MAX_IMAGES = 4;
 
-const AddPictures = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
-    const onboardingCount = useSelector(count);
-    const dispatch = useDispatch();
-    const { width } = useWindowDimensions();
-    const CARD_SIZE = (width - 50) / 2;
+const AddPictures = () => {
+  const { width } = useWindowDimensions();
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const CARD_SIZE = (width - 50) / 2;
+  const { userData } = useSelector((state) => state.users);
+  const [step, setStep] = useState(userData?.role == "band" ? 14 : 15);
+  const totalSteps = userData?.role == "band" ? 15 : 16;
+  const cameraRef = useRef(null);
+  const [images, setImages] = useState([]);
+  const [uploading, setUploading] = useState([]); // individual image loaders
+  const [error, setError] = useState("");
+  const [imageModal, setImageModal] = useState(false);
+  const [imgLoading, setImgLoading] = useState(false);
+  const [cameraIndex, setCameraIndex] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const cameraRef = useRef(null);
-    const [images, setImages] = useState(state?.images || []);
-    const [uploading, setUploading] = useState([]); // loader state per slot
-    const [error, setError] = useState("");
-    const [imageModal, setImageModal] = useState(false);
-    const [imgLoading, setImgLoading] = useState(false);
-    const [cameraIndex, setCameraIndex] = useState(null);
+  const handleChange = async (pickedImage) => {
+    if (!pickedImage?.path && !pickedImage?.uri) return;
 
-    const handleChange = async (pickedImage) => {
-      if (!pickedImage?.path && !pickedImage?.uri) return;
+    const localUri = pickedImage.path || pickedImage.uri;
+    const file = {
+      uri: localUri,
+      type: pickedImage.mime || "image/jpeg",
+    };
 
-      const localUri = pickedImage.path || pickedImage.uri;
-      const file = {
-        uri: localUri,
-        type: pickedImage.mime || "image/jpeg",
-      };
+    try {
+      setImgLoading(true);
+      setUploading((prev) => {
+        const updated = [...prev];
+        updated[cameraIndex] = true;
+        return updated;
+      });
 
-      try {
-        setImgLoading(true);
-        setUploading((prev) => {
+      const uploadedUrl = await uploadAndGetUrl(file);
+
+      if (uploadedUrl) {
+        setImages((prev) => {
           const updated = [...prev];
-          updated[cameraIndex] = true;
+          updated[cameraIndex] = uploadedUrl;
           return updated;
         });
-
-        const uploadedUrl = await uploadAndGetUrl(file);
-
-        if (uploadedUrl) {
-          setImages((prev) => {
-            const updated = [...prev];
-            updated[cameraIndex] = uploadedUrl;
-            return updated;
-          });
-          setError("");
-        } else {
-          setError("Failed to upload image. Please try again.");
-        }
-      } catch (err) {
-        console.log("Upload error:", err);
-        setError("Error while uploading image.");
-      } finally {
-        setImgLoading(false);
-        setUploading((prev) => {
-          const updated = [...prev];
-          updated[cameraIndex] = false;
-          return updated;
-        });
-      }
-    };
-
-    const handleCapture = async () => {
-      try {
-        if (cameraRef.current) {
-          const photo = await cameraRef.current.takePhoto({
-            flash: "off",
-          });
-          if (photo?.path) {
-            handleChange(photo);
-          }
-        }
-      } catch (err) {
-        console.log("Camera capture error:", err);
-      }
-    };
-
-    const onDelete = (index) => {
-      if (index === null || index === undefined) return;
-      setImages((prev) => prev.filter((_, i) => i !== index));
-    };
-
-    const submit = async () => {
-      if (images.length < MAX_IMAGES) {
-        setError(`Please upload all ${MAX_IMAGES} pictures.`);
-        return;
-      }
-      setIsLoading(true);
-
-      try {
         setError("");
-        const res = await put("user/profile", {
-          pictures: images,
-        });
-
-        if (res?.data?.success) {
-          dispatch(setUserData(res?.data?.user));
-          setState({ ...state, images });
-          ToastMessage(
-            "Your photos have been uploaded successfully!",
-            "success"
-          );
-          if (currentIndex < onboardingCount) {
-            setCurrentIndex(currentIndex + 1);
-          }
-        } else {
-          setError("Failed to update profile. Please try again.");
-        }
-      } catch (err) {
-        console.log("Submit error:", err);
-        setError("Something went wrong while saving.");
-      } finally {
-        setIsLoading(false);
+      } else {
+        setError("Failed to upload image. Please try again.");
       }
-    };
+    } catch (err) {
+      console.log("Upload error:", err);
+      setError("Error while uploading image.");
+    } finally {
+      setImgLoading(false);
+      setUploading((prev) => {
+        const updated = [...prev];
+        updated[cameraIndex] = false;
+        return updated;
+      });
+    }
+  };
 
-    const back = () => {
-      if (currentIndex > 1) setCurrentIndex(currentIndex - 1);
-    };
+  const handleCapture = async () => {
+    try {
+      if (cameraRef.current) {
+        const photo = await cameraRef.current.takePhoto({ flash: "off" });
+        if (photo?.path) handleChange(photo);
+      }
+    } catch (err) {
+      console.log("Camera capture error:", err);
+    }
+  };
 
-    useImperativeHandle(ref, () => ({ submit, back }));
+  const onDelete = (index) => {
+    if (index === null || index === undefined) return;
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
-    return (
+  const handleNext = async () => {
+    navigation.navigate("AddDescription");
+
+    // if (images.length < MAX_IMAGES) {
+    //   setError(`Please upload all ${MAX_IMAGES} pictures.`);
+    //   return;
+    // }
+
+    // setIsLoading(true);
+    // try {
+    //   setError("");
+    //   const res = await put("user/profile", { pictures: images });
+
+    //   if (res?.data?.success) {
+    //     dispatch(setUserData(res?.data?.user));
+    //     ToastMessage("Your photos have been uploaded successfully!", "success");
+    //     navigation.navigate("AddDescription");
+    //   } else {
+    //     setError("Failed to update profile. Please try again.");
+    //   }
+    // } catch (err) {
+    //   console.log("Submit error:", err);
+    //   setError("Something went wrong while saving.");
+    // } finally {
+    //   setIsLoading(false);
+    // }
+  };
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+  };
+
+  return (
+    <ScreenWrapper
+      scrollEnabled
+      footerUnScrollable={() => (
+        <AuthFooter
+          paddingHorizontal={12}
+          onPress={handleNext}
+          onBackPress={handleBack}
+          btnLoading={isLoading}
+        />
+      )}
+    >
+      <AuthHeader
+        step={step}
+        totalSteps={totalSteps}
+        subtitle="Upload your photos"
+      />
+
       <View style={styles.container}>
         <CustomText
           label="Pictures"
@@ -216,6 +226,7 @@ const AddPictures = forwardRef(
           }
           color={error ? "#EE1045" : ""}
         />
+
         {imageModal && (
           <UploadImageCustom
             images={images}
@@ -229,9 +240,9 @@ const AddPictures = forwardRef(
           />
         )}
       </View>
-    );
-  }
-);
+    </ScreenWrapper>
+  );
+};
 
 export default AddPictures;
 

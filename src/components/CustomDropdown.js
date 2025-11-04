@@ -42,6 +42,7 @@ const CustomDropdown = ({
   modalTitle = "Select Option",
   isColor,
   colorBg,
+  showError,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [text, setText] = useState("");
@@ -379,7 +380,7 @@ const CustomDropdown = ({
           marginBottom={12}
         />
       )}
-      {error && (
+      {error && showError && (
         <ErrorComponent
           errorTitle={error}
           color={errorColor || "#EE1045CC"}

@@ -81,9 +81,10 @@ const ResetPassword = forwardRef(
             dispatch(setToken(response?.data?.tokens?.accessToken));
             dispatch(setRefreshToken(response?.data?.tokens?.refreshToken));
 
-            if (currentIndex < onboardingCount) {
-              setCurrentIndex(currentIndex + 1);
-            }
+            // if (currentIndex < onboardingCount) {
+            //   setCurrentIndex(currentIndex + 1);
+            // }
+            navigation.navigate("Instruments");
           }
 
           setLoading(false);

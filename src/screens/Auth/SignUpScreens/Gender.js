@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 import CustomDropdown from "../../../components/CustomDropdown";
 import ErrorComponent from "../../../components/ErrorComponent";
@@ -22,7 +22,7 @@ const StepFive = forwardRef(
       setGender(val);
       let newErrors = "";
       if (!val) {
-        newErrors = "Please select an option.";
+        newErrors = "Please select an option";
         setError(newErrors);
         setShowSuccessColor(false);
       } else {
@@ -70,20 +70,10 @@ const StepFive = forwardRef(
             value={gender}
             setValue={setGender}
             error={error}
+            showError={true}
             placeholder="E.g. Male"
             modalTitle="Select Gender"
           />
-          {error ? null : (
-            <ErrorComponent
-              error={error}
-              isValid={showSuccessColor}
-              color={showSuccessColor ? "#64CD75" : COLORS.gray1}
-              errorTitle={
-                showSuccessColor ? "Valid Gender" : "Please Select an Option"
-              }
-              marginTop={-8}
-            />
-          )}
         </View>
       </View>
     );

@@ -1,88 +1,112 @@
-import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
 import CustomText from "../../../components/CustomText";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import ErrorComponent from "../../../components/ErrorComponent";
 import { put } from "../../../services/ApiRequest";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { ToastMessage } from "../../../utils/ToastMessage";
+import ScreenWrapper from "../../../components/ScreenWrapper";
+import AuthHeader from "../../../components/Auth/AuthHeader";
+import AuthFooter from "../../../components/Auth/AuthFooter";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const LEVELS = ["Beginner", "Intermediate", "Advanced", "Legend"];
 
-const Level = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
-    const dispatch = useDispatch();
+const Level = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const route = useRoute();
 
-    const normalizeName = (name) => name?.replace(/\n/g, " ").trim();
+  const instruments = route?.params?.selectedInstruments || [];
 
-    const instruments = (state?.instruments || []).map(normalizeName);
+  const [selectedLevels, setSelectedLevels] = useState({});
+  const [error, setError] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { userData } = useSelector((state) => state.users);
+  const [step, setStep] = useState(userData?.role == "band" ? 11 : 12);
+  const totalSteps = userData?.role == "band" ? 15 : 16;
+  const normalizeName = (name) => name?.replace(/\n/g, " ").trim();
 
-    const [selectedLevels, setSelectedLevels] = useState({});
-    const [error, setError] = useState("");
-
-    useEffect(() => {
-      if (state?.instrumentWithLevel?.length) {
-        const prefill = {};
-        state.instrumentWithLevel.forEach((item) => {
-          const normalized = normalizeName(item.instrument);
-          prefill[normalized] = item.level;
-        });
-        setSelectedLevels(prefill);
-      }
-    }, [state?.instrumentWithLevel]);
-
-    const selectLevel = (instrument, level) => {
-      setSelectedLevels((prev) => ({ ...prev, [instrument]: level }));
-    };
-
-    const errorCheck = () => {
-      const allSelected = instruments.every((inst) => selectedLevels[inst]);
-      return allSelected ? "" : "Please select a level for each instrument.";
-    };
-
-    const submit = async () => {
-      const err = errorCheck();
-      if (err) {
-        setError(err);
-        return;
-      }
-
+  /** ✅ Validate all selected */
+  const errorCheck = (levels) => {
+    const allSelected = instruments.every((inst) => levels[inst]);
+    if (allSelected) {
       setError("");
-      setIsLoading(true);
-      const instrumentWithLevel = instruments.map((inst) => ({
-        instrument: inst,
-        level: selectedLevels[inst],
-      }));
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+      return "";
+    } else {
+      setShowSuccess(false);
+      setError("Please select a level for each instrument.");
+      return "Please select a level for each instrument.";
+    }
+  };
 
-      try {
-        const res = await put("user/profile", {
-          Instruments: instrumentWithLevel,
-        });
-        if (res?.data?.success) {
-          setState({ ...state, instrumentWithLevel });
-          setCurrentIndex(currentIndex + 1);
-          dispatch(setUserData(res?.data?.user));
-          ToastMessage(
-            "Your instruments have been updated successfully!",
-            "success"
-          );
-        }
-      } catch (err) {
-        console.log("Error saving instruments:", err);
-      } finally {
-        setIsLoading(false);
+  /** ✅ Select a level */
+  const selectLevel = (instrument, level) => {
+    setSelectedLevels((prev) => {
+      const updated = { ...prev, [instrument]: level };
+      errorCheck(updated);
+      return updated;
+    });
+  };
+
+  /** ✅ Save & navigate next */
+  const handleNext = async () => {
+    const err = errorCheck(selectedLevels);
+    if (err) return;
+
+    setIsLoading(true);
+    const instrumentWithLevel = instruments.map((inst) => ({
+      instrument: normalizeName(inst),
+      level: selectedLevels[inst],
+    }));
+
+    try {
+      const res = await put("user/profile", {
+        Instruments: instrumentWithLevel,
+      });
+
+      if (res?.data?.success) {
+        dispatch(setUserData(res?.data?.user));
+        ToastMessage(
+          "Your instruments have been updated successfully!",
+          "success"
+        );
+        navigation.navigate("Genres");
       }
-    };
+    } catch (err) {
+      console.log("Error saving instruments:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const back = () => {
-      if (currentIndex > 1) setCurrentIndex(currentIndex - 1);
-    };
+  const handleBack = () => navigation.goBack();
 
-    useImperativeHandle(ref, () => ({ submit, back }));
+  return (
+    <ScreenWrapper
+      paddingBottom={12}
+      scrollEnabled
+      footerUnScrollable={() => (
+        <AuthFooter
+          paddingHorizontal={12}
+          onPress={handleNext}
+          onBackPress={handleBack}
+          btnLoading={isLoading}
+        />
+      )}
+    >
+      <AuthHeader
+        step={step}
+        totalSteps={totalSteps}
+        subtitle="Select your level for each instrument"
+      />
 
-    return (
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <CustomText
@@ -104,7 +128,7 @@ const Level = forwardRef(
           {instruments.map((instrument) => (
             <View key={instrument} style={{ marginBottom: 12 }}>
               <CustomText
-                label={instrument}
+                label={normalizeName(instrument)}
                 fontFamily={fonts.medium}
                 fontSize={17}
                 color={COLORS.white}
@@ -123,6 +147,9 @@ const Level = forwardRef(
                           backgroundColor: isSelected
                             ? COLORS.white
                             : "#313131",
+                          borderColor: isSelected
+                            ? COLORS.white
+                            : "transparent",
                         },
                       ]}
                       onPress={() => selectLevel(instrument, level)}
@@ -142,14 +169,22 @@ const Level = forwardRef(
             </View>
           ))}
 
-          {error ? (
-            <ErrorComponent errorTitle={error} color={error ? "#EE1045" : ""} />
-          ) : null}
+          <ErrorComponent
+            errorTitle={
+              showSuccess
+                ? "All levels selected!"
+                : error || "Please complete all selections"
+            }
+            error={error}
+            isValid={showSuccess}
+            color={showSuccess ? "#64CD75" : error ? "#EE1045CC" : COLORS.gray2}
+            marginBottom={12}
+          />
         </ScrollView>
       </View>
-    );
-  }
-);
+    </ScreenWrapper>
+  );
+};
 
 export default Level;
 
@@ -160,7 +195,7 @@ const styles = StyleSheet.create({
   levelRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 4,
+    gap: 6,
   },
   levelButton: {
     paddingHorizontal: 12,

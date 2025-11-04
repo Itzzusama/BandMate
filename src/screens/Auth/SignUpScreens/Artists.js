@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -6,6 +6,8 @@ import {
   ScrollView,
   Image,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
 
 import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
@@ -16,9 +18,11 @@ import Icons from "../../../components/Icons";
 import { ArtistImgs } from "../../../assets/images/artistImgs";
 import { put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
-import { useDispatch } from "react-redux";
 import { sortAlphabetically } from "../../../utils/constants";
 import { ToastMessage } from "../../../utils/ToastMessage";
+import ScreenWrapper from "../../../components/ScreenWrapper";
+import AuthHeader from "../../../components/Auth/AuthHeader";
+import AuthFooter from "../../../components/Auth/AuthFooter";
 
 const artists = [
   { name: "Blur", img: ArtistImgs.img2 },
@@ -31,77 +35,95 @@ const artists = [
   { name: "Linkin Park", img: ArtistImgs.img2 },
   { name: "Oasis", img: ArtistImgs.img3 },
 ];
+
 const sortedArtists = sortAlphabetically(artists);
-const Artists = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
-    const dispatch = useDispatch();
 
-    const [selectedArtists, setSelectedArtists] = useState([]);
-    const [error, setError] = useState("");
-    const [prevError, setPrevError] = useState("");
-    const [showSuccessColor, setShowSuccessColor] = useState(false);
+const Artists = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
-    useEffect(() => {
-      if (prevError && !error) {
-        setShowSuccessColor(true);
-        const timer = setTimeout(() => setShowSuccessColor(false), 2000);
-        return () => clearTimeout(timer);
+  const [selectedArtists, setSelectedArtists] = useState([]);
+  const [error, setError] = useState("");
+  const [prevError, setPrevError] = useState("");
+  const [showSuccessColor, setShowSuccessColor] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { userData } = useSelector((state) => state.users);
+  const [step, setStep] = useState(userData?.role == "band" ? 13 : 14);
+  const totalSteps = userData?.role == "band" ? 15 : 16;
+
+  useEffect(() => {
+    if (prevError && !error) {
+      setShowSuccessColor(true);
+      const timer = setTimeout(() => setShowSuccessColor(false), 2000);
+      return () => clearTimeout(timer);
+    }
+    setPrevError(error);
+  }, [error]);
+
+  const toggleArtist = (name) => {
+    setSelectedArtists((prev) => {
+      const updated = prev.includes(name)
+        ? prev.filter((a) => a !== name)
+        : [...prev, name];
+
+      if (updated.length >= 3) {
+        setError("");
       }
-      setPrevError(error);
-    }, [error]);
 
-    const toggleArtist = (name) => {
-      setSelectedArtists((prev) => {
-        const updated = prev.includes(name)
-          ? prev.filter((a) => a !== name)
-          : [...prev, name];
+      return updated;
+    });
+  };
 
-        if (updated.length >= 3) {
-          setError("");
-        }
+  const errorCheck = () => {
+    if (selectedArtists.length < 3) return "Please choose at least 3 artists.";
+    return "";
+  };
 
-        return updated;
-      });
-    };
+  const handleNext = async () => {
+    const err = errorCheck();
+    if (err) {
+      setError(err);
+      return;
+    }
+    setError("");
+    setIsLoading(true);
 
-    const errorCheck = () => {
-      if (selectedArtists.length < 3)
-        return "Please choose at least 3 artists.";
-      return "";
-    };
-
-    const submit = async () => {
-      const err = errorCheck();
-      if (err) {
-        setError(err);
-        return;
+    try {
+      const res = await put("user/profile", { Artists: selectedArtists });
+      if (res?.data?.success) {
+        dispatch(setUserData(res?.data?.user));
+        ToastMessage("Your favorite artists have been added!", "success");
+        navigation.navigate("AddPictures");
       }
-      setError("");
-      setIsLoading(true);
-      try {
-        const res = await put("user/profile", {
-          Artists: selectedArtists,
-        });
-        if (res?.data?.success) {
-          setState({ ...state, artists: selectedArtists });
-          setCurrentIndex(currentIndex + 1);
-          dispatch(setUserData(res?.data?.user));
-          ToastMessage("Your favorite artists have been added!", "success");
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const back = () => {
-      if (currentIndex > 1) setCurrentIndex(currentIndex - 1);
-    };
+  const handleBack = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+  };
 
-    useImperativeHandle(ref, () => ({ submit, back }));
+  return (
+    <ScreenWrapper
+      scrollEnabled
+      footerUnScrollable={() => (
+        <AuthFooter
+          paddingHorizontal={12}
+          onPress={handleNext}
+          onBackPress={handleBack}
+          btnLoading={isLoading}
+        />
+      )}
+    >
+      <AuthHeader
+        step={step}
+        totalSteps={totalSteps}
+        subtitle="Pick your favorite artists"
+      />
 
-    return (
       <View style={styles.container}>
         <CustomText
           label="Choose 3 or more artists you like."
@@ -130,64 +152,73 @@ const Artists = forwardRef(
 
         <ErrorComponent
           errorTitle={`Choose at least ${selectedArtists.length}/3`}
-          color={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
+          color={
+            error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.white2
+          }
           isValid={showSuccessColor}
           error={error}
           color1={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
         />
 
-        <View style={styles.grid}>
-          {sortedArtists.map((artist) => {
-            const isSelected = selectedArtists.includes(artist.name);
-            return (
-              <TouchableOpacity
-                key={artist.name}
-                style={styles.card}
-                onPress={() => toggleArtist(artist.name)}
-                activeOpacity={0.8}
-              >
-                <View
-                  style={[
-                    styles.imageWrapper,
-                    {
-                      borderColor: isSelected ? COLORS.btnColor : COLORS.black,
-                      borderWidth: isSelected ? 3 : 0,
-                    },
-                  ]}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 40 }}
+        >
+          <View style={styles.grid}>
+            {sortedArtists.map((artist) => {
+              const isSelected = selectedArtists.includes(artist.name);
+              return (
+                <TouchableOpacity
+                  key={artist.name}
+                  style={styles.card}
+                  onPress={() => toggleArtist(artist.name)}
+                  activeOpacity={0.8}
                 >
-                  <Image
-                    source={artist.img}
-                    style={styles.artistImage}
-                    resizeMode="cover"
-                  />
-                  {isSelected && (
-                    <View style={styles.overlay}>
-                      <Icons
-                        family="MaterialCommunityIcons"
-                        name={"check-circle"}
-                        size={36}
-                        color={COLORS.btnColor}
-                      />
-                    </View>
-                  )}
-                </View>
+                  <View
+                    style={[
+                      styles.imageWrapper,
+                      {
+                        borderColor: isSelected
+                          ? COLORS.btnColor
+                          : COLORS.black,
+                        borderWidth: isSelected ? 3 : 0,
+                      },
+                    ]}
+                  >
+                    <Image
+                      source={artist.img}
+                      style={styles.artistImage}
+                      resizeMode="cover"
+                    />
+                    {isSelected && (
+                      <View style={styles.overlay}>
+                        <Icons
+                          family="MaterialCommunityIcons"
+                          name={"check-circle"}
+                          size={36}
+                          color={COLORS.btnColor}
+                        />
+                      </View>
+                    )}
+                  </View>
 
-                <CustomText
-                  label={artist.name}
-                  fontSize={12}
-                  color={COLORS.white}
-                  fontFamily={fonts.medium}
-                  textAlign="center"
-                  marginTop={4}
-                />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+                  <CustomText
+                    label={artist.name}
+                    fontSize={12}
+                    color={COLORS.white}
+                    fontFamily={fonts.medium}
+                    textAlign="center"
+                    marginTop={4}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </ScrollView>
       </View>
-    );
-  }
-);
+    </ScreenWrapper>
+  );
+};
 
 export default Artists;
 

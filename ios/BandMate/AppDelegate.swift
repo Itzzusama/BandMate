@@ -1,4 +1,5 @@
 import UIKit
+import AppAuth
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
@@ -8,12 +9,12 @@ import RNBootSplash
 
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate ,RNAppAuthAuthorizationFlowManager {
   var window: UIWindow?
 
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
-
+  var authorizationFlowManagerDelegate: RNAppAuthAuthorizationFlowManagerDelegate?
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -38,6 +39,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     )
 
     return true
+  }
+  func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    // Handle redirect from AppAuth
+    if let authorizationFlowManagerDelegate = self.authorizationFlowManagerDelegate {
+      if authorizationFlowManagerDelegate.resumeExternalUserAgentFlow(with: url) {
+        return true
+      }
+    }
+    return false
   }
 }
 

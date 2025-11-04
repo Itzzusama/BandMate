@@ -20,6 +20,9 @@ import { setToken } from "../../../store/reducer/AuthConfig";
 import { post } from "../../../services/ApiRequest";
 import { Images } from "../../../assets/images";
 import fonts from "../../../assets/fonts";
+import { COLORS } from "../../../utils/COLORS";
+import { PNGIcons } from "../../../assets/images/icons";
+import { Image } from "react-native";
 
 const LoginPass = () => {
   const navigation = useNavigation();
@@ -133,7 +136,7 @@ const LoginPass = () => {
   return (
     <ScreenWrapper
       scrollEnabled
-      headerUnScrollable={() => <Header  title="Enter Your Password"  />}
+      headerUnScrollable={() => <Header title="Enter Your Password" />}
       footerUnScrollable={() => (
         <View style={{ padding: 12 }}>
           <AuthFooter onPress={onContinuePress} loading={loading} />
@@ -189,12 +192,17 @@ const LoginPass = () => {
             onPress={onFaceIdPress}
             style={styles.row}
           >
-            <ImageFast
+            <Image
               source={
                 biometricType === "FaceID" ? Images.faceId : Images.finger
               }
               resizeMode="contain"
-              style={{ height: 20, width: 20, marginRight: 12 }}
+              style={{
+                height: 20,
+                width: 20,
+                marginRight: 8,
+                tintColor: COLORS.gray1,
+              }}
             />
 
             <CustomText
@@ -223,9 +231,14 @@ const LoginPass = () => {
         onPress={() => navigation.navigate("OTPScreen")}
         style={styles.row}
       >
-        <ImageFast
-          source={Images.otp}
-          style={{ height: 20, width: 20, marginRight: 12 }}
+        <Image
+          source={PNGIcons.insurance}
+          style={{
+            height: 20,
+            width: 20,
+            marginRight: 8,
+            tintColor: COLORS.gray1,
+          }}
         />
 
         <CustomText

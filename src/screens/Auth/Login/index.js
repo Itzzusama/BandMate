@@ -131,15 +131,15 @@ const Login = ({ navigation }) => {
         </View>
       )}
     >
-      <View style={styles.tab}>
+      <View style={[styles.tab, styles.btnContainer]}>
         {["Phone Number", "Email"].map((item, i) => (
           <CustomButton
             key={i}
             title={item}
-            height={32}
+            height={34}
             width="49%"
             fontSize={14}
-            fontFamily={fonts.regular}
+            fontFamily={item == isType ? fonts.medium : fonts.regular}
             onPress={() => {
               setType(item);
               setEmail("");
@@ -149,9 +149,8 @@ const Login = ({ navigation }) => {
               setShowEmailSuccessColor(false);
               setShowPhoneSuccessColor(false);
             }}
-            backgroundColor={item == isType ? COLORS.black : "#1212120A"}
-            color={item == isType ? COLORS.white : COLORS.black}
-            marginTop={20}
+            backgroundColor={item == isType ? COLORS.white : COLORS.inputBg}
+            color={item == isType ? COLORS.black : COLORS.white2}
           />
         ))}
       </View>
@@ -189,6 +188,7 @@ const Login = ({ navigation }) => {
                 setPhoneError("");
               }
             }}
+            marginBottom={5}
           />
           <ErrorComponent
             errorTitle={
@@ -228,6 +228,7 @@ const Login = ({ navigation }) => {
         <>
           <CustomInput
             value={email}
+            withLabel={"EMAIL ADDRESS"}
             onChangeText={(text) => {
               setEmail(text);
               // Agar error hai to real-time check karo
@@ -327,5 +328,11 @@ const styles = StyleSheet.create({
   },
   locationInfo: {
     marginBottom: 4,
+  },
+  btnContainer: {
+    padding: 4,
+    borderRadius: 99,
+    backgroundColor: COLORS.inputBg,
+    marginTop: 12,
   },
 });

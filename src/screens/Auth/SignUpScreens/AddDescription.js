@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,9 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomInput from "../../../components/CustomInput";
 import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
+import ScreenWrapper from "../../../components/ScreenWrapper";
+import AuthHeader from "../../../components/Auth/AuthHeader";
+import AuthFooter from "../../../components/Auth/AuthFooter";
 
 import fonts from "../../../assets/fonts";
-import { count } from "../../../store/reducer/appSlice";
 import { COLORS } from "../../../utils/COLORS";
 import { put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
@@ -16,77 +18,87 @@ import { ToastMessage } from "../../../utils/ToastMessage";
 
 const MAX_LENGTH = 150;
 
-const AddDescription = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
-    const navigation = useNavigation();
-    const dispatch = useDispatch();
-    const onboardingCount = useSelector(count);
+const AddDescription = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.users);
+  const [step, setStep] = useState(userData?.role == "band" ? 15 : 16);
+  const totalSteps = userData?.role == "band" ? 15 : 16;
+  const [description, setDescription] = useState("");
+  const [error, setError] = useState("");
+  const [prevError, setPrevError] = useState("");
+  const [showSuccessColor, setShowSuccessColor] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const [description, setDescription] = useState(state?.description || "");
-    const [error, setError] = useState("");
-    const [prevError, setPrevError] = useState("");
-    const [showSuccessColor, setShowSuccessColor] = useState(false);
-    const [loading, setLoading] = useState(false);
+  const validateDescription = (val) => {
+    let newError = "";
+    if (val.trim().length > MAX_LENGTH) {
+      newError = `Description must be less than ${MAX_LENGTH} characters.`;
+    }
+    return newError;
+  };
 
-    const validateDescription = (val) => {
-      let newError = "";
-      if (val.trim().length > MAX_LENGTH) {
-        newError = `Description must be less than ${MAX_LENGTH} characters.`;
+  const handleNext = async () => {
+    const err = validateDescription(description);
+    if (err) {
+      setError(err);
+      return;
+    }
+
+    setError("");
+    try {
+      setIsLoading(true);
+
+      const res = await put("user/profile", {
+        profile: { bio: description.trim() },
+      });
+
+      if (res?.data?.success) {
+        dispatch(setUserData(res?.data?.user));
+        ToastMessage("Profile updated successfully!", "success");
+        navigation.navigate("PinOnBoarding");
+      } else {
+        setError("Failed to update profile. Please try again.");
       }
-      return newError;
-    };
+    } catch (err) {
+      console.log("Error updating bio:", err);
+      setError("Something went wrong while saving description.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const submit = async () => {
-      const err = validateDescription(description);
-      if (err) {
-        setError(err);
-        return;
-      }
-      setError("");
-      try {
-        setIsLoading(true);
+  const handleBack = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+  };
 
-        setState({ ...state, description: description.trim() });
+  useEffect(() => {
+    if (prevError && !error) {
+      setShowSuccessColor(true);
+      const timer = setTimeout(() => setShowSuccessColor(false), 2000);
+      return () => clearTimeout(timer);
+    }
+    setPrevError(error);
+  }, [error]);
 
-        const res = await put("user/profile", {
-          profile: {
-            bio: description.trim(),
-          },
-        });
+  return (
+    <ScreenWrapper
+      scrollEnabled
+      footerUnScrollable={() => (
+        <AuthFooter
+          paddingHorizontal={12}
+          onPress={handleNext}
+          onBackPress={handleBack}
+          btnLoading={isLoading}
+        />
+      )}
+    >
+      <AuthHeader
+        step={step}
+        totalSteps={totalSteps}
+        subtitle="Tell others about you"
+      />
 
-        if (res?.data?.success) {
-          dispatch(setUserData(res?.data?.user));
-          ToastMessage("Profile updated successfully!", "success");
-          navigation.navigate("PinOnBoarding", { state: state });
-        } else {
-          setError("Failed to update profile. Please try again.");
-        }
-      } catch (err) {
-        console.log("Error updating bio:", err);
-        setError("Something went wrong while saving description.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    const back = () => {
-      if (currentIndex > 1) {
-        setCurrentIndex(currentIndex - 1);
-      }
-    };
-
-    useEffect(() => {
-      if (prevError && !error) {
-        setShowSuccessColor(true);
-        const timer = setTimeout(() => setShowSuccessColor(false), 2000);
-        return () => clearTimeout(timer);
-      }
-      setPrevError(error);
-    }, [error]);
-
-    useImperativeHandle(ref, () => ({ submit, back }));
-
-    return (
       <View style={styles.container}>
         <View>
           <CustomText
@@ -111,7 +123,7 @@ const AddDescription = forwardRef(
             multiline
             paddingVertical={10}
             height={104}
-            editable={!loading}
+            editable={!isLoading}
             onChangeText={(text) => {
               setDescription(text);
               if (error) {
@@ -128,9 +140,9 @@ const AddDescription = forwardRef(
           />
         </View>
       </View>
-    );
-  }
-);
+    </ScreenWrapper>
+  );
+};
 
 export default AddDescription;
 
@@ -138,8 +150,5 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "space-between",
     flex: 1,
-  },
-  footerRow: {
-    marginTop: 4,
   },
 });

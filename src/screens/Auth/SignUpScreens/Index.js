@@ -25,6 +25,7 @@ import Genres from "./Genres";
 import Artists from "./Artists";
 import AddPictures from "./AddPictures";
 import AddDescription from "./AddDescription";
+import { count } from "../../../store/reducer/appSlice";
 
 const SignUpScreens = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
@@ -63,6 +64,7 @@ const SignUpScreens = () => {
 
   const [state, setState] = useState(init);
   const [isLoading, setIsLoading] = useState(false);
+  const onboardingCount = useSelector(count);
   const steps = useMemo(() => {
     if (state.role === "band") {
       return [
@@ -75,12 +77,6 @@ const SignUpScreens = () => {
         "Verifying your email",
         "Creating a strong password",
         "Confirming password",
-        "Instruments",
-        "Level",
-        "Genres",
-        "Artists",
-        "Pictures",
-        "About you",
       ];
     } else {
       return [
@@ -94,37 +90,11 @@ const SignUpScreens = () => {
         "Verifying your email",
         "Creating a strong password",
         "Confirming password",
-        "Instruments",
-        "Level",
-        "Genres",
-        "Artists",
-        "Pictures",
-        "About you",
       ];
     }
   }, [state.role, user?.role]);
 
   const totalSteps = steps.length;
-
-  useEffect(() => {
-    if (token) {
-      const missingInstruments =
-        !user?.Instruments || user.Instruments.length === 0;
-      const missingGenres = !user?.Genres || user.Genres.length === 0;
-      const missingArtists = !user?.Artists || user.Artists.length === 0;
-      const missingImages = !user?.pictures || user.pictures.length === 0;
-      let targetStepName = null;
-
-      if (missingInstruments) targetStepName = "Instruments";
-      else if (missingGenres) targetStepName = "Genres";
-      else if (missingArtists) targetStepName = "Artists";
-
-      if (targetStepName) {
-        const targetIndex = steps.indexOf(targetStepName);
-        if (targetIndex !== -1) setCurrentIndex(targetIndex + 1);
-      }
-    }
-  }, [token, user, steps]);
 
   // useEffect(() => {
   //   const currentStep = steps[currentIndex - 1];
@@ -218,14 +188,7 @@ const SignUpScreens = () => {
         return <BandMembers {...commonProps} />;
       case "Age range":
         return <AgeRange {...commonProps} />;
-      case "Instruments":
-        return <Instruments {...commonProps} />;
-      case "Level":
-        return <Level {...commonProps} />;
-      case "Genres":
-        return <Genres {...commonProps} />;
-      case "Artists":
-        return <Artists {...commonProps} />;
+
       case "Firstname":
         return <FirstName {...commonProps} />;
       case "Surname":
@@ -242,10 +205,6 @@ const SignUpScreens = () => {
         return <Password {...commonProps} />;
       case "Confirming password":
         return <ResetPassword {...commonProps} />;
-      case "Pictures":
-        return <AddPictures {...commonProps} />;
-      case "About you":
-        return <AddDescription {...commonProps} />;
       default:
         return <Text>No View</Text>;
     }
@@ -267,7 +226,7 @@ const SignUpScreens = () => {
     >
       <AuthHeader
         step={currentIndex}
-        totalSteps={totalSteps}
+        totalSteps={onboardingCount}
         subtitle={steps[currentIndex - 1]}
       />
       <StepView stepName={steps[currentIndex - 1]} />

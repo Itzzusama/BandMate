@@ -26,6 +26,7 @@ const RootNavigation = () => {
         headerShown: false,
         animation: "slide_from_right",
       }}
+      initialRouteName="AuthStack"
     >
       {isToken ? (
         shouldGoToAuth ? (

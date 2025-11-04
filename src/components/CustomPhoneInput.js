@@ -35,6 +35,7 @@ const CustomPhoneInput = ({
   placeholder = "XXX XXX XX",
   onValidationChange,
   isIcon,
+  borderColor,
   rightIcon,
   rightIconSource,
   rightIconStyle,
@@ -129,7 +130,7 @@ const CustomPhoneInput = ({
         style={[
           styles.container,
           {
-            marginBottom: error ? 5 : marginBottom || 15,
+            marginBottom: error ? 5 : marginBottom || 8,
             marginTop,
             height,
             width: isChange ? "auto" : "100%",
@@ -202,6 +203,12 @@ const CustomPhoneInput = ({
                   : showSuccessColor
                   ? "#64CD75"
                   : COLORS.white,
+                borderColor: error
+                  ? "#EE1045"
+                  : showSuccessColor
+                  ? "#64CD75"
+                  : borderColor,
+                borderWidth: error ? 1 : 0,
               },
             ]}
             value={phoneNumber}
