@@ -1,28 +1,25 @@
-import React, { useRef, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { useRef, useState, useEffect } from "react";
 import {
   Animated,
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
   Dimensions,
-  Platform,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import ImageFast from "./ImageFast";
-import CustomText from "./CustomText";
 import fonts from "../assets/fonts";
-import { COLORS } from "../utils/COLORS";
 import { PNGIcons } from "../assets/images/icons";
-import { Images } from "../assets/images";
-import AuthSlider from "./Auth/AuthSlider";
+import { COLORS } from "../utils/COLORS";
+import CustomText from "./CustomText";
 import Icons from "./Icons";
-import { useNavigation } from "@react-navigation/native";
+import ImageFast from "./ImageFast";
+import { BlurView } from "@react-native-community/blur";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const ArtistDetailCard = () => {
-  // --- animation refs ---
+const ArtistDetailCard = ({ images, color }) => {
   const navigation = useNavigation();
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
@@ -34,11 +31,61 @@ const ArtistDetailCard = () => {
     "transparent",
   ]);
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const sliderAnimation = useRef(new Animated.Value(0)).current;
+
   const buttonActions = [
     { colors: ["#F41857", "#F4185700"], direction: "left", rotation: -8 }, // red
     { colors: ["#007AFE", "#007AFE00"], direction: "up", rotation: 0 }, // blue
     { colors: ["#1ED760", "#1ED76000"], direction: "right", rotation: 8 }, // green
   ];
+
+  // Auto-advance slider every 3 seconds
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      goToNextImage();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentImageIndex, images]);
+
+  // Start slider animation when image changes
+  useEffect(() => {
+    startSliderAnimation();
+  }, [currentImageIndex, images]);
+
+  const startSliderAnimation = () => {
+    if (!images || images.length <= 1) return;
+
+    // Reset animation
+    sliderAnimation.setValue(0);
+
+    // Start the fill animation
+    Animated.timing(sliderAnimation, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const goToNextImage = () => {
+    if (!images || images.length <= 1) return;
+
+    const nextIndex = (currentImageIndex + 1) % images.length;
+
+    // Update the image index first
+    setCurrentImageIndex(nextIndex);
+
+    // Reset and restart slider animation
+    sliderAnimation.setValue(0);
+    Animated.timing(sliderAnimation, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start();
+  };
 
   const handleButtonPress = (index) => {
     const action = buttonActions[index];
@@ -123,6 +170,9 @@ const ArtistDetailCard = () => {
     gradientOpacity.setValue(0);
     gradientTranslateY.setValue(200);
     setCurrentGradientColors(["transparent", "transparent"]);
+    // Reset carousel to first image when card resets
+    setCurrentImageIndex(0);
+    sliderAnimation.setValue(0);
   };
 
   const cardRotation = rotateCard.interpolate({
@@ -144,93 +194,159 @@ const ArtistDetailCard = () => {
           },
         ]}
       >
-        <ImageFast source={Images.artist} style={styles.imgStyle}>
-          <LinearGradient
-            colors={["#14141499", "#14141440", "#60606000"]}
-            start={{ x: 0.5, y: 1 }}
-            end={{ x: 0.5, y: 0 }}
-            style={styles.bottomGradient}
-          />
-          <View style={styles.row}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              activeOpacity={0.8}
-            >
-              <Image
-                source={PNGIcons.tr_back}
-                style={{ height: 40, width: 40 }}
-              />
-            </TouchableOpacity>
-
-            <Image source={PNGIcons.qr} style={{ height: 48, width: 48 }} />
-          </View>
-          <View style={styles.innerContainer}>
-            <CustomText
-              label={"Viktor, 28"}
-              fontSize={44}
-              lineHeight={44 * 1.4}
-              fontFamily={fonts.abril}
-            />
-            <View style={styles.locationRow}>
-              <Image source={PNGIcons.pin} style={styles.pinIcon} />
-              <CustomText
-                label={"Los Angeles, CA"}
-                fontSize={12}
-                lineHeight={12 * 1.4}
-                fontFamily={fonts.medium}
-                marginLeft={3}
-              />
-              <CustomText
-                label={"33 km"}
-                fontSize={12}
-                lineHeight={12 * 1.4}
-                color={COLORS.white2}
-                fontFamily={fonts.medium}
-                marginLeft={4}
-              />
-            </View>
-            <View style={styles.genrePill}>
-              <Icons
-                family={"Ionicons"}
-                name={"person-sharp"}
-                color={COLORS.white}
-                size={9}
-              />
-              <CustomText
-                label={"Solo Artist"}
-                fontFamily={fonts.medium}
-                fontSize={12}
-                lineHeight={12 * 1.4}
-                marginLeft={4}
-              />
-            </View>
-            <AuthSlider
-              min={1}
-              max={4}
-              marginBottom={10}
-              marginTop={12}
-              showLeftSpace
-            />
-          </View>
-
-          <Animated.View
-            style={[
-              styles.gradientOverlay,
-              {
-                opacity: gradientOpacity,
-                transform: [{ translateY: gradientTranslateY }],
-              },
-            ]}
-            pointerEvents="none"
-          >
+        {/* Image Carousel */}
+        {images && images?.length > 0 ? (
+          <ImageFast source={images[currentImageIndex]} style={styles.imgStyle}>
             <LinearGradient
-              colors={currentGradientColors}
+              colors={["#14141499", "#14141440", "#60606000"]}
               start={{ x: 0.5, y: 1 }}
               end={{ x: 0.5, y: 0 }}
-              style={styles.gradientFill}
+              style={styles.bottomGradient}
             />
-          </Animated.View>
-        </ImageFast>
+            <View style={styles.row}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                activeOpacity={0.8}
+                style={{
+                  height: 40,
+                  width: 40,
+                  borderRadius: 99,
+                  overflow: "hidden", // important for circular blur,
+                }}
+              >
+                <BlurView
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  blurType="chromeMaterial"
+                  blurAmount={16}
+                >
+                  <Icons
+                    name="chevron-back"
+                    family="Ionicons"
+                    color="#FFFFFFA3"
+                    size={14}
+                    
+                  />
+                </BlurView>
+              </TouchableOpacity>
+
+              <Image source={PNGIcons.qr} style={{ height: 48, width: 48 }} />
+            </View>
+            <View style={styles.innerContainer}>
+              <CustomText
+                label={"Viktor, 28"}
+                fontSize={44}
+                lineHeight={44 * 1.4}
+                fontFamily={fonts.abril}
+              />
+              <View style={styles.locationRow}>
+                <Image source={PNGIcons.pin} style={styles.pinIcon} />
+                <CustomText
+                  label={"Los Angeles, CA"}
+                  fontSize={12}
+                  lineHeight={12 * 1.4}
+                  fontFamily={fonts.medium}
+                  marginLeft={3}
+                />
+                <CustomText
+                  label={"33 km"}
+                  fontSize={12}
+                  lineHeight={12 * 1.4}
+                  color={COLORS.white2}
+                  fontFamily={fonts.medium}
+                  marginLeft={4}
+                />
+              </View>
+              <View style={styles.genrePill}>
+                <Icons
+                  family={"Ionicons"}
+                  name={"person-sharp"}
+                  color={COLORS.white}
+                  size={9}
+                />
+                <CustomText
+                  label={"Solo Artist"}
+                  fontFamily={fonts.medium}
+                  fontSize={12}
+                  lineHeight={12 * 1.4}
+                  marginLeft={4}
+                />
+              </View>
+
+              {/* Dynamic Slider - Only show if multiple images */}
+              {images && images.length > 1 && (
+                <View style={styles.sliderContainer}>
+                  <View style={styles.sliderTrack}>
+                    {Array.from({ length: images.length }).map((_, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.block,
+                          {
+                            backgroundColor: "#FFFFFF17",
+                            borderRadius: 99,
+                            overflow: "hidden",
+                          },
+                        ]}
+                      >
+                        {index === currentImageIndex && (
+                          <Animated.View
+                            style={[
+                              StyleSheet.absoluteFill,
+                              {
+                                backgroundColor: COLORS.authHeader,
+                                width: sliderAnimation.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: ["0%", "100%"],
+                                }),
+                              },
+                            ]}
+                          />
+                        )}
+                        {index < currentImageIndex && (
+                          <View
+                            style={[
+                              StyleSheet.absoluteFill,
+                              {
+                                backgroundColor: COLORS.authHeader,
+                              },
+                            ]}
+                          />
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+            </View>
+
+            <Animated.View
+              style={[
+                styles.gradientOverlay,
+                {
+                  opacity: gradientOpacity,
+                  transform: [{ translateY: gradientTranslateY }],
+                },
+              ]}
+              pointerEvents="none"
+            >
+              <LinearGradient
+                colors={currentGradientColors}
+                start={{ x: 0.5, y: 1 }}
+                end={{ x: 0.5, y: 0 }}
+                style={styles.gradientFill}
+              />
+            </Animated.View>
+          </ImageFast>
+        ) : (
+          // Fallback if no images provided
+          <View style={[styles.imgStyle, { backgroundColor: COLORS.gray }]}>
+            <Text>No images available</Text>
+          </View>
+        )}
       </Animated.View>
 
       <View style={styles.bottomContainer}>
@@ -273,7 +389,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-
   genrePill: {
     borderRadius: 99,
     backgroundColor: "rgba(255,255,255,0.08)",
@@ -289,7 +404,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 200,
-
     overflow: "hidden",
   },
   gradientFill: {
@@ -310,10 +424,8 @@ const styles = StyleSheet.create({
     height: 48,
     width: 48,
   },
-
   bottomGradient: {
     ...StyleSheet.absoluteFillObject,
-
     bottom: 0,
   },
   pinIcon: {
@@ -327,5 +439,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 8,
     paddingTop: 12,
+  },
+  sliderContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 12,
+    marginBottom: 20,
+  },
+  sliderTrack: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderRadius: 100,
+    overflow: "hidden",
+    gap: 8,
+  },
+  block: {
+    flex: 1,
+    height: 6,
+    position: "relative",
   },
 });

@@ -4,44 +4,81 @@ import {
   Animated,
   Dimensions,
   Image,
+  PanResponder,
   Platform,
-  Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
-  PanResponder,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import {
+  gyroscope,
+  SensorTypes,
+  setUpdateIntervalForType,
+} from "react-native-sensors";
 import fonts from "../../../../assets/fonts";
 import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
-import AuthSlider from "../../../../components/Auth/AuthSlider";
 import CustomText from "../../../../components/CustomText";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
-import {
-  gyroscope,
-  setUpdateIntervalForType,
-  SensorTypes,
-} from "react-native-sensors";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
+const profileImages = [
+  {
+    id: 1,
+    images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
+    // premium: true,
+  },
+  {
+    id: 2,
+    images: [PNGIcons.dala, PNGIcons.ProductCard, PNGIcons.bandImage],
+    premium: true,
+  },
+  {
+    id: 3,
+    images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
+    // premium: true,
+  },
+  {
+    id: 4,
+    images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
+    // premium: true,
+  },
+  {
+    id: 5,
+    images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
+    // premium: true,
+  },
+];
+
 const HomeCard = () => {
   const navigation = useNavigation();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [cards, setCards] = useState([...profileImages]);
+  const sliderAnimation = useRef(new Animated.Value(0)).current;
+
+  // Current card animations
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
   const gradientOpacity = useRef(new Animated.Value(0)).current;
   const gradientTranslateY = useRef(new Animated.Value(200)).current;
+
+  // Next card animations
+  const nextCardScale = useRef(new Animated.Value(0.9)).current;
+  const nextCardTranslateY = useRef(new Animated.Value(10)).current;
+
+  // Gesture animations
+  const pan = useRef(new Animated.ValueXY()).current;
+  const rotate = useRef(new Animated.Value(0)).current;
+
   const [currentGradientColors, setCurrentGradientColors] = useState([
     "transparent",
     "transparent",
   ]);
-
-  // New animated values for gesture handling
-  const pan = useRef(new Animated.ValueXY()).current;
-  const rotate = useRef(new Animated.Value(0)).current;
 
   const buttonActions = [
     {
@@ -71,17 +108,59 @@ const HomeCard = () => {
     },
   ];
 
+  // Auto-advance slider every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      goToNextImage();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentImageIndex, currentIndex]);
+
+  // Start slider animation when image changes
+  useEffect(() => {
+    startSliderAnimation();
+  }, [currentImageIndex, currentIndex]);
+
+  const startSliderAnimation = () => {
+    // Reset animation
+    sliderAnimation.setValue(0);
+
+    // Start the fill animation
+    Animated.timing(sliderAnimation, {
+      toValue: 1,
+      duration: 3000, // 3 seconds
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const goToNextImage = () => {
+    const currentProfile = cards[0];
+    const nextIndex = (currentImageIndex + 1) % currentProfile.images.length;
+
+    // Update the image index first
+    setCurrentImageIndex(nextIndex);
+
+    // Reset and restart slider animation
+    sliderAnimation.setValue(0);
+    Animated.timing(sliderAnimation, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start();
+  };
+
   const handleSwipe = (direction) => {
     let index;
     switch (direction) {
       case "left":
-        index = 1; // Using the second left action for swipe left
+        index = 1;
         break;
       case "right":
-        index = 3; // Using the first right action for swipe right
+        index = 3;
         break;
       case "up":
-        index = 2; // Using the up action for swipe up
+        index = 2;
         break;
       default:
         return;
@@ -97,6 +176,20 @@ const HomeCard = () => {
 
     // Reset gradient position to bottom before animation
     gradientTranslateY.setValue(200);
+
+    // Animate next card coming forward
+    Animated.parallel([
+      Animated.timing(nextCardScale, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(nextCardTranslateY, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
     // Animate gradient appearance from bottom to top
     Animated.sequence([
@@ -165,10 +258,22 @@ const HomeCard = () => {
 
       Animated.parallel(animations).start(() => {
         setTimeout(() => {
-          resetCardPosition();
+          goToNextCard();
         }, 100);
       });
     }, 400);
+  };
+
+  const goToNextCard = () => {
+    setCards((prevCards) => {
+      const newCards = [...prevCards];
+      // Remove the swiped card and add it to the end of the array
+      const removedCard = newCards.shift();
+      newCards.push(removedCard);
+      return newCards;
+    });
+    setCurrentImageIndex(0); // Reset to first image when changing cards
+    resetCardPosition();
   };
 
   const resetCardPosition = () => {
@@ -180,6 +285,11 @@ const HomeCard = () => {
     setCurrentGradientColors(["transparent", "transparent"]);
     pan.setValue({ x: 0, y: 0 });
     rotate.setValue(0);
+    sliderAnimation.setValue(0);
+
+    // Reset next card animation for next swipe
+    nextCardScale.setValue(0.9);
+    nextCardTranslateY.setValue(10);
   };
 
   // PanResponder for gesture handling
@@ -187,7 +297,6 @@ const HomeCard = () => {
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Only respond to significant moves to avoid interfering with button presses
         return Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
       },
       onPanResponderMove: (_, gestureState) => {
@@ -197,16 +306,67 @@ const HomeCard = () => {
         pan.setValue({ x: dx, y: dy });
 
         // Add rotation based on horizontal movement for better visual feedback
-        const rotation = dx * 0.1; // Adjust this value for more/less rotation
+        const rotation = dx * 0.1;
         rotate.setValue(rotation);
+
+        // Show gradient during swipe
+        const swipeThreshold = 30;
+        if (Math.abs(dx) > swipeThreshold) {
+          // Set gradient colors based on swipe direction
+          if (dx < 0) {
+            // Swiping left - red gradient
+            console.log("red----");
+
+            setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
+          } else {
+            console.log("green----");
+
+            // Swiping right - green gradient
+            setCurrentGradientColors(["#1ED760", "#1ED76000"]);
+          }
+
+          // Calculate opacity based on swipe distance
+          const opacity = Math.min(Math.abs(dx) / 150, 1);
+          gradientOpacity.setValue(opacity);
+          gradientTranslateY.setValue(0);
+        } else {
+          // Reset gradient when not swiping far enough
+          gradientOpacity.setValue(0);
+          gradientTranslateY.setValue(200);
+        }
       },
       onPanResponderRelease: (_, gestureState) => {
         const { dx, dy, vx, vy } = gestureState;
-        const swipeThreshold = 50; // Minimum distance to consider it a swipe
-        const velocityThreshold = 0.5; // Minimum velocity to consider it a swipe
+        const swipeThreshold = 50;
+        const velocityThreshold = 0.5;
 
         // Check if it's a left swipe
         if (dx < -swipeThreshold || vx < -velocityThreshold) {
+          // Set gradient for left swipe
+          setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
+          gradientTranslateY.setValue(200);
+
+          // Animate gradient appearance
+          Animated.sequence([
+            Animated.parallel([
+              Animated.timing(gradientOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+              }),
+              Animated.timing(gradientTranslateY, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+              }),
+            ]),
+            Animated.timing(gradientOpacity, {
+              toValue: 0.7,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ]).start();
+
           Animated.parallel([
             Animated.timing(pan, {
               toValue: { x: -screenWidth * 2, y: dy },
@@ -224,6 +384,31 @@ const HomeCard = () => {
         }
         // Check if it's a right swipe
         else if (dx > swipeThreshold || vx > velocityThreshold) {
+          // Set gradient for right swipe
+          setCurrentGradientColors(["#1ED760", "#1ED76000"]);
+          gradientTranslateY.setValue(200);
+
+          // Animate gradient appearance
+          Animated.sequence([
+            Animated.parallel([
+              Animated.timing(gradientOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+              }),
+              Animated.timing(gradientTranslateY, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+              }),
+            ]),
+            Animated.timing(gradientOpacity, {
+              toValue: 0.7,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ]).start();
+
           Animated.parallel([
             Animated.timing(pan, {
               toValue: { x: screenWidth * 2, y: dy },
@@ -251,6 +436,11 @@ const HomeCard = () => {
         }
         // If not a swipe, return to original position
         else {
+          // Reset gradient
+          gradientOpacity.setValue(0);
+          gradientTranslateY.setValue(200);
+          setCurrentGradientColors(["transparent", "transparent"]);
+
           Animated.parallel([
             Animated.spring(pan, {
               toValue: { x: 0, y: 0 },
@@ -291,7 +481,7 @@ const HomeCard = () => {
     const subscription = gyroscope.subscribe(({ x, y }) => {
       // Map gyro movement to small subtle translations
       Animated.spring(gyroX, {
-        toValue: x * 25, // adjust sensitivity
+        toValue: x * 25,
         useNativeDriver: true,
       }).start();
 
@@ -304,13 +494,286 @@ const HomeCard = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const currentProfile = cards[0];
+  const nextProfile = cards[1];
+
+  const renderCard = (profile, isCurrent = true) => (
+    <TouchableOpacity
+      activeOpacity={0.6}
+      onPress={() => navigation.navigate("Detail", { images: profile?.images })}
+      style={styles.imageContainer}
+    >
+      {/* Simple Image Display - No Carousel Animation */}
+      <ImageFast
+        source={profile.images[isCurrent ? currentImageIndex : 0]}
+        style={styles.image}
+      />
+
+      <View style={styles.overlay} />
+
+      <View style={styles.innerContainer}>
+        <View style={styles.headerRow}>
+          <View style={styles.row}>
+            <Image
+              source={
+                profile.premium ? Images.goldenVerified : Images.verifiedBadge
+              }
+              style={styles.verifyStar}
+            />
+            <CustomText
+              label={"VERIFIED SOLO ARTIST"}
+              fontSize={12}
+              lineHeight={12 * 1.4}
+              marginLeft={8}
+              fontFamily={fonts.medium}
+            />
+          </View>
+          <View style={styles.bg}>
+            <CustomText
+              label={"64%"}
+              fontFamily={fonts.semiBold}
+              lineHeight={14 * 1.4}
+            />
+          </View>
+        </View>
+
+        {/* footer */}
+        <View>
+          <CustomText
+            label={"Myles, 27"}
+            fontSize={44}
+            lineHeight={44 * 1.4}
+            fontFamily={fonts.abril}
+          />
+
+          <View style={styles.locationRow}>
+            <Image source={PNGIcons.pin} style={styles.pinIcon} />
+            <CustomText
+              label={"Austin, US"}
+              fontSize={12}
+              lineHeight={12 * 1.4}
+              fontFamily={fonts.medium}
+              marginLeft={3}
+            />
+            <CustomText
+              label={"17 km"}
+              fontSize={12}
+              lineHeight={12 * 1.4}
+              color={COLORS.white2}
+              fontFamily={fonts.medium}
+              marginLeft={4}
+            />
+          </View>
+
+          <CustomText
+            label={"528 monthly profile views"}
+            fontSize={11}
+            fontFamily={fonts.medium}
+            marginTop={8}
+          />
+          {profile.premium && (
+            <>
+              <CustomText
+                label={"Shares the same passion for"}
+                fontSize={11}
+                fontFamily={fonts.medium}
+                marginTop={8}
+              />
+              <View style={[styles.genreRow, { marginBottom: 0 }]}>
+                <View
+                  style={[
+                    styles.genrePill,
+                    {
+                      borderWidth: 1,
+                      borderColor: "#A19375",
+                      backgroundColor: "#FFCF83" + 40,
+                    },
+                  ]}
+                >
+                  <CustomText
+                    label={"Elvis Presley"}
+                    fontFamily={fonts.medium}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                    color={"#FFCF83"}
+                  />
+                </View>
+                <View
+                  style={[
+                    styles.genrePill,
+                    {
+                      borderWidth: 1,
+                      borderColor: "#A19375",
+                      backgroundColor: "#FFCF83" + 40,
+                    },
+                  ]}
+                >
+                  <CustomText
+                    label={"Michael Jackson"}
+                    fontFamily={fonts.medium}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                    color={"#FFCF83"}
+                  />
+                </View>
+                <View
+                  style={[
+                    styles.genrePill,
+                    {
+                      borderWidth: 1,
+                      borderColor: "#A19375",
+                      backgroundColor: "#FFCF83" + 40,
+                    },
+                  ]}
+                >
+                  <CustomText
+                    label={"& 34 more"}
+                    fontFamily={fonts.medium}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                    color={"#FFCF83"}
+                  />
+                </View>
+              </View>
+            </>
+          )}
+
+          <View style={styles.genreRow}>
+            <View style={styles.genrePill}>
+              <CustomText
+                label={"Blue"}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                lineHeight={12 * 1.4}
+              />
+            </View>
+            <View style={styles.genrePill}>
+              <CustomText
+                label={"Rock"}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                lineHeight={12 * 1.4}
+              />
+            </View>
+            <View style={styles.genrePill}>
+              <CustomText
+                label={"Soul"}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                lineHeight={12 * 1.4}
+              />
+            </View>
+          </View>
+
+          <View style={styles.footerRow}>
+            <CustomText
+              label={
+                "Lead guitarist looking for a band. Into classic rock and blues."
+              }
+              fontSize={12}
+              lineHeight={12 * 1.4}
+              fontFamily={fonts.medium}
+            />
+            <Image source={PNGIcons.forward} style={styles.forwardIcon} />
+          </View>
+
+          {/* Dynamic Slider */}
+          <View style={styles.sliderContainer}>
+            <View style={styles.sliderTrack}>
+              {Array.from({ length: profile.images.length }).map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.block,
+                    {
+                      backgroundColor: "#FFFFFF17",
+                      borderRadius: 99,
+                      overflow: "hidden",
+                    },
+                  ]}
+                >
+                  {index === currentImageIndex && isCurrent && (
+                    <Animated.View
+                      style={[
+                        StyleSheet.absoluteFill,
+                        {
+                          backgroundColor: COLORS.authHeader,
+                          width: sliderAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["0%", "100%"],
+                          }),
+                        },
+                      ]}
+                    />
+                  )}
+                  {index < currentImageIndex && isCurrent && (
+                    <View
+                      style={[
+                        StyleSheet.absoluteFill,
+                        {
+                          backgroundColor: COLORS.authHeader,
+                        },
+                      ]}
+                    />
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Animated Gradient Overlay - only for current card */}
+      {isCurrent && (
+        <Animated.View
+          style={[
+            styles.gradientOverlay,
+            {
+              opacity: gradientOpacity,
+              transform: [{ translateY: gradientTranslateY }],
+            },
+          ]}
+          pointerEvents="none"
+        >
+          <LinearGradient
+            colors={currentGradientColors}
+            start={{ x: 0.5, y: 1 }}
+            end={{ x: 0.5, y: 0 }}
+            style={styles.gradientFill}
+          />
+        </Animated.View>
+      )}
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
+      {/* Next Card (Preview) - This will become the current card after swipe */}
+      {nextProfile && (
+        <Animated.View
+          style={[
+            styles.cardWrapper,
+            styles.nextCard,
+            {
+              transform: [
+                { scale: nextCardScale },
+                { translateY: nextCardTranslateY },
+              ],
+            },
+          ]}
+        >
+          {renderCard(nextProfile, false)}
+        </Animated.View>
+      )}
+
+      {/* Current Card */}
       <Animated.View
         {...panResponder.panHandlers}
         style={[
           styles.cardWrapper,
+          styles.currentCard,
           {
+            backgroundColor: currentProfile.premium ? "#FFCF83" : "#FFFFFF29",
             transform: [
               {
                 translateX: Animated.add(
@@ -329,143 +792,10 @@ const HomeCard = () => {
           },
         ]}
       >
-        <ImageFast
-          source={PNGIcons.bandImage}
-          style={styles.image}
-          onPress={() => navigation.navigate("Detail")}
-        >
-          <View style={styles.overlay} />
-
-          <View style={styles.innerContainer}>
-            <View style={styles.headerRow}>
-              <View style={styles.row}>
-                <Image
-                  source={Images.verifiedBadge}
-                  style={styles.verifyStar}
-                />
-                <CustomText
-                  label={"VERIFIED SOLO ARTIST"}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  marginLeft={8}
-                  fontFamily={fonts.medium}
-                />
-              </View>
-              <View style={styles.bg}>
-                <CustomText
-                  label={"64%"}
-                  fontFamily={fonts.semiBold}
-                  lineHeight={14 * 1.4}
-                />
-              </View>
-            </View>
-
-            {/* footer */}
-            <View>
-              <CustomText
-                label={"Myles, 27"}
-                fontSize={44}
-                lineHeight={44 * 1.4}
-                fontFamily={fonts.abril}
-              />
-
-              <View style={styles.locationRow}>
-                <Image source={PNGIcons.pin} style={styles.pinIcon} />
-                <CustomText
-                  label={"Austin, US"}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  fontFamily={fonts.medium}
-                  marginLeft={3}
-                />
-                <CustomText
-                  label={"17 km"}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  color={COLORS.white2}
-                  fontFamily={fonts.medium}
-                  marginLeft={4}
-                />
-              </View>
-
-              <CustomText
-                label={"528 monthly profile views"}
-                fontSize={11}
-                fontFamily={fonts.medium}
-                marginTop={8}
-              />
-
-              <View style={styles.genreRow}>
-                <View style={styles.genrePill}>
-                  <CustomText
-                    label={"Blue"}
-                    fontFamily={fonts.medium}
-                    fontSize={12}
-                    lineHeight={12 * 1.4}
-                  />
-                </View>
-                <View style={styles.genrePill}>
-                  <CustomText
-                    label={"Rock"}
-                    fontFamily={fonts.medium}
-                    fontSize={12}
-                    lineHeight={12 * 1.4}
-                  />
-                </View>
-                <View style={styles.genrePill}>
-                  <CustomText
-                    label={"Soul"}
-                    fontFamily={fonts.medium}
-                    fontSize={12}
-                    lineHeight={12 * 1.4}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.footerRow}>
-                <CustomText
-                  label={
-                    "Lead guitarist looking for a band. Into classic rock and blues."
-                  }
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  fontFamily={fonts.medium}
-                />
-                <Image source={PNGIcons.forward} style={styles.forwardIcon} />
-              </View>
-
-              <AuthSlider
-                min={1}
-                max={3}
-                marginBottom={20}
-                marginTop={12}
-                gap={8}
-                height={6}
-              />
-            </View>
-          </View>
-
-          {/* Animated Gradient Overlay */}
-          <Animated.View
-            style={[
-              styles.gradientOverlay,
-              {
-                opacity: gradientOpacity,
-                transform: [{ translateY: gradientTranslateY }],
-              },
-            ]}
-            pointerEvents="none"
-          >
-            <LinearGradient
-              colors={currentGradientColors}
-              start={{ x: 0.5, y: 1 }}
-              end={{ x: 0.5, y: 0 }}
-              style={styles.gradientFill}
-            />
-          </Animated.View>
-        </ImageFast>
+        {renderCard(currentProfile, true)}
       </Animated.View>
 
+      {/* Bottom Buttons */}
       <View style={styles.bottomContainer}>
         {[
           PNGIcons.btn1,
@@ -504,26 +834,44 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   cardWrapper: {
-    width: "100%",
+    width: "95%",
     padding: 4,
-    backgroundColor: "#FFFFFF29",
     borderColor: "#FFFFFF29",
     borderRadius: 34,
     borderWidth: 1,
+  },
+  currentCard: {
+    position: "absolute",
+    zIndex: 2,
+  },
+  nextCard: {
+    position: "absolute",
+    zIndex: 1,
+    marginTop: 25,
+  },
+  imageContainer: {
+    height: Platform.OS == "ios" ? screenHeight * 0.56 : screenHeight * 0.55,
+    width: "100%",
+    borderRadius: 32,
+    overflow: "hidden",
+  },
+  image: {
+    height: "100%",
+    width: "100%",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.12)",
   },
-  image: {
-    height: Platform.OS == "ios" ? screenHeight * 0.56 : screenHeight * 0.55,
-    width: "100%",
-    borderRadius: 32,
-  },
   innerContainer: {
     padding: 14,
     justifyContent: "space-between",
     flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   row: {
     flexDirection: "row",
@@ -582,7 +930,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 16,
+    marginTop:
+      Platform.OS == "ios"
+        ? screenHeight * 0.56 + 30
+        : screenHeight * 0.55 + 30,
     padding: 12,
     gap: 16,
   },
@@ -609,5 +960,24 @@ const styles = StyleSheet.create({
   },
   gradientFill: {
     flex: 1,
+  },
+  sliderContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 12,
+    marginBottom: 20,
+  },
+  sliderTrack: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderRadius: 100,
+    overflow: "hidden",
+    gap: 8,
+  },
+  block: {
+    flex: 1,
+    height: 6,
+    position: "relative",
   },
 });

@@ -7,7 +7,6 @@ import Divider from "./Divider";
 const SummaryCard = ({ match, inCommon, monthlyViews }) => {
   return (
     <>
-      <Divider />
       <View style={styles.container}>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
@@ -32,7 +31,6 @@ const SummaryCard = ({ match, inCommon, monthlyViews }) => {
           </View>
         </View>
       </View>
-      <Divider />
     </>
   );
 };
@@ -45,6 +43,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginHorizontal: 12,
     marginBottom: 18,
+    marginTop:16
   },
   statsContainer: {
     flexDirection: "row",

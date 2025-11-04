@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
+import { getPalette } from "@somesoap/react-native-image-palette";
+import { useEffect, useState } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import { COLORS } from "../../../../utils/COLORS";
+import fonts from "../../../../assets/fonts";
+import { Images } from "../../../../assets/images";
+import { PNGIcons } from "../../../../assets/images/icons";
 import CustomText from "../../../../components/CustomText";
 import Icons from "../../../../components/Icons";
-import fonts from "../../../../assets/fonts";
-import { PNGIcons } from "../../../../assets/images/icons";
 import ImageFast from "../../../../components/ImageFast";
-import { BlurView } from "@react-native-community/blur";
-import { Images } from "../../../../assets/images";
-import { getPalette } from "@somesoap/react-native-image-palette";
+import { COLORS } from "../../../../utils/COLORS";
 
 const PostCard = ({
   displayName = "Display Name",

@@ -1,20 +1,24 @@
+import { useIsFocused, useRoute } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import ScreenWrapper from "../../../components/ScreenWrapper";
-import CustomButton from "../../../components/CustomButton";
-import ArtistDetailCard from "../../../components/ArtistDetailCard";
 import { SongsImgs } from "../../../assets/images/songs";
-import SummaryCard from "./molecules/SummaryCard";
+import ArtistDetailCard from "../../../components/ArtistDetailCard";
+import CustomButton from "../../../components/CustomButton";
+import ScreenWrapper from "../../../components/ScreenWrapper";
 import AboutArtist from "./molecules/AboutArtist";
-import LatestRelease from "./molecules/LatestRelease";
-import MusicStyles from "./molecules/MusicStyles";
-import LookingFor from "./molecules/LookingFor";
 import Availability from "./molecules/Availability";
-import Levels from "./molecules/Levels";
-import PopularRelease from "./molecules/PopularRelease";
-import FansOf from "./molecules/FansOf";
 import DiscograpghyBtn from "./molecules/DiscograpghyBtn";
-import { useRoute } from "@react-navigation/native";
+import FansOf from "./molecules/FansOf";
 import Language from "./molecules/Language";
+import LatestRelease from "./molecules/LatestRelease";
+import Levels from "./molecules/Levels";
+import LookingFor from "./molecules/LookingFor";
+import MusicStyles from "./molecules/MusicStyles";
+import PopularRelease from "./molecules/PopularRelease";
+import SummaryCard from "./molecules/SummaryCard";
+
+import { getPalette } from "@somesoap/react-native-image-palette";
+import { Images } from "../../../assets/images";
 
 const releaseData = [
   {
@@ -52,13 +56,31 @@ const songsData = [
 ];
 const Detail = ({ navigation }) => {
   const route = useRoute();
+  const isFocus = useIsFocused();
+
+  const images = route.params?.images;
+
+  const img = images[0];
+
   const { myPage } = route?.params || {};
+
+  const [bgColor, setBgColor] = useState("");
+
+  useEffect(() => {
+    if (!img) return;
+    getPalette(img)
+      .then((palette) => {
+        if (palette?.vibrant) setBgColor(palette.darkVibrant);
+      })
+      .catch(() => {});
+  }, [isFocus]);
 
   return (
     <ScreenWrapper
       paddingHorizontal={0.1}
       paddingBottom={0.1}
       scrollEnabled
+      backgroundColor={bgColor}
       footerUnScrollable={() =>
         myPage ? (
           <View style={{ padding: 12 }} />
@@ -69,7 +91,7 @@ const Detail = ({ navigation }) => {
         )
       }
     >
-      <ArtistDetailCard />
+      <ArtistDetailCard images={images} color={bgColor} />
       <SummaryCard match={64} inCommon={4} monthlyViews={528} />
       <AboutArtist
         name={"About Viktor"}

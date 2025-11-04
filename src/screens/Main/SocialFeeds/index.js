@@ -1,17 +1,16 @@
-import { StyleSheet, View, ScrollView, Pressable } from "react-native";
-import ScreenWrapper from "../../../components/ScreenWrapper";
-import Header from "./molecules/Header";
-import Categories from "./molecules/Categories";
-import Moments from "./molecules/Moments";
-import FeedCard from "./molecules/FeedCard";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import fonts from "../../../assets/fonts";
 import { FeedsImages } from "../../../assets/images/FeedsImages";
 import { EventImages } from "../../../assets/images/eventImages";
-import PostCard from "./molecules/PostCard";
-import CustomText from "../../../components/CustomText";
-import fonts from "../../../assets/fonts";
-import { COLORS } from "../../../utils/COLORS";
-import { Image } from "react-native";
 import { PNGIcons } from "../../../assets/images/icons";
+import CustomText from "../../../components/CustomText";
+import ScreenWrapper from "../../../components/ScreenWrapper";
+import { COLORS } from "../../../utils/COLORS";
+import Categories from "./molecules/Categories";
+import FeedCard from "./molecules/FeedCard";
+import Header from "./molecules/Header";
+import Moments from "./molecules/Moments";
+import PostCard from "./molecules/PostCard";
 const SocialFeeds = () => {
   return (
     <ScreenWrapper
