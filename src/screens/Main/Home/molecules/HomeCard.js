@@ -29,7 +29,7 @@ const profileImages = [
   {
     id: 1,
     images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
-    premium: true,
+    // premium: true,
   },
   {
     id: 2,
@@ -39,17 +39,17 @@ const profileImages = [
   {
     id: 3,
     images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
-    premium: true,
+    // premium: true,
   },
   {
     id: 4,
     images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
-    premium: true,
+    // premium: true,
   },
   {
     id: 5,
     images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
-    premium: true,
+    // premium: true,
   },
 ];
 
@@ -57,6 +57,7 @@ const HomeCard = () => {
   const navigation = useNavigation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [cards, setCards] = useState([...profileImages]);
   const sliderAnimation = useRef(new Animated.Value(0)).current;
 
   // Current card animations
@@ -65,6 +66,10 @@ const HomeCard = () => {
   const rotateCard = useRef(new Animated.Value(0)).current;
   const gradientOpacity = useRef(new Animated.Value(0)).current;
   const gradientTranslateY = useRef(new Animated.Value(200)).current;
+
+  // Next card animations
+  const nextCardScale = useRef(new Animated.Value(0.9)).current;
+  const nextCardTranslateY = useRef(new Animated.Value(10)).current;
 
   // Gesture animations
   const pan = useRef(new Animated.ValueXY()).current;
@@ -130,7 +135,7 @@ const HomeCard = () => {
   };
 
   const goToNextImage = () => {
-    const currentProfile = profileImages[currentIndex];
+    const currentProfile = cards[0];
     const nextIndex = (currentImageIndex + 1) % currentProfile.images.length;
 
     // Update the image index first
@@ -171,6 +176,20 @@ const HomeCard = () => {
 
     // Reset gradient position to bottom before animation
     gradientTranslateY.setValue(200);
+
+    // Animate next card coming forward
+    Animated.parallel([
+      Animated.timing(nextCardScale, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(nextCardTranslateY, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
     // Animate gradient appearance from bottom to top
     Animated.sequence([
@@ -246,11 +265,14 @@ const HomeCard = () => {
   };
 
   const goToNextCard = () => {
-    setCurrentIndex((prev) => {
-      const nextIndex = (prev + 1) % profileImages.length;
-      setCurrentImageIndex(0); // Reset to first image when changing cards
-      return nextIndex;
+    setCards((prevCards) => {
+      const newCards = [...prevCards];
+      // Remove the swiped card and add it to the end of the array
+      const removedCard = newCards.shift();
+      newCards.push(removedCard);
+      return newCards;
     });
+    setCurrentImageIndex(0); // Reset to first image when changing cards
     resetCardPosition();
   };
 
@@ -264,6 +286,10 @@ const HomeCard = () => {
     pan.setValue({ x: 0, y: 0 });
     rotate.setValue(0);
     sliderAnimation.setValue(0);
+
+    // Reset next card animation for next swipe
+    nextCardScale.setValue(0.9);
+    nextCardTranslateY.setValue(10);
   };
 
   // PanResponder for gesture handling
@@ -282,6 +308,32 @@ const HomeCard = () => {
         // Add rotation based on horizontal movement for better visual feedback
         const rotation = dx * 0.1;
         rotate.setValue(rotation);
+
+        // Show gradient during swipe
+        const swipeThreshold = 30;
+        if (Math.abs(dx) > swipeThreshold) {
+          // Set gradient colors based on swipe direction
+          if (dx < 0) {
+            // Swiping left - red gradient
+            console.log("red----");
+
+            setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
+          } else {
+            console.log("green----");
+
+            // Swiping right - green gradient
+            setCurrentGradientColors(["#1ED760", "#1ED76000"]);
+          }
+
+          // Calculate opacity based on swipe distance
+          const opacity = Math.min(Math.abs(dx) / 150, 1);
+          gradientOpacity.setValue(opacity);
+          gradientTranslateY.setValue(0);
+        } else {
+          // Reset gradient when not swiping far enough
+          gradientOpacity.setValue(0);
+          gradientTranslateY.setValue(200);
+        }
       },
       onPanResponderRelease: (_, gestureState) => {
         const { dx, dy, vx, vy } = gestureState;
@@ -290,6 +342,31 @@ const HomeCard = () => {
 
         // Check if it's a left swipe
         if (dx < -swipeThreshold || vx < -velocityThreshold) {
+          // Set gradient for left swipe
+          setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
+          gradientTranslateY.setValue(200);
+
+          // Animate gradient appearance
+          Animated.sequence([
+            Animated.parallel([
+              Animated.timing(gradientOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+              }),
+              Animated.timing(gradientTranslateY, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+              }),
+            ]),
+            Animated.timing(gradientOpacity, {
+              toValue: 0.7,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ]).start();
+
           Animated.parallel([
             Animated.timing(pan, {
               toValue: { x: -screenWidth * 2, y: dy },
@@ -307,6 +384,31 @@ const HomeCard = () => {
         }
         // Check if it's a right swipe
         else if (dx > swipeThreshold || vx > velocityThreshold) {
+          // Set gradient for right swipe
+          setCurrentGradientColors(["#1ED760", "#1ED76000"]);
+          gradientTranslateY.setValue(200);
+
+          // Animate gradient appearance
+          Animated.sequence([
+            Animated.parallel([
+              Animated.timing(gradientOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+              }),
+              Animated.timing(gradientTranslateY, {
+                toValue: 0,
+                duration: 500,
+                useNativeDriver: true,
+              }),
+            ]),
+            Animated.timing(gradientOpacity, {
+              toValue: 0.7,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ]).start();
+
           Animated.parallel([
             Animated.timing(pan, {
               toValue: { x: screenWidth * 2, y: dy },
@@ -334,6 +436,11 @@ const HomeCard = () => {
         }
         // If not a swipe, return to original position
         else {
+          // Reset gradient
+          gradientOpacity.setValue(0);
+          gradientTranslateY.setValue(200);
+          setCurrentGradientColors(["transparent", "transparent"]);
+
           Animated.parallel([
             Animated.spring(pan, {
               toValue: { x: 0, y: 0 },
@@ -387,8 +494,8 @@ const HomeCard = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const currentProfile = profileImages[currentIndex];
-  const nextProfile = profileImages[(currentIndex + 1) % profileImages.length];
+  const currentProfile = cards[0];
+  const nextProfile = cards[1];
 
   const renderCard = (profile, isCurrent = true) => (
     <TouchableOpacity
@@ -641,11 +748,22 @@ const HomeCard = () => {
 
   return (
     <View style={styles.container}>
-      {/* Next Card (Preview) */}
+      {/* Next Card (Preview) - This will become the current card after swipe */}
       {nextProfile && (
-        <View style={[styles.cardWrapper, styles.nextCard]}>
+        <Animated.View
+          style={[
+            styles.cardWrapper,
+            styles.nextCard,
+            {
+              transform: [
+                { scale: nextCardScale },
+                { translateY: nextCardTranslateY },
+              ],
+            },
+          ]}
+        >
           {renderCard(nextProfile, false)}
-        </View>
+        </Animated.View>
       )}
 
       {/* Current Card */}
@@ -729,7 +847,7 @@ const styles = StyleSheet.create({
   nextCard: {
     position: "absolute",
     zIndex: 1,
-    marginTop: 10,
+    marginTop: 25,
   },
   imageContainer: {
     height: Platform.OS == "ios" ? screenHeight * 0.56 : screenHeight * 0.55,
