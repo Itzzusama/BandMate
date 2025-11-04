@@ -46,21 +46,15 @@ const HomeCard = () => {
   const rotateCard = useRef(new Animated.Value(0)).current;
   const gradientOpacity = useRef(new Animated.Value(0)).current;
   const gradientTranslateY = useRef(new Animated.Value(200)).current;
-  const currentCardScale = useRef(new Animated.Value(1)).current;
-  const currentCardOpacity = useRef(new Animated.Value(1)).current;
   
-  // Next card animations
-  const nextCardScale = useRef(new Animated.Value(0.9)).current;
-  const nextCardOpacity = useRef(new Animated.Value(0.6)).current;
-  const nextCardTranslateY = useRef(new Animated.Value(20)).current;
-  
+  // Gesture animations
+  const pan = useRef(new Animated.ValueXY()).current;
+  const rotate = useRef(new Animated.Value(0)).current;
+
   const [currentGradientColors, setCurrentGradientColors] = useState([
     "transparent",
     "transparent",
   ]);
-
-  const pan = useRef(new Animated.ValueXY()).current;
-  const rotate = useRef(new Animated.Value(0)).current;
 
   const buttonActions = [
     {
@@ -90,45 +84,17 @@ const HomeCard = () => {
     },
   ];
 
-  // Animate next card coming to front
-  const animateNextCardIn = () => {
-    Animated.parallel([
-      Animated.spring(nextCardScale, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(nextCardOpacity, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(nextCardTranslateY, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  // Reset next card to background position
-  const resetNextCard = () => {
-    nextCardScale.setValue(0.9);
-    nextCardOpacity.setValue(0.6);
-    nextCardTranslateY.setValue(20);
-  };
-
   const handleSwipe = (direction) => {
     let index;
     switch (direction) {
       case "left":
-        index = 1;
+        index = 1; // Using the second left action for swipe left
         break;
       case "right":
-        index = 3;
+        index = 3; // Using the first right action for swipe right
         break;
       case "up":
-        index = 2;
+        index = 2; // Using the up action for swipe up
         break;
       default:
         return;
@@ -162,20 +128,6 @@ const HomeCard = () => {
       Animated.timing(gradientOpacity, {
         toValue: 0.7,
         duration: 1500,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Animate current card scale down and opacity out
-    Animated.parallel([
-      Animated.timing(currentCardScale, {
-        toValue: 0.8,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(currentCardOpacity, {
-        toValue: 0,
-        duration: 300,
         useNativeDriver: true,
       }),
     ]).start();
@@ -225,12 +177,9 @@ const HomeCard = () => {
       }
 
       Animated.parallel(animations).start(() => {
-        // Animate next card coming in
-        animateNextCardIn();
-        
         setTimeout(() => {
           goToNextCard();
-        }, 200);
+        }, 100);
       });
     }, 400);
   };
@@ -252,9 +201,6 @@ const HomeCard = () => {
     setCurrentGradientColors(["transparent", "transparent"]);
     pan.setValue({ x: 0, y: 0 });
     rotate.setValue(0);
-    currentCardScale.setValue(1);
-    currentCardOpacity.setValue(1);
-    resetNextCard();
   };
 
   // PanResponder for gesture handling
@@ -273,10 +219,6 @@ const HomeCard = () => {
         // Add rotation based on horizontal movement for better visual feedback
         const rotation = dx * 0.1;
         rotate.setValue(rotation);
-
-        // Scale down current card slightly during drag
-        const scale = 1 - Math.min(Math.abs(dx) / 500, 0.1);
-        currentCardScale.setValue(scale);
       },
       onPanResponderRelease: (_, gestureState) => {
         const { dx, dy, vx, vy } = gestureState;
@@ -296,16 +238,8 @@ const HomeCard = () => {
               duration: 300,
               useNativeDriver: true,
             }),
-            Animated.timing(currentCardOpacity, {
-              toValue: 0,
-              duration: 300,
-              useNativeDriver: true,
-            }),
           ]).start(() => {
-            animateNextCardIn();
-            setTimeout(() => {
-              handleSwipe("left");
-            }, 150);
+            handleSwipe("left");
           });
         }
         // Check if it's a right swipe
@@ -321,36 +255,18 @@ const HomeCard = () => {
               duration: 300,
               useNativeDriver: true,
             }),
-            Animated.timing(currentCardOpacity, {
-              toValue: 0,
-              duration: 300,
-              useNativeDriver: true,
-            }),
           ]).start(() => {
-            animateNextCardIn();
-            setTimeout(() => {
-              handleSwipe("right");
-            }, 150);
+            handleSwipe("right");
           });
         }
         // Check if it's an upward swipe
         else if (dy < -swipeThreshold || vy < -velocityThreshold) {
-          Animated.parallel([
-            Animated.timing(pan, {
-              toValue: { x: dx, y: -screenHeight * 2 },
-              duration: 300,
-              useNativeDriver: true,
-            }),
-            Animated.timing(currentCardOpacity, {
-              toValue: 0,
-              duration: 300,
-              useNativeDriver: true,
-            }),
-          ]).start(() => {
-            animateNextCardIn();
-            setTimeout(() => {
-              handleSwipe("up");
-            }, 150);
+          Animated.timing(pan, {
+            toValue: { x: dx, y: -screenHeight * 2 },
+            duration: 300,
+            useNativeDriver: true,
+          }).start(() => {
+            handleSwipe("up");
           });
         }
         // If not a swipe, return to original position
@@ -364,12 +280,6 @@ const HomeCard = () => {
             }),
             Animated.spring(rotate, {
               toValue: 0,
-              useNativeDriver: true,
-              friction: 5,
-              tension: 40,
-            }),
-            Animated.spring(currentCardScale, {
-              toValue: 1,
               useNativeDriver: true,
               friction: 5,
               tension: 40,
@@ -629,22 +539,9 @@ const HomeCard = () => {
     <View style={styles.container}>
       {/* Next Card (Preview) */}
       {nextProfile && (
-        <Animated.View
-          style={[
-            styles.cardWrapper,
-            styles.nextCard,
-            {
-              backgroundColor: nextProfile.premium ? "#FFCF83" : "#FFFFFF29",
-              transform: [
-                { scale: nextCardScale },
-                { translateY: nextCardTranslateY },
-              ],
-              opacity: nextCardOpacity,
-            },
-          ]}
-        >
+        <View style={[styles.cardWrapper, styles.nextCard]}>
           {renderCard(nextProfile, false)}
-        </Animated.View>
+        </View>
       )}
 
       {/* Current Card */}
@@ -669,9 +566,7 @@ const HomeCard = () => {
                 ),
               },
               { rotate: combinedRotate },
-              { scale: currentCardScale },
             ],
-            opacity: currentCardOpacity,
           },
         ]}
       >
@@ -730,7 +625,7 @@ const styles = StyleSheet.create({
   nextCard: {
     position: "absolute",
     zIndex: 1,
-    marginTop: 10, // Slight offset to show preview
+    marginTop: 10,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
