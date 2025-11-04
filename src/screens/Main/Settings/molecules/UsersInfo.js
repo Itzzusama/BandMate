@@ -8,13 +8,21 @@ import { COLORS } from "../../../../utils/COLORS";
 import { PNGIcons } from "../../../../assets/images/icons";
 import CustomButton from "../../../../components/CustomButton";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import ImageFast from "../../../../components/ImageFast";
 const UsersInfo = () => {
   const navigation = useNavigation();
+  const user = useSelector((state) => state.users.userData);
+
   return (
     <View style={styles.container}>
-      <Image source={Images.user3} style={styles.avatar} />
+      <ImageFast
+        isView
+        source={user?.pictures[0] ? { uri: user?.pictures[0] } : Images.user}
+        style={styles.avatar}
+      />
       <CustomText
-        label={"Hi Viktor"}
+        label={`Hi ${user?.display_name || "Victor"}`}
         fontFamily={fonts.medium}
         fontSize={32}
         lineHeight={32 * 1.4}
@@ -22,7 +30,7 @@ const UsersInfo = () => {
       />
       <View style={styles.row}>
         <CustomText
-          label={"username"}
+          label={` ${user?.display_name || "username"}`}
           fontFamily={fonts.medium}
           lineHeight={14 * 1.4}
           color={COLORS.white3}
@@ -34,7 +42,12 @@ const UsersInfo = () => {
         title={"View My Page"}
         width={128}
         height={40}
-        onPress={() => navigation.navigate("Detail", { myPage: true })}
+        onPress={() =>
+          navigation.navigate("Detail", {
+            myPage: true,
+            images: user?.pictures,
+          })
+        }
         backgroundColor={COLORS.cardColor}
         marginTop={20}
         customText={{
@@ -56,9 +69,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   avatar: {
-    height: 80,
-    width: 80,
-    resizeMode: "contain",
+    height: 85,
+    width: 85,
+    borderRadius: 99,
   },
   row: {
     flexDirection: "row",

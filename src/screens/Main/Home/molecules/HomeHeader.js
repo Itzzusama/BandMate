@@ -9,20 +9,26 @@ import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
 import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
+import { useSelector } from "react-redux";
 
 const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
+  const user = useSelector((state) => state.users.userData);
+
   return (
     <View style={[styles.header, { marginTop: insets.top }]}>
       <Pressable onPress={() => navigation.navigate("Settings")}>
-        <ImageFast source={Images.user} style={styles.profileImage} />
+        <ImageFast
+          source={user?.pictures[0] ? { uri: user?.pictures[0] } : Images.user}
+          style={styles.profileImage}
+        />
       </Pressable>
 
       <View style={styles.profileInfo}>
         <CustomText
-          label={"Hi Myles 👋"}
+          label={`Hi ${user?.display_name || "Myles"} 👋`}
           fontSize={17}
           lineHeight={17 * 1.4}
           color={COLORS.white}

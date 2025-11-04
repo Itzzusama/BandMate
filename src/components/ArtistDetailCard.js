@@ -42,7 +42,7 @@ const ArtistDetailCard = ({ images, color }) => {
 
   // Auto-advance slider every 3 seconds
   useEffect(() => {
-    if (!images || images.length <= 1) return;
+    if (!images || images?.length <= 1) return;
 
     const interval = setInterval(() => {
       goToNextImage();

@@ -19,18 +19,21 @@ import CommunityOptions from "./molecules/CommunityOptions";
 import RateApp from "./molecules/RateApp";
 import FeedbackSection from "./molecules/FeedbackSection";
 import { logout } from "../../../store/reducer/AuthConfig";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Settings = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.users.userData);
+
   return (
     <ScreenWrapper
       paddingBottom={0.1}
       scrollEnabled
       headerUnScrollable={() => <Header />}
     >
-      <UsersInfo />
+      <UsersInfo  />
       <View style={styles.row}>
         <InfoCard
           icon={PNGIcons.tire}

@@ -1,16 +1,42 @@
-import { StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 
-
+import { useIsFocused } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import LinearGradient from "react-native-linear-gradient";
+import fonts from "../../../assets/fonts";
 import ScreenWrapper from "../../../components/ScreenWrapper";
+import TopTabWithBG from "../../../components/TopTabWithBG";
+import { get } from "../../../services/ApiRequest";
 import HomeCard from "./molecules/HomeCard";
 import HomeHeader from "./molecules/HomeHeader";
-import TopTabWithBG from "../../../components/TopTabWithBG";
-import { useState } from "react";
-import fonts from "../../../assets/fonts";
-import LinearGradient from "react-native-linear-gradient";
 
 const Home = ({ navigation }) => {
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
+  const isFocus = useIsFocused();
   const [tab, setTab] = useState("For You");
+  const [profileData, setProfileData] = useState([]);
+  const [refreshing, setRefreshing] = useState(true);
+
+  const getUserProfile = async () => {
+    setRefreshing(true);
+    try {
+      const response = await get("matching/recommendations");
+      setProfileData(response.data?.recommendations);
+      setRefreshing(false);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getUserProfile();
+  }, [isFocus]);
+  
   return (
     <ScreenWrapper
       translucent
@@ -24,8 +50,8 @@ const Home = ({ navigation }) => {
       )}
     >
       <LinearGradient
-        colors={['#131E1F', '#121212']}
-        locations={[1, 0]} 
+        colors={["#131E1F", "#121212"]}
+        locations={[1, 0]}
         style={styles.gradientContainer}
       >
         <TopTabWithBG
@@ -39,7 +65,22 @@ const Home = ({ navigation }) => {
           activeFontFamily={fonts.medium}
           width={"55%"}
         />
-        <HomeCard />
+        {refreshing ? (
+          <View
+            style={{
+              height:
+                Platform.OS == "ios"
+                  ? screenHeight * 0.56 + 30
+                  : screenHeight * 0.55 + 30,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator size={"large"} />
+          </View>
+        ) : (
+          <HomeCard images={profileData} />
+        )}
       </LinearGradient>
     </ScreenWrapper>
   );

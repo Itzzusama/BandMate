@@ -53,7 +53,7 @@ const profileImages = [
   },
 ];
 
-const HomeCard = () => {
+const HomeCard = ({images}) => {
   const navigation = useNavigation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

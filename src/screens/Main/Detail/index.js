@@ -54,15 +54,14 @@ const songsData = [
     des: "The Verve",
   },
 ];
-const Detail = ({ navigation }) => {
-  const route = useRoute();
+const Detail = ({ navigation, route }) => {
   const isFocus = useIsFocused();
 
   const images = route.params?.images;
 
   const img = images[0];
 
-  const { myPage } = route?.params || {};
+  const myPage = route?.params?.myPage;
 
   const [bgColor, setBgColor] = useState("");
 
@@ -78,13 +77,11 @@ const Detail = ({ navigation }) => {
   return (
     <ScreenWrapper
       paddingHorizontal={0.1}
-      paddingBottom={0.1}
+      paddingBottom={myPage ? 12 : 0.1}
       scrollEnabled
       backgroundColor={bgColor}
       footerUnScrollable={() =>
-        myPage ? (
-          <View style={{ padding: 12 }} />
-        ) : (
+        !myPage && (
           <View style={{ padding: 12 }}>
             <CustomButton title={"Connect"} marginBottom={24} />
           </View>
