@@ -22,12 +22,10 @@ const RootNavigation = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="MainStack"
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
       }}
-      initialRouteName="AuthStack"
     >
       {isToken ? (
         shouldGoToAuth ? (
