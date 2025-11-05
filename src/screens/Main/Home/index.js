@@ -36,7 +36,7 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     getUserProfile();
   }, [isFocus]);
-  
+
   return (
     <ScreenWrapper
       translucent
@@ -79,7 +79,7 @@ const Home = ({ navigation }) => {
             <ActivityIndicator size={"large"} />
           </View>
         ) : (
-          <HomeCard images={profileData} />
+          <HomeCard data={profileData} />
         )}
       </LinearGradient>
     </ScreenWrapper>

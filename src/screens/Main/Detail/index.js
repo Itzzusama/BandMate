@@ -1,4 +1,4 @@
-import { useIsFocused, useRoute } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SongsImgs } from "../../../assets/images/songs";
@@ -18,7 +18,6 @@ import PopularRelease from "./molecules/PopularRelease";
 import SummaryCard from "./molecules/SummaryCard";
 
 import { getPalette } from "@somesoap/react-native-image-palette";
-import { Images } from "../../../assets/images";
 
 const releaseData = [
   {
