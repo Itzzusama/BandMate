@@ -93,6 +93,8 @@ const CustomInput = ({
             ? "#EE10450A"
             : showSuccessColor
             ? "#64CD750A"
+            : backgroundColor
+            ? backgroundColor
             : COLORS.inputBg,
           borderColor: error
             ? "#EE1045"
@@ -184,7 +186,6 @@ const CustomInput = ({
                 width: 22,
                 height: 22,
                 marginRight: 10,
-                backgroundColor: COLORS.white,
               }}
               onPress={() => {
                 onChangeText?.("");

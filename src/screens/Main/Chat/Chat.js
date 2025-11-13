@@ -11,104 +11,127 @@ import ScreenWrapper from "../../../components/ScreenWrapper";
 import TopTab from "../../../components/TopTab";
 import { COLORS } from "../../../utils/COLORS";
 import ConversationBox from "./molecules/ConversationBox";
+import { useEffect } from "react";
+import { get } from "../../../services/ApiRequest";
+import { useSelector } from "react-redux";
 
-const tabs = ["", "1 on 1", "Groups", "Matches" ];
+const tabs = ["", "1 on 1", "Groups", "Matches"];
+const PindedData = [
+  {
+    _id: 1,
+    otherUser: {
+      _id: 2,
+      name: "John Doe",
+    },
+    lastMessage: {
+      _id: 3,
+      content: "Hello, how are you?",
+    },
+  },
+  {
+    _id: 2,
+    otherUser: {
+      _id: 42,
+      name: "John Doe",
+    },
+    lastMessage: {
+      _id: 332,
+      content: "What is the price of the car?",
+    },
+  },
+];
 
+const requestData = [
+  {
+    _id: 1,
+    isRequest: true,
+    otherUser: {
+      _id: 2,
+      name: "Viktor Sola",
+    },
+    lastMessage: {
+      _id: 3,
+      content: "Heyy, how are you Julian?",
+    },
+  },
+  {
+    _id: 2,
+    isRequest: true,
+    otherUser: {
+      _id: 42,
+      name: "Dani",
+    },
+    lastMessage: {
+      _id: 332,
+      content: "Hey, would you be available for...",
+    },
+  },
+];
 const Chat = () => {
   const [tab, setTab] = useState(0);
+  const { userData } = useSelector((state) => state.users);
+  const userId = userData?._id;
+  const [chatData, setChatData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const getChats = async () => {
+    try {
+      const res = await get(
+        `conversations/${userId}?page=1&limit=20&minimal=false`
+      );
+      if (res?.data?.success) {
+        setChatData(res?.data?.data);
+      }
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const PindedData = [
-    {
-      _id: 1,
-      otherUser: {
-        _id: 2,
-        name: "John Doe",
-      },
-      lastMessage: {
-        _id: 3,
-        content: "Hello, how are you?",
-      },
-    },
-    {
-      _id: 2,
-      otherUser: {
-        _id: 42,
-        name: "John Doe",
-      },
-      lastMessage: {
-        _id: 332,
-        content: "What is the price of the car?",
-      },
-    },
-  ];
+  useEffect(() => {
+    getChats();
+  }, []);
 
-  const requestData = [
-    {
-      _id: 1,
-      isRequest: true,
-      otherUser: {
-        _id: 2,
-        name: "Viktor Sola",
-      },
-      lastMessage: {
-        _id: 3,
-        content: "Heyy, how are you Julian?",
-      },
-    },
-    {
-      _id: 2,
-      isRequest: true,
-      otherUser: {
-        _id: 42,
-        name: "Dani",
-      },
-      lastMessage: {
-        _id: 332,
-        content: "Hey, would you be available for...",
-      },
-    },
-  ];
-
-  const chatData = [
-    {
-      _id: 1,
-      otherUser: {
-        _id: 2,
-        name: "John Doe",
-      },
-      lastMessage: {
-        _id: 3,
-        content: "Hello, how are you?",
-      },
-    },
-    {
-      _id: 2,
-      otherUser: {
-        _id: 42,
-        name: "John Doe",
-      },
-      lastMessage: {
-        _id: 332,
-        content: "What is the price of the car?",
-      },
-    },
-    {
-      _id: 3,
-      otherUser: {
-        _id: 42,
-        name: "John Doe",
-      },
-      lastMessage: {
-        _id: 332,
-        content: "What is the price of the car?",
-      },
-    },
-  ];
+  // const chatData = [
+  //   {
+  //     _id: 1,
+  //     otherUser: {
+  //       _id: 2,
+  //       name: "John Doe",
+  //     },
+  //     lastMessage: {
+  //       _id: 3,
+  //       content: "Hello, how are you?",
+  //     },
+  //   },
+  //   {
+  //     _id: 2,
+  //     otherUser: {
+  //       _id: 42,
+  //       name: "John Doe",
+  //     },
+  //     lastMessage: {
+  //       _id: 332,
+  //       content: "What is the price of the car?",
+  //     },
+  //   },
+  //   {
+  //     _id: 3,
+  //     otherUser: {
+  //       _id: 42,
+  //       name: "John Doe",
+  //     },
+  //     lastMessage: {
+  //       _id: 332,
+  //       content: "What is the price of the car?",
+  //     },
+  //   },
+  // ];
 
   return (
     <ScreenWrapper
       paddingHorizontal={0.1}
-      headerUnScrollable={() => <Header title="Inbox"   />}
+      headerUnScrollable={() => <Header title="Inbox" />}
+      scrollEnabled
     >
       <View style={{}}>
         <TopTab
@@ -228,7 +251,7 @@ const Chat = () => {
           />
         </TouchableOpacity>
       </View>
-      <View>
+      <View style={{ paddingBottom: 90 }}>
         <FlatList
           data={chatData}
           renderItem={({ item }) => <ConversationBox item={item} />}

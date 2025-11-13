@@ -1,14 +1,68 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
+import LinearGradient from "react-native-linear-gradient";
+import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
-import CustomText from "../../../../components/CustomText";
-import ImageFast from "../../../../components/ImageFast";
-import LinearGradient from "react-native-linear-gradient";
-import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
+import ImageFast from "../../../../components/ImageFast";
 import EditButton from "./EditButton";
-const LatestRelease = ({ myPage }) => {
+import {
+  checkSpotifyTokenValidity,
+  loginWithSpotify,
+  spotifyDataService,
+} from "../../../../services/spotifyAuthService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+
+const LatestRelease = ({ myPage, artistId }) => {
+  const [latestRelease, setLatestRelease] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!artistId) return;
+
+    const fetchLatestRelease = async () => {
+      try {
+        setLoading(true);
+
+        const albums = await spotifyDataService.getArtistAlbums(artistId);
+        if (albums?.length > 0) {
+          const sorted = albums.sort(
+            (a, b) => new Date(b.release_date) - new Date(a.release_date)
+          );
+          setLatestRelease(sorted[0]);
+        }
+      } catch (err) {
+        console.log("Error fetching latest release:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLatestRelease();
+  }, [artistId]);
+
+  if (loading) {
+    return (
+      <ActivityIndicator
+        color={COLORS.btnColor}
+        style={{ marginVertical: 20 }}
+      />
+    );
+  }
+
+  if (!latestRelease) {
+    return; //<CustomText label="No releases found." color={COLORS.white2} />;
+  }
+
   return (
     <View style={styles.container}>
       <View
@@ -27,49 +81,57 @@ const LatestRelease = ({ myPage }) => {
         {myPage && <EditButton />}
       </View>
 
-      <ImageFast source={Images.latest_rel} style={styles.imgStyle}>
-        <LinearGradient
-          colors={["#14141499", "#14141440", "#14141499"]}
-          start={{ x: 0.5, y: 1 }}
-          end={{ x: 0.5, y: 0 }}
-          style={styles.bottomGradient}
-        />
+      <TouchableOpacity activeOpacity={0.7}>
+        <ImageFast
+          source={{ uri: latestRelease.images[0]?.url }}
+          style={styles.imgStyle}
+        >
+          <LinearGradient
+            colors={["#14141499", "#14141440", "#14141499"]}
+            start={{ x: 0.5, y: 1 }}
+            end={{ x: 0.5, y: 0 }}
+            style={styles.bottomGradient}
+          />
 
-        <CustomText
-          label={"Posted by Artist"}
-          fontFamily={fonts.medium}
-          color={COLORS.white}
-          fontSize={14}
-          lineHeight={14 * 1.4}
-          marginTop={26}
-          marginLeft={49}
-        />
+          <CustomText
+            label={`Posted by ${latestRelease.artists[0]?.name}`}
+            fontFamily={fonts.medium}
+            color={COLORS.white}
+            fontSize={14}
+            lineHeight={14 * 1.4}
+            marginTop={26}
+            marginLeft={18}
+          />
 
-        <View style={styles.bottomContent}>
-          <View style={styles.bottonRow}>
-            <View style={styles.row}>
-              <Image source={Images.thumbnail} style={styles.thumbnail} />
-              <View>
-                <CustomText
-                  label={"The Car"}
-                  fontFamily={fonts.medium}
-                  color={COLORS.white}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
+          <View style={styles.bottomContent}>
+            <View style={styles.bottonRow}>
+              <View style={styles.row}>
+                <Image
+                  source={{ uri: latestRelease.images[0]?.url }}
+                  style={styles.thumbnail}
                 />
-                <CustomText
-                  label={"Album"}
-                  fontFamily={fonts.medium}
-                  color={COLORS.white2}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                />
+                <View style={{ flex: 1 }}>
+                  <CustomText
+                    label={latestRelease.name}
+                    fontFamily={fonts.medium}
+                    color={COLORS.white}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                  />
+                  <CustomText
+                    label={latestRelease.album_type}
+                    fontFamily={fonts.medium}
+                    color={COLORS.white2}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                  />
+                </View>
               </View>
+              <Image source={PNGIcons.forward} style={styles.forwardIcon} />
             </View>
-            <Image source={PNGIcons.forward} style={styles.forwardIcon} />
           </View>
-        </View>
-      </ImageFast>
+        </ImageFast>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -89,7 +151,6 @@ const styles = StyleSheet.create({
   },
   bottomGradient: {
     ...StyleSheet.absoluteFillObject,
-
     bottom: 0,
   },
   bottomContent: {

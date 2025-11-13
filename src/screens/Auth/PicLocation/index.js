@@ -22,6 +22,7 @@ import { PNGIcons } from "../../../assets/images/icons";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { put } from "../../../services/ApiRequest";
 const GOOGLE_API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 const darkMapStyle = [
   { elementType: "geometry", stylers: [{ color: "#212121" }] },
@@ -271,7 +272,7 @@ const PicLocation = () => {
   };
 
   const handleBackPress = () => {
-    navigation.goBack();
+    setgooglPlacesModal(true);
   };
 
   return (
@@ -367,6 +368,7 @@ const PicLocation = () => {
             marginTop={-12}
             onPress={handleConfirmAddress}
             textColor={COLORS.white2}
+            onBackPress={() => setgooglPlacesModal(true)}
           />
         </View>
       )}

@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { COLORS } from "../../../../utils/COLORS";
 import CustomText from "../../../../components/CustomText";
@@ -7,9 +7,19 @@ import fonts from "../../../../assets/fonts";
 import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
 
-const ConnentAccount = ({ accName = "Spotify", top, bottom }) => {
+const ConnentAccount = ({
+  accName = "Spotify",
+  top,
+  bottom,
+  onPress,
+  disabled,
+}) => {
   return (
-    <View style={[styles.conatiner, { marginTop: top, marginBottom: bottom }]}>
+    <Pressable
+      style={[styles.conatiner, { marginTop: top, marginBottom: bottom }]}
+      onPress={onPress}
+      disabled={disabled}
+    >
       <Image source={PNGIcons.attach} style={styles.attach} />
       <View style={styles.row}>
         <CustomText
@@ -25,7 +35,7 @@ const ConnentAccount = ({ accName = "Spotify", top, bottom }) => {
         Get your music on <Text style={styles.accname}>{accName}</Text> and
         allow other users to discover your creations in just a click.
       </Text>
-    </View>
+    </Pressable>
   );
 };
 

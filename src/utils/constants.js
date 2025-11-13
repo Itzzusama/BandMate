@@ -100,29 +100,28 @@ export const uploadAndGetUrl = async (file) => {
   }
 };
 
-export const uploadFileGetUrl = async (file) => {
+export const uploadFileGetUrl = async (file, filetype = "application/pdf") => {
   console.log(`Uploading file: ${file?.localUri} with URI: ${file.localUri}`);
-
+  console.log(filetype);
   try {
-    // const token = await AsyncStorage.getItem('token');
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODliMWYzYWQ3Y2U1NmJhZjdkZWIyOTYiLCJmaXJzdF9uYW1lIjoiVXNhbWEiLCJzdXJfbmFtZSI6IkFtYW4iLCJlbWFpbCI6InVzYW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NTUwODY2MjEsImV4cCI6MTAwMTc1NTA4NjYyMCwiYXVkIjoieW91cl9qd3RfYXVkaWVuY2UiLCJpc3MiOiJ5b3VyX2p3dF9pc3N1ZXIifQ.LUVupGpTfKjHEawuZ1utrnXo3IZjP_pEuk0Dn223KoY";
-
     const formData = new FormData();
 
     formData.append("file", {
       uri: file.localUri,
-      type: "application/pdf",
+      type: filetype,
       name: file.name || "file",
     });
 
-    const res = await axios.post(`${endPoints.BASE_URL}upload-file`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        "x-auth-token": token,
-      },
-    });
-
+    const res = await axios.post(
+      `https://move.sola-group.ch/api/upload-file`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    console.log(res);
     return res?.data;
   } catch (err) {
     console.log("Error:", err.response?.data || err.message);

@@ -2,6 +2,9 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import Header from "../../../components/Header";
 import AdvanceSettingCard from "./molecules/AdvanceSettingCard";
+import { useState } from "react";
+import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
+import { useNavigation } from "@react-navigation/native";
 const options = [
   {
     id: "currency",
@@ -50,6 +53,9 @@ const options = [
   },
 ];
 const AdvancedSettings = () => {
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [googleModalVisible, setGoogleModalVisible] = useState(false);
+  const navigation = useNavigation();
   return (
     <ScreenWrapper
       paddingBottom={0.1}
@@ -64,8 +70,27 @@ const AdvancedSettings = () => {
           des={item.des}
           index={index}
           lastIndex={options.length - 1}
+          onPress={() => {
+            if (item.id == "addressing") {
+              setGoogleModalVisible(true);
+            }
+          }}
         />
       ))}
+      <CustomModalGooglePlaces
+        isVisible={googleModalVisible}
+        onClose={() => {
+          setGoogleModalVisible(false);
+          navigation.navigate("AdvancedSettings");
+        }}
+        onLocationSelect={(location) => {
+          console.log("Selected location:", location);
+          setSelectedLocation(location);
+          setGoogleModalVisible(false);
+          navigation.navigate("AdvancedSettings");
+        }}
+        initialValue={selectedLocation?.address || ""}
+      />
     </ScreenWrapper>
   );
 };

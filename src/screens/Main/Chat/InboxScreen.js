@@ -1,85 +1,49 @@
-/* eslint-disable react/no-unstable-nested-components */
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 import { Images } from "../../../assets/images";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import { useSocket } from "../../../components/SocketProvider";
-// import { get } from "../../../services/ApiRequest"; // API commented out for static data
 import { COLORS } from "../../../utils/COLORS";
 import { formatDate } from "../../../utils/constants";
 import ChatBubble from "./molecules/ChatBubble";
 import ChatFooter from "./molecules/ChatFooter";
 import ChatHeader from "./molecules/ChatHeader";
 import ListHeader from "./molecules/ListHeader";
+import { get } from "../../../services/ApiRequest";
 
 const InboxScreen = ({ route }) => {
   const { socket } = useSocket();
   const flatListRef = useRef(null);
   const { userData } = useSelector((state) => state.users);
+
   const userId = userData?._id;
 
   const [loading, setLoading] = useState(false);
   const [replyMessage, setReplyMessage] = useState(null);
-  const [messages, setMessages] = useState([
-    {
-      _id: "m5",
-      content: "Sounds good. See you there!",
-      senderId: { _id: "me" },
-      isSender: true,
-      timestamp: "2025-06-11T16:52:00.000Z",
-    },
-    {
-      _id: "m4",
-      content:
-        "The Romans, who adopted many Greek beliefs, associated owls with Minerva",
-      senderId: { _id: "42" },
-      isSender: false,
-      timestamp: "2025-06-11T16:50:00.000Z",
-    },
-    {
-      _id: "m3",
-      content: "Are you free tonight?",
-      senderId: { _id: "42" },
-      isSender: false,
-      timestamp: "2025-06-11T16:45:00.000Z",
-    },
-    {
-      _id: "m2",
-      content: "Yep, I’m around.",
-      senderId: { _id: "me" },
-      isSender: true,
-      timestamp: "2025-06-11T16:40:00.000Z",
-    },
-    {
-      _id: "m1",
-      content: "Hey Marcus!",
-      senderId: { _id: "42" },
-      isSender: false,
-      timestamp: "2025-06-11T16:35:00.000Z",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
 
   const recipientId = route?.params?.recipientId;
+  const conversationId = route?.params?.conversationId;
   const recipientName = route?.params?.recipientName || "Chat";
 
-  // const fetchMessages = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const res = await get(`conversations/${recipientId}/messages`);
-  //
-  //     if (res?.data?.success) {
-  //       setMessages(res?.data.messages);
-  //     } else {
-  //       setMessages([]);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching messages:", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const fetchMessages = async () => {
+    try {
+      setLoading(true);
+      const res = await get(`conversations/${conversationId}/messages`);
+
+      if (res?.data?.success) {
+        setMessages(res?.data.messages);
+      } else {
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error("Error fetching messages:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!socket) return;
@@ -103,6 +67,7 @@ const InboxScreen = ({ route }) => {
   }, [socket, recipientId]);
 
   const handleReply = (message) => {
+    console.log(message);
     setReplyMessage(message);
   };
 
@@ -110,18 +75,22 @@ const InboxScreen = ({ route }) => {
     setReplyMessage(null);
   };
 
-  const sendMsg = () => {
-    if (!inputText.trim() || !socket) return;
+  const sendMsg = ({ type = "text", attachment, content, duration }) => {
+    if (!socket) return;
+    if (type == "text" && !inputText.trim()) return;
 
     const tempId = `temp_${Date.now()}`;
     const tempMessage = {
       clientId: tempId,
       content: inputText,
       senderId: { _id: userId },
-      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       isPending: true,
       isSender: true,
-      replyTo: replyMessage?._id,
+      replyTo: replyMessage?.id,
+      type: type,
+      attachment: attachment,
+      duration: duration,
     };
 
     setInputText("");
@@ -129,23 +98,58 @@ const InboxScreen = ({ route }) => {
 
     setMessages((prev = []) => [tempMessage, ...prev]);
 
-    // const payload = {
-    //   participant_id: recipientId,
-    //   content: tempMessage.content,
-    // };
-
-    // socket.emit("send:message", payload);
+    const payload = {
+      participant_id: recipientId,
+      content: tempMessage.content,
+      type: type, //"text", "image", "voice", "file"
+      attachment: attachment ? attachment : null,
+      duration: duration ? duration : null,
+      dimensions: null,
+      conversationType: "private", //"private", "group", "matching"
+      ...(replyMessage?.id ? { replyTo: replyMessage?.id } : {}),
+    };
+    console.log(payload);
+    socket.emit(
+      replyMessage?.id ? "reply:message" : "send:message",
+      payload,
+      (res) => {
+        if (res.success) {
+          setMessages((prev) => {
+            return [...prev, res.message];
+          });
+        } else {
+          console.log("---", res?.message);
+        }
+      }
+    );
   };
-
+  const onReact = (message) => {
+    const payload = {
+      messageId: message?.id,
+      emoji: ":heart:", //string-->like
+    };
+    console.log(payload);
+    socket.emit("react:message", payload, (res) => {
+      console.log(res);
+      if (res.success) {
+        console.log("sent");
+        // setMessages((prev) => {
+        //   return [...prev, res.message];
+        // });
+      } else {
+        console.log(res?.message);
+      }
+    });
+  };
   const isUserMessage = (msg) => {
     const senderId = msg?.senderId?._id;
     return senderId === userId;
   };
 
-  // useEffect(() => {
-  //   // Fetch messages from API (disabled - using static seed data)
-  //   fetchMessages();
-  // }, []);
+  useEffect(() => {
+    // Fetch messages from API (disabled - using static seed data)
+    fetchMessages();
+  }, []);
 
   return (
     <ScreenWrapper
@@ -153,7 +157,7 @@ const InboxScreen = ({ route }) => {
       statusBarColor="rgba(38, 38, 38, 0.64)"
       paddingHorizontal={12}
       headerUnScrollable={() => (
-        <ChatHeader source={Images.user} title={"Catie, 24" || "Chat"} />
+        <ChatHeader source={Images.user} title={recipientName || "Chat"} />
       )}
       footerUnScrollable={() => (
         <ChatFooter
@@ -162,6 +166,7 @@ const InboxScreen = ({ route }) => {
           inputText={inputText}
           replyMessage={replyMessage}
           onClearReply={clearReply}
+          name={recipientName}
         />
       )}
     >
@@ -182,14 +187,15 @@ const InboxScreen = ({ route }) => {
             const previousItem = messages[index + 1];
             const showDate =
               !previousItem ||
-              formatDate(item.timestamp) !==
-                formatDate(previousItem?.timestamp);
+              formatDate(item?.createdAt) !==
+                formatDate(previousItem?.createdAt);
             return (
               <>
                 <ChatBubble
                   item={item}
                   isSender={item?.isSender ?? isUserMessage(item)}
                   onReply={handleReply}
+                  onReact={onReact}
                 />
               </>
             );

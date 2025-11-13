@@ -19,6 +19,8 @@ import Preferences from "../screens/Main/Settings/Preferences";
 import TabStack from "./TabStack";
 
 import AppLanguage from "../screens/Main/Settings/AppLanguage";
+import PicLocation from "../screens/Auth/PicLocation";
+import SongsList from "../screens/Main/SongsList";
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
@@ -50,6 +52,8 @@ const MainStack = () => {
       />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="AppLanguage" component={AppLanguage} />
+      <Stack.Screen name="PicLocation" component={PicLocation} />
+      <Stack.Screen name="SongsList" component={SongsList} />
     </Stack.Navigator>
   );
 };

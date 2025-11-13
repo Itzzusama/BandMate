@@ -16,11 +16,14 @@ import CustomText from "./CustomText";
 import Icons from "./Icons";
 import ImageFast from "./ImageFast";
 import { BlurView } from "@react-native-community/blur";
+import { useSelector } from "react-redux";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const ArtistDetailCard = ({ images, color }) => {
   const navigation = useNavigation();
+  const { userData } = useSelector((state) => state.users);
+  console.log(userData);
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
@@ -228,7 +231,6 @@ const ArtistDetailCard = ({ images, color }) => {
                     family="Ionicons"
                     color="#FFFFFFA3"
                     size={14}
-                    
                   />
                 </BlurView>
               </TouchableOpacity>
@@ -237,7 +239,7 @@ const ArtistDetailCard = ({ images, color }) => {
             </View>
             <View style={styles.innerContainer}>
               <CustomText
-                label={"Viktor, 28"}
+                label={userData?.first_name + ", 18"}
                 fontSize={44}
                 lineHeight={44 * 1.4}
                 fontFamily={fonts.abril}

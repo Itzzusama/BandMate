@@ -10,6 +10,7 @@ import ImageFast from "../../../components/ImageFast";
 import { Images } from "../../../assets/images";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { PNGIcons } from "../../../assets/images/icons";
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
@@ -31,7 +32,7 @@ const WelcomeScreen = () => {
     >
       <View style={styles.container}>
         <ImageFast
-          source={Images.logo}
+          source={PNGIcons.logo}
           style={
             Platform.OS == "android"
               ? { height: 28, width: 210, marginBottom: 48 }

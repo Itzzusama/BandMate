@@ -3,11 +3,14 @@ export const endPoints = {
   BASE_URL: "https://bandmate.sola-group.ch/api/",
   SOCKET_BASE_URL: "https://bandmate.sola-group.ch",
 
-  //  Alternative local IP Amir's Mac (uncomment if needed)
-  // BASE_URL: "http://192.168.18.90:2000/api/",
-  // SOCKET_BASE_URL: "http://192.168.18.90:2000/",
+  //local host url https://7h1wmg7x-9000.inc1.devtunnels.ms/api/
+  // BASE_URL: "https://7h1wmg7x-9000.inc1.devtunnels.ms/api/",
+  // SOCKET_BASE_URL: "https://7h1wmg7x-9000.inc1.devtunnels.ms",
+  // this app credes
+  // clientId: "db9f59d0366d4831baed0b0ddd719aa7",
+  // clientSecret: "2990cf5cf7494da894b98c0d13508827",
 
-  // Alternative local IP (uncomment if needed)
-  // BASE_URL: "http://192.168.18.42:2000/api/",
-  // SOCKET_BASE_URL: "http://192.168.18.42:2000/",
+  // chianai app creds
+  clientId: "5ffb5700820b4c1483fc349f2aeeec75",
+  clientSecret: "1a9d52595ea54104879fbe5d0bc3a204",
 };

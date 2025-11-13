@@ -6,6 +6,7 @@ import { chatSlice } from "./ChatSlice";
 import { navSlice } from "./appSlice";
 import bottomSheetSliceReducer from "./bottomSheetSlice";
 import { themeSlice } from "./themeSlice";
+import { spotifyAuthSlice } from "./spotifyAuthSlice";
 
 export const rootReducer = combineReducers({
   users: usersSlice.reducer,
@@ -14,4 +15,5 @@ export const rootReducer = combineReducers({
   navApp: navSlice.reducer,
   navBottomSheet: bottomSheetSliceReducer,
   theme: themeSlice,
+  spotifyAuth: spotifyAuthSlice.reducer,
 });

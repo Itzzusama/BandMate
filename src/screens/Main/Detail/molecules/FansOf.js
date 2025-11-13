@@ -12,6 +12,7 @@ import { ArtistImgs } from "../../../../assets/images/artistImgs";
 import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
 import EditButton from "./EditButton";
+import { useNavigation } from "@react-navigation/native";
 
 const artists = [
   { name: "Arctic Monkeys", img: ArtistImgs.img6 },
@@ -20,6 +21,7 @@ const artists = [
 ];
 
 const FansOf = ({ myPage }) => {
+  const navigation = useNavigation();
   return (
     <>
       <View style={styles.container}>
@@ -29,9 +31,19 @@ const FansOf = ({ myPage }) => {
             fontFamily={fonts.medium}
             fontSize={17}
             color={COLORS.white}
-            marginLeft={12}
           />
-          {myPage && <EditButton />}
+          {myPage && (
+            <EditButton
+              onPress={() =>
+                navigation.navigate("AuthStack", {
+                  screen: "Artists",
+                  params: {
+                    fromScreen: "Home",
+                  },
+                })
+              }
+            />
+          )}
         </View>
 
         <ScrollView
@@ -87,5 +99,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 15,
+    paddingHorizontal: 12,
   },
 });

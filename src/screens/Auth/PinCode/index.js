@@ -79,7 +79,6 @@ const PinCode = () => {
         isVisible={googleModalVisible}
         onClose={() => {
           setGoogleModalVisible(false);
-          navigation.navigate("Success");
         }}
         onLocationSelect={(location) => {
           console.log("Selected location:", location);

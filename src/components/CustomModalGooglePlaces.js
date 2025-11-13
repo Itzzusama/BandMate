@@ -973,7 +973,7 @@ const CustomModalGooglePlaces = ({
           <TouchableOpacity
             style={styles.iconContainer}
             activeOpacity={0.8}
-            onPress={closeModal}
+            onPress={onClose}
           >
             <Image
               source={PNGIcons.white_cross}

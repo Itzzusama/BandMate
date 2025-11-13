@@ -3,14 +3,16 @@ import { COLORS } from "../../../../utils/COLORS";
 import CustomText from "../../../../components/CustomText";
 import Icons from "../../../../components/Icons";
 import fonts from "../../../../assets/fonts";
+import { Pressable } from "react-native";
 
-const AdvanceSettingCard = ({ title, des, index, lastIndex }) => {
+const AdvanceSettingCard = ({ title, des, index, lastIndex, onPress }) => {
   return (
-    <View
+    <Pressable
       style={[
         styles.container,
-        index === lastIndex && { borderBottomWidth: 0 }, // ✅ Hide border for last item
+        index === lastIndex && { borderBottomWidth: 0 },
       ]}
+      onPress={onPress}
     >
       <View style={{ flex: 1 }}>
         <CustomText
@@ -35,7 +37,7 @@ const AdvanceSettingCard = ({ title, des, index, lastIndex }) => {
         color={COLORS.white3}
         size={18}
       />
-    </View>
+    </Pressable>
   );
 };
 

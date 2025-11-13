@@ -19,7 +19,8 @@ const ConversationBox = ({ item }) => {
       onPress={() =>
         navigation.navigate("InboxScreen", {
           recipientId: otherUser?._id,
-          recipientName: otherUser?.name,
+          conversationId: item?.lastMessage?.conversationId,
+          recipientName: otherUser?.first_name,
         })
       }
     >
@@ -68,7 +69,7 @@ const ConversationBox = ({ item }) => {
               >
                 <CustomText
                   fontSize={16}
-                  label={otherUser?.name}
+                  label={otherUser?.first_name || otherUser?.name}
                   fontFamily={fonts.medium}
                 />
                 {item?.isRequest && item?._id === 1 && (

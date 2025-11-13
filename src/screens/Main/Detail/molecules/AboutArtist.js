@@ -5,8 +5,10 @@ import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import Divider from "./Divider";
 import EditButton from "./EditButton";
+import { useNavigation } from "@react-navigation/native";
 
 const AboutArtist = ({ name, bio, myPage }) => {
+  const navigation = useNavigation();
   return (
     <>
       <View style={{ paddingHorizontal: 12 }}>
@@ -19,7 +21,18 @@ const AboutArtist = ({ name, bio, myPage }) => {
             lineHeight={17 * 1.4}
             marginBottom={4}
           />
-          {myPage && <EditButton />}
+          {myPage && (
+            <EditButton
+              onPress={() =>
+                navigation.navigate("AuthStack", {
+                  screen: "AddDescription",
+                  params: {
+                    fromScreen: "Home",
+                  },
+                })
+              }
+            />
+          )}
         </View>
 
         <CustomText

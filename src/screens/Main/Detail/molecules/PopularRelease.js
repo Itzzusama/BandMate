@@ -1,22 +1,25 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import Divider from "./Divider";
-import { SongsImgs } from "../../../../assets/images/songs";
 import Icons from "../../../../components/Icons";
 import { PNGIcons } from "../../../../assets/images/icons";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import CustomText from "../../../../components/CustomText";
-import { Icon } from "react-native-vector-icons/Icon";
 import ConnentAccount from "./ConnentAccount";
+import { useSelector } from "react-redux";
 
-const PopularRelease = ({ title, data, showDots }) => {
+const PopularRelease = ({ title, data, showDots, name, onSeeAllPress }) => {
+  const { accessToken } = useSelector((state) => state?.spotifyAuth);
   return (
     <View>
       <View style={{ paddingHorizontal: 12 }}>
         <View style={[styles.row, { marginBottom: 16 }]}>
           <View style={[styles.row, { flex: 1 }]}>
-            <Image source={PNGIcons.spotify} style={styles.icon} />
+            <Image
+              source={
+                name == "Spotify" ? PNGIcons.spotify : PNGIcons.soundCloud
+              }
+              style={styles.icon}
+            />
             <CustomText
               label={title}
               fontFamily={fonts.medium}
@@ -31,9 +34,11 @@ const PopularRelease = ({ title, data, showDots }) => {
             color={COLORS.gray3}
             fontSize={12}
             lineHeight={12 * 1.4}
+            onPress={onSeeAllPress}
           />
         </View>
-        <ConnentAccount bottom={16} />
+        {!accessToken && <ConnentAccount bottom={16} accName={name} />}
+        {name == "SoundCloud" && <ConnentAccount bottom={16} accName={name} />}
         {data?.map((item, index) => (
           <View style={[styles.row, { marginBottom: 16 }]} key={index}>
             <Image
@@ -46,15 +51,11 @@ const PopularRelease = ({ title, data, showDots }) => {
                 fontFamily={fonts.medium}
                 color={COLORS.white}
                 fontSize={17}
-                numberOfLines={showDots ? 1 : 2}
+                marginRight={12}
+                numberOfLines={1}
                 // lineHeight={17 * 1.4}
               />
-              <CustomText
-                label={item.des}
-                color={COLORS.gray3}
-                fontSize={12}
-                marginTop={-4}
-              />
+              <CustomText label={item.des} color={COLORS.gray3} fontSize={12} />
             </View>
             {showDots && (
               <Icons

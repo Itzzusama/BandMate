@@ -1,4 +1,4 @@
-import { useIsFocused, useRoute } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SongsImgs } from "../../../assets/images/songs";
@@ -18,7 +18,12 @@ import PopularRelease from "./molecules/PopularRelease";
 import SummaryCard from "./molecules/SummaryCard";
 
 import { getPalette } from "@somesoap/react-native-image-palette";
-import { Images } from "../../../assets/images";
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getLatestReleases,
+  getTopTracks,
+} from "../../../services/spotifyAuthService";
 
 const releaseData = [
   {
@@ -55,16 +60,17 @@ const songsData = [
   },
 ];
 const Detail = ({ navigation, route }) => {
+  const dispatch = useDispatch();
   const isFocus = useIsFocused();
-
   const images = route.params?.images;
-
   const img = images[0];
-
   const myPage = route?.params?.myPage;
-
+  const artistId = "7dGJo4pcD2V6oG8kP0tJRR";
   const [bgColor, setBgColor] = useState("");
-
+  const { userData } = useSelector((state) => state.users);
+  const [latestReleases, setLatestReleases] = useState([]);
+  const [topTracks, setTopTracks] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (!img) return;
     getPalette(img)
@@ -73,6 +79,28 @@ const Detail = ({ navigation, route }) => {
       })
       .catch(() => {});
   }, [isFocus]);
+
+  useEffect(() => {
+    const fetchArtistData = async () => {
+      try {
+        setLoading(true);
+
+        const releases = await getLatestReleases(dispatch, artistId);
+        setLatestReleases(releases);
+
+        const tracks = await getTopTracks(dispatch, artistId);
+        setTopTracks(tracks);
+      } catch (error) {
+        console.error("Error fetching artist data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (artistId) {
+      fetchArtistData();
+    }
+  }, [dispatch, artistId]);
 
   return (
     <ScreenWrapper
@@ -91,13 +119,11 @@ const Detail = ({ navigation, route }) => {
       <ArtistDetailCard images={images} color={bgColor} />
       <SummaryCard match={64} inCommon={4} monthlyViews={528} />
       <AboutArtist
-        name={"About Viktor"}
-        bio={
-          "Band with 8 years of experience. Looking to find musicians for jam sessions. Influenced by rock, indie, and alternative music mostly into 90s era."
-        }
+        name={"About " + userData?.first_name}
+        bio={userData?.profile?.bio}
         myPage={myPage}
       />
-      <LatestRelease myPage={myPage} />
+      <LatestRelease myPage={myPage} artistId={artistId} />
       <Language myPage={myPage} />
       <MusicStyles myPage={myPage} />
 
@@ -108,22 +134,26 @@ const Detail = ({ navigation, route }) => {
       <Availability myPage={myPage} />
       <PopularRelease
         title={"Popular releases"}
-        data={releaseData}
+        data={latestReleases}
         myPage={myPage}
+        name={"Spotify"}
       />
       <DiscograpghyBtn />
       <PopularRelease
         title={"Popular releases"}
         data={releaseData}
         myPage={myPage}
+        name={"SoundCloud"}
       />
       <DiscograpghyBtn />
       <FansOf myPage={myPage} />
       <PopularRelease
-        title={"Songs Viktor Knows"}
-        data={songsData}
+        title={`Songs ${userData?.first_name} Knows`}
+        data={topTracks}
         showDots
         myPage={myPage}
+        name={"Spotify"}
+        onSeeAllPress={() => navigation.navigate("SongsList")}
       />
     </ScreenWrapper>
   );

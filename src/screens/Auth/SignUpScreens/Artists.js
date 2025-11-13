@@ -5,9 +5,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
@@ -15,7 +17,6 @@ import SearchInput from "../../../components/SearchInput";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import Icons from "../../../components/Icons";
-import { ArtistImgs } from "../../../assets/images/artistImgs";
 import { put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { sortAlphabetically } from "../../../utils/constants";
@@ -23,33 +24,116 @@ import { ToastMessage } from "../../../utils/ToastMessage";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import AuthHeader from "../../../components/Auth/AuthHeader";
 import AuthFooter from "../../../components/Auth/AuthFooter";
+import Header from "../../../components/Header";
+import CustomButton from "../../../components/CustomButton";
+import ConnentAccount from "../../Main/Detail/molecules/ConnentAccount";
 
-const artists = [
-  { name: "Blur", img: ArtistImgs.img2 },
-  { name: "Arctic Monkeys", img: ArtistImgs.img6 },
-  { name: "Beastie Boys", img: ArtistImgs.img3 },
-  { name: "Coldplay", img: ArtistImgs.img4 },
-  { name: "David Bowie", img: ArtistImgs.img5 },
-  { name: "Depeche Mode", img: ArtistImgs.img6 },
-  { name: "Foo Fighters", img: ArtistImgs.img5 },
-  { name: "Linkin Park", img: ArtistImgs.img2 },
-  { name: "Oasis", img: ArtistImgs.img3 },
+import {
+  loginWithSpotify,
+  checkSpotifyTokenValidity,
+} from "../../../services/spotifyAuthService";
+import { SPOTIFY_ARTIST_IDS } from "../../../services/spotifyArtistIds";
+
+const DEFAULT_ARTISTS = [
+  {
+    id: "1dfeR4HaWDbWqFHLkxsg1d",
+    name: "Queen",
+    img: {
+      uri: "https://i.scdn.co/image/b040846ceba13c3e9c125d68389491094e7f2982",
+    },
+  },
+  {
+    id: "3WrFJ7ztbogyGnTHbHJFl2",
+    name: "The Beatles",
+    img: {
+      uri: "https://i.scdn.co/image/6b2a709752ef9c7aaf0d270344157f6cd2e0f1a7",
+    },
+  },
+  {
+    id: "0k17h0D3J5VfsdmQ1iZtE9",
+    name: "Pink Floyd",
+    img: {
+      uri: "https://i.scdn.co/image/d011c95081cd9a329e506abd7ded47535d524a07",
+    },
+  },
+  {
+    id: "36QJpDe2go2KgaRleHCDTp",
+    name: "Led Zeppelin",
+    img: {
+      uri: "https://i.scdn.co/image/207803ce008388d3427a685254f9de6a8f61dc2e",
+    },
+  },
+  {
+    id: "3fMbdgg4jU18AjLCKBhRSm",
+    name: "Michael Jackson",
+    img: {
+      uri: "https://i.scdn.co/image/ab6761610000e5eb0e08ea2c4d6789fbf5cbe0aa",
+    },
+  },
+  {
+    id: "7Ey4PD4MYsKc5I2dolUwbH",
+    name: "Metallica",
+    img: {
+      uri: "https://i.scdn.co/image/ab6761610000e5eb69a0a9c2a434c6f26a95471d",
+    },
+  },
+  {
+    id: "6XyY86QOPPrYVGvF9ch6wz",
+    name: "Linkin Park",
+    img: {
+      uri: "https://i.scdn.co/image/ab6761610000e5eb811f3b785b6ef52632f49d27",
+    },
+  },
+  {
+    id: "53XhwfbYqKCa1cC15pYq2q",
+    name: "Imagine Dragons",
+    img: {
+      uri: "https://i.scdn.co/image/ab6761610000e5eb920dc1f617550de8388f368e",
+    },
+  },
+  {
+    id: "6olE6TJLqED3rqDCT0FyPh",
+    name: "Nirvana",
+    img: {
+      uri: "https://i.scdn.co/image/ab6761610000e5eb8ae7f2aaa9817a704a87ea36",
+    },
+  },
+  {
+    id: "0L8ExT028jH3ddEcZwqJJ5",
+    name: "Red Hot Chili Peppers",
+    img: {
+      uri: "https://i.scdn.co/image/ab6761610000e5eb5fdb0b89e2881970c0e87e7e",
+    },
+  },
 ];
-
-const sortedArtists = sortAlphabetically(artists);
 
 const Artists = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const route = useRoute();
+  const { fromScreen } = route?.params || {};
+  const { userData } = useSelector((state) => state.users);
 
+  const [spotifyArtists, setSpotifyArtists] = useState([]);
+  const [loadingSpotify, setLoadingSpotify] = useState(false);
   const [selectedArtists, setSelectedArtists] = useState([]);
   const [error, setError] = useState("");
   const [prevError, setPrevError] = useState("");
   const [showSuccessColor, setShowSuccessColor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { userData } = useSelector((state) => state.users);
-  const [step, setStep] = useState(userData?.role == "band" ? 13 : 14);
-  const totalSteps = userData?.role == "band" ? 15 : 16;
+
+  const step = userData?.role === "band" ? 13 : 14;
+  const totalSteps = userData?.role === "band" ? 15 : 16;
+
+  useEffect(() => {
+    setSpotifyArtists(DEFAULT_ARTISTS);
+
+    const checkTokenAndFetch = async () => {
+      const token = await AsyncStorage.getItem("spToken");
+      if (token) getSpotifyArtists();
+    };
+    checkTokenAndFetch();
+  }, []);
 
   useEffect(() => {
     if (prevError && !error) {
@@ -60,17 +144,59 @@ const Artists = () => {
     setPrevError(error);
   }, [error]);
 
-  const toggleArtist = (name) => {
-    setSelectedArtists((prev) => {
-      const updated = prev.includes(name)
-        ? prev.filter((a) => a !== name)
-        : [...prev, name];
-
-      if (updated.length >= 3) {
-        setError("");
+  const getSpotifyArtists = async (query = "top artists", limit = 30) => {
+    try {
+      setLoadingSpotify(true);
+      let token = await dispatch(checkSpotifyTokenValidity());
+      console.log(token);
+      const idsQuery = SPOTIFY_ARTIST_IDS.join(",");
+      const res = await fetch(
+        `https://api.spotify.com/v1/search?type=artist&q=${encodeURIComponent(
+          query
+        )}&limit=${limit}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await res.json();
+      console.log(data);
+      if (data?.artists?.items?.length > 0) {
+        const formatted = data?.artists?.items?.map((artist) => ({
+          id: artist.id,
+          name: artist.name,
+          img: { uri: artist.images?.[0]?.url || "" },
+        }));
+        setSpotifyArtists(formatted);
+        // ToastMessage("Spotify artists loaded successfully!", "success");
+      } else {
+        setSpotifyArtists(DEFAULT_ARTISTS);
       }
+    } catch (err) {
+      console.error("Spotify fetch artists error:", err);
+      // ToastMessage("Failed to fetch Spotify artists", "error");
+      setSpotifyArtists(DEFAULT_ARTISTS);
+    } finally {
+      setLoadingSpotify(false);
+    }
+  };
 
-      return updated;
+  const toggleArtist = (artist) => {
+    setSelectedArtists((prev) => {
+      const exists = prev.find((a) => a.spotifyId === artist.id);
+      if (exists) {
+        // Remove artist if already selected
+        return prev.filter((a) => a.spotifyId !== artist.id);
+      } else {
+        // Add artist object
+        return [
+          ...prev,
+          {
+            artist: artist.name,
+            image: artist.img.uri,
+            spotifyId: artist.id,
+          },
+        ];
+      }
     });
   };
 
@@ -78,7 +204,6 @@ const Artists = () => {
     if (selectedArtists.length < 3) return "Please choose at least 3 artists.";
     return "";
   };
-
   const handleNext = async () => {
     const err = errorCheck();
     if (err) {
@@ -87,9 +212,10 @@ const Artists = () => {
     }
     setError("");
     setIsLoading(true);
-
+    console.log(selectedArtists);
     try {
       const res = await put("user/profile", { Artists: selectedArtists });
+
       if (res?.data?.success) {
         dispatch(setUserData(res?.data?.user));
         ToastMessage("Your favorite artists have been added!", "success");
@@ -109,20 +235,31 @@ const Artists = () => {
   return (
     <ScreenWrapper
       scrollEnabled
-      footerUnScrollable={() => (
-        <AuthFooter
-          paddingHorizontal={12}
-          onPress={handleNext}
-          onBackPress={handleBack}
-          btnLoading={isLoading}
+      headerUnScrollable={() =>
+        fromScreen === "Home" && <Header title={"Edit Artists"} />
+      }
+      footerUnScrollable={() =>
+        fromScreen === "Home" ? (
+          <View style={{ padding: 12 }}>
+            <CustomButton title={"Submit"} marginBottom={24} />
+          </View>
+        ) : (
+          <AuthFooter
+            paddingHorizontal={12}
+            onPress={handleNext}
+            onBackPress={handleBack}
+            btnLoading={isLoading}
+          />
+        )
+      }
+    >
+      {fromScreen !== "Home" && (
+        <AuthHeader
+          step={step}
+          totalSteps={totalSteps}
+          subtitle="Pick your favorite artists"
         />
       )}
-    >
-      <AuthHeader
-        step={step}
-        totalSteps={totalSteps}
-        subtitle="Pick your favorite artists"
-      />
 
       <View style={styles.container}>
         <CustomText
@@ -143,12 +280,29 @@ const Artists = () => {
         <SearchInput placeholder="E.g. Coldplay, Bowie, Blur..." />
 
         <CustomText
-          label="Just enter names"
+          label="Just enter names or connect Spotify to auto-fill"
           fontSize={12}
           color={COLORS.white2}
           marginBottom={12}
           marginTop={4}
         />
+
+        {/* ✅ Show connect button only if no token exists */}
+        {!AsyncStorage.getItem("spToken") && (
+          <ConnentAccount
+            accName="Spotify"
+            onPress={getSpotifyArtists}
+            bottom={12}
+            disabled={loadingSpotify}
+          />
+        )}
+
+        {loadingSpotify && (
+          <ActivityIndicator
+            color={COLORS.btnColor}
+            style={{ marginBottom: 12 }}
+          />
+        )}
 
         <ErrorComponent
           errorTitle={`Choose at least ${selectedArtists.length}/3`}
@@ -165,13 +319,18 @@ const Artists = () => {
           contentContainerStyle={{ paddingBottom: 40 }}
         >
           <View style={styles.grid}>
-            {sortedArtists.map((artist) => {
-              const isSelected = selectedArtists.includes(artist.name);
+            {(spotifyArtists.length > 0
+              ? spotifyArtists
+              : sortAlphabetically(DEFAULT_ARTISTS)
+            ).map((artist) => {
+              const isSelected = selectedArtists.some(
+                (a) => a.spotifyId === artist.id
+              );
               return (
                 <TouchableOpacity
                   key={artist.name}
                   style={styles.card}
-                  onPress={() => toggleArtist(artist.name)}
+                  onPress={() => toggleArtist(artist)}
                   activeOpacity={0.8}
                 >
                   <View
@@ -209,6 +368,7 @@ const Artists = () => {
                     fontFamily={fonts.medium}
                     textAlign="center"
                     marginTop={4}
+                    numberOfLines={2}
                   />
                 </TouchableOpacity>
               );

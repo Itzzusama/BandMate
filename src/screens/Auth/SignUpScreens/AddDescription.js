@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 
 import CustomInput from "../../../components/CustomInput";
@@ -15,6 +15,8 @@ import { COLORS } from "../../../utils/COLORS";
 import { put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { ToastMessage } from "../../../utils/ToastMessage";
+import CustomButton from "../../../components/CustomButton";
+import Header from "../../../components/Header";
 
 const MAX_LENGTH = 150;
 
@@ -22,9 +24,11 @@ const AddDescription = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.users);
+  const route = useRoute();
+  const { fromScreen } = route?.params || {};
   const [step, setStep] = useState(userData?.role == "band" ? 15 : 16);
   const totalSteps = userData?.role == "band" ? 15 : 16;
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(userData?.profile?.bio || "");
   const [error, setError] = useState("");
   const [prevError, setPrevError] = useState("");
   const [showSuccessColor, setShowSuccessColor] = useState(false);
@@ -56,7 +60,11 @@ const AddDescription = () => {
       if (res?.data?.success) {
         dispatch(setUserData(res?.data?.user));
         ToastMessage("Profile updated successfully!", "success");
-        navigation.navigate("PinOnBoarding");
+        if (fromScreen == "Home") {
+          navigation.goBack();
+        } else {
+          navigation.navigate("PinOnBoarding");
+        }
       } else {
         setError("Failed to update profile. Please try again.");
       }
@@ -84,20 +92,35 @@ const AddDescription = () => {
   return (
     <ScreenWrapper
       scrollEnabled
-      footerUnScrollable={() => (
-        <AuthFooter
-          paddingHorizontal={12}
-          onPress={handleNext}
-          onBackPress={handleBack}
-          btnLoading={isLoading}
+      headerUnScrollable={() =>
+        fromScreen == "Home" && <Header title={"Edit Bio"} />
+      }
+      footerUnScrollable={() =>
+        fromScreen == "Home" ? (
+          <View style={{ padding: 12 }}>
+            <CustomButton
+              title={"Submit"}
+              marginBottom={24}
+              onPress={handleNext}
+            />
+          </View>
+        ) : (
+          <AuthFooter
+            paddingHorizontal={12}
+            onPress={handleNext}
+            onBackPress={handleBack}
+            btnLoading={isLoading}
+          />
+        )
+      }
+    >
+      {fromScreen != "Home" && (
+        <AuthHeader
+          step={step}
+          totalSteps={totalSteps}
+          subtitle="Tell others about you"
         />
       )}
-    >
-      <AuthHeader
-        step={step}
-        totalSteps={totalSteps}
-        subtitle="Tell others about you"
-      />
 
       <View style={styles.container}>
         <View>

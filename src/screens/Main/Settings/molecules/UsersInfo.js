@@ -13,7 +13,7 @@ import ImageFast from "../../../../components/ImageFast";
 const UsersInfo = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.users.userData);
-
+  console.log(user);
   return (
     <View style={styles.container}>
       <ImageFast
@@ -45,7 +45,7 @@ const UsersInfo = () => {
         onPress={() =>
           navigation.navigate("Detail", {
             myPage: true,
-            images: user?.pictures,
+            images: user?.pictures?.length > 0 ? user?.pictures : [Images.user],
           })
         }
         backgroundColor={COLORS.cardColor}

@@ -17,7 +17,9 @@ import Icons from "../../../../components/Icons";
 import { COLORS } from "../../../../utils/COLORS";
 import UploadChatModal from "./UploadChatModal";
 import { Images } from "../../../../assets/images";
-
+import AudioRecorder from "./AudioRecorder";
+import { uploadFileGetUrl } from "../../../../utils/constants";
+import { Alert } from "react-native";
 const quickMessages = ["Have you arrived?", "I'm outside"];
 
 const ChatFooter = ({
@@ -27,7 +29,9 @@ const ChatFooter = ({
   showChatFeatures = true,
   replyMessage,
   onClearReply,
+  name,
 }) => {
+  const [recordingMode, setRecordingMode] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(new Animated.Value(0));
@@ -144,6 +148,37 @@ const ChatFooter = ({
     inputRange: [0, 1],
     outputRange: [0, 120],
   });
+  const handleAudioSend = async (filePath, duration, size) => {
+    try {
+      const file = {
+        localUri: filePath,
+        name: filePath.split("/").pop(),
+      };
+
+      const res = await uploadFileGetUrl(file, (filetype = "audio/mp4"));
+
+      if (res?.file) {
+        const attachment = {
+          filename: file.name,
+          url: res.file,
+          mimetype: "audio/m4a",
+          size: size || 0,
+        };
+
+        sendMessage({
+          type: "voice",
+          attachment,
+          content: "",
+          duration,
+        });
+      } else {
+        Alert.alert("Upload Failed", "No URL returned from server");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      Alert.alert("Error", "Failed to upload voice message");
+    }
+  };
 
   return (
     <>
@@ -151,12 +186,12 @@ const ChatFooter = ({
         <View>
           <View style={styles.row}>
             <View style={styles.typeBox}>
-              <View style={styles.dot} />
+              {/* <View style={styles.dot} />
               <CustomText
                 fontSize={12}
                 label={"Marcus typing"}
                 lineHeight={12 * 1.4}
-              />
+              /> */}
             </View>
             <TouchableOpacity style={styles.arrowDown}>
               <Icons name={"arrow-down"} color={COLORS.white} size={20} />
@@ -181,9 +216,7 @@ const ChatFooter = ({
       )}
 
       {replyMessage && (
-        <View
-          style={[styles.replyContainer, { borderColor: COLORS.buttonColor }]}
-        >
+        <View style={[styles.replyContainer, { borderColor: COLORS.btnColor }]}>
           <View style={styles.replyContent}>
             <View style={styles.replyTextContainer}>
               <View
@@ -195,7 +228,7 @@ const ChatFooter = ({
                 />
 
                 <CustomText
-                  label={`Replying to Adam`}
+                  label={`Replying to ${name}`}
                   fontFamily={fonts.medium}
                 />
               </View>
@@ -229,45 +262,60 @@ const ChatFooter = ({
           },
         ]}
       >
-        <Animated.View style={[styles.inputContainer, { flex: inputFlexAnim }]}>
-          <TouchableOpacity
-            onPress={toggleActions}
-            onLongPress={() => setVisible(true)}
-          >
-            <Icons
-              size={20}
-              name={"plus"}
-              family={"Entypo"}
-              color={COLORS.white3}
-            />
-          </TouchableOpacity>
-          <TextInput
-            value={inputText}
-            style={[styles.input]}
-            placeholder="Type message"
-            placeholderTextColor={COLORS.white3}
-            onChangeText={(text) => {
-              setInputText(text);
-              if (actionsOpen) closeActions();
+        {recordingMode ? (
+          <AudioRecorder
+            onCancel={() => setRecordingMode(false)}
+            onSend={(filePath, duration, size) => {
+              setRecordingMode(false);
+              handleAudioSend(filePath, duration, size);
             }}
           />
-          <TouchableOpacity>
-            <Icons
-              size={20}
-              name={"camera"}
-              family={"Feather"}
-              color={COLORS.white3}
+        ) : (
+          <Animated.View
+            style={[styles.inputContainer, { flex: inputFlexAnim }]}
+          >
+            <TouchableOpacity
+              onPress={toggleActions}
+              onLongPress={() => setVisible(true)}
+            >
+              <Icons
+                size={20}
+                name={"plus"}
+                family={"Entypo"}
+                color={COLORS.white3}
+              />
+            </TouchableOpacity>
+            <TextInput
+              value={inputText}
+              style={[styles.input]}
+              placeholder="Type message"
+              placeholderTextColor={COLORS.white3}
+              onChangeText={(text) => {
+                setInputText(text);
+                if (actionsOpen) closeActions();
+              }}
             />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 15 }}>
-            <Icons
-              size={18}
-              name={"mic"}
-              family={"Feather"}
-              color={COLORS.white3}
-            />
-          </TouchableOpacity>
-        </Animated.View>
+            <TouchableOpacity>
+              <Icons
+                size={20}
+                name={"camera"}
+                family={"Feather"}
+                color={COLORS.white3}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ marginLeft: 15 }}
+              onPress={() => setRecordingMode(true)}
+            >
+              <Icons
+                size={18}
+                name={"mic"}
+                family={"Feather"}
+                color={COLORS.white3}
+              />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
         <Animated.View
           style={[
@@ -308,19 +356,20 @@ const ChatFooter = ({
             />
           </TouchableOpacity>
         </Animated.View>
-
-        <TouchableOpacity
-          onPress={sendMessage}
-          style={styles.sendBtn}
-          disabled={!inputText || inputText?.trim() === ""}
-        >
-          <Icons
-            name={"arrow-right"}
-            family={"Feather"}
-            size={18}
-            // color="#fff"
-          />
-        </TouchableOpacity>
+        {!recordingMode && (
+          <TouchableOpacity
+            onPress={sendMessage}
+            style={styles.sendBtn}
+            disabled={!inputText || inputText?.trim() === ""}
+          >
+            <Icons
+              name={"arrow-right"}
+              family={"Feather"}
+              size={18}
+              // color="#fff"
+            />
+          </TouchableOpacity>
+        )}
       </Animated.View>
       <UploadChatModal
         isVisible={visible}
@@ -396,7 +445,7 @@ const styles = StyleSheet.create({
   typeBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.inputBg,
+    // backgroundColor: COLORS.inputBg,
     borderRadius: 30,
     height: 24,
     width: 120,
@@ -429,12 +478,12 @@ const styles = StyleSheet.create({
   },
   replyContainer: {
     backgroundColor: "rgba(161, 147, 117, 0.08)",
-    borderLeftColor: COLORS.btnColor,
+    borderColor: COLORS.btnColor,
     marginHorizontal: 12,
     borderRadius: 12,
     borderWidth: 1,
     marginTop: 8,
-    marginBottom: -8,
+    marginBottom: -4,
   },
   replyContent: {
     flexDirection: "row",

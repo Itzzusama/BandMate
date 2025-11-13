@@ -217,4 +217,7 @@ export const PNGIcons = {
   blot: require("./blot.png"),
   star_blue: require("./star_blue.png"),
   attach: require("./attach.png"),
+  soundCloud: require("./soundCloud.png"),
+  arrowUpDown: require("./arrowUpDown.png"),
+  grid: require("./grid.png"),
 };

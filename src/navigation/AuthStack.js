@@ -55,6 +55,9 @@ const AuthStack = () => {
   } else if (isToken && missingArtists) {
     initialRoute = "Artists";
   }
+  // else if (isToken && missingImages) {
+  //   initialRoute = "AddPictures";
+  // }
   return (
     <Stack.Navigator
       initialRouteName={initialRoute}
