@@ -79,8 +79,12 @@ const Home = ({ navigation }) => {
             <ActivityIndicator size={"large"} />
           </View>
         ) : (
+<<<<<<< HEAD
           <View />
           //   <HomeCard images={profileData} />
+=======
+          <HomeCard data={profileData} />
+>>>>>>> 660bae7d4a83b1635b6e400f16ef1c32b854230e
         )}
       </LinearGradient>
     </ScreenWrapper>

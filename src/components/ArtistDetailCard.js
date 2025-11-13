@@ -209,12 +209,12 @@ const ArtistDetailCard = ({ images, color }) => {
             <View style={styles.row}>
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
-                activeOpacity={0.8}
+                activeOpacity={0.6}
                 style={{
                   height: 40,
                   width: 40,
                   borderRadius: 99,
-                  overflow: "hidden", // important for circular blur,
+                  overflow: "hidden",
                 }}
               >
                 <BlurView
@@ -223,13 +223,14 @@ const ArtistDetailCard = ({ images, color }) => {
                     alignItems: "center",
                     justifyContent: "center",
                   }}
-                  blurType="chromeMaterial"
+                  blurType="materialDark"
                   blurAmount={16}
+                  reducedTransparencyFallbackColor={color}
                 >
                   <Icons
                     name="chevron-back"
                     family="Ionicons"
-                    color="#FFFFFFA3"
+                    color="rgba(255, 255, 255, 0.64)"
                     size={14}
                   />
                 </BlurView>

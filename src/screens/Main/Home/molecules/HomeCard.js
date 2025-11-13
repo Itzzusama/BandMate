@@ -29,7 +29,7 @@ const profileImages = [
   {
     id: 1,
     images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
-    // premium: true,
+    premium: true,
   },
   {
     id: 2,
@@ -39,21 +39,21 @@ const profileImages = [
   {
     id: 3,
     images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
-    // premium: true,
+    premium: true,
   },
   {
     id: 4,
     images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
-    // premium: true,
+    premium: true,
   },
   {
     id: 5,
     images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
-    // premium: true,
+    premium: true,
   },
 ];
 
-const HomeCard = ({images}) => {
+const HomeCard = ({ data }) => {
   const navigation = useNavigation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
