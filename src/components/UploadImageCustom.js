@@ -91,7 +91,7 @@ const UploadImageCustom = ({
       setImageModal(false);
       setTimeout(async () => {
         const result = await openPicker({
-          mediaType: "photo",
+          mediaType: "any",
           quality: 0.8,
         });
 

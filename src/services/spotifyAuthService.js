@@ -6,7 +6,7 @@ import { setSpotifyTokens } from "../store/reducer/spotifyAuthSlice";
 const config = {
   clientId: endPoints.clientId,
   clientSecret: endPoints.clientSecret,
-  redirectUrl: "com.chainai.app://oauth/",
+  redirectUrl: "com.solagroup.bandmate://oauth/", // "com.chainai.app://oauth/",
   scopes: [
     "user-read-email",
     "user-top-read",

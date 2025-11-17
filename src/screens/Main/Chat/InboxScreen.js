@@ -76,6 +76,7 @@ const InboxScreen = ({ route }) => {
   };
 
   const sendMsg = ({ type = "text", attachment, content, duration }) => {
+    console.log(type);
     if (!socket) return;
     if (type == "text" && !inputText.trim()) return;
 
@@ -104,7 +105,7 @@ const InboxScreen = ({ route }) => {
       type: type, //"text", "image", "voice", "file"
       attachment: attachment ? attachment : null,
       duration: duration ? duration : null,
-      dimensions: null,
+      dimensions: type == "image" ? { height: 240, width: 280 } : null,
       conversationType: "private", //"private", "group", "matching"
       ...(replyMessage?.id ? { replyTo: replyMessage?.id } : {}),
     };
@@ -113,7 +114,9 @@ const InboxScreen = ({ route }) => {
       replyMessage?.id ? "reply:message" : "send:message",
       payload,
       (res) => {
+        console.log(res);
         if (res.success) {
+          console.log("sent");
           setMessages((prev) => {
             return [...prev, res.message];
           });
@@ -124,33 +127,66 @@ const InboxScreen = ({ route }) => {
     );
   };
   const onReact = (message) => {
+    if (!message?.id) return;
+
     const payload = {
-      messageId: message?.id,
-      emoji: ":heart:", //string-->like
+      messageId: message.id,
+      emoji: ":heart:",
     };
-    console.log(payload);
+
+    setMessages((prev) => {
+      const existing = [...prev];
+      const index = existing.findIndex((m) => m.id === message.id);
+      if (index === -1) return prev;
+
+      const target = existing[index];
+      const currentCount = target?.metadata?.reactionCount || 0;
+      const newCount = currentCount + 1;
+
+      existing[index] = {
+        ...target,
+        metadata: {
+          ...(target.metadata || {}),
+          reactionCount: newCount,
+        },
+      };
+
+      return [...existing];
+    });
+
     socket.emit("react:message", payload, (res) => {
-      console.log(res);
       if (res.success) {
-        console.log("sent");
-        // setMessages((prev) => {
-        //   return [...prev, res.message];
-        // });
+        const updatedCount = res?.reactionCount ?? 0;
+        setMessages((prev) => {
+          const existing = [...prev];
+          const index = existing.findIndex((m) => m.id === message.id);
+          if (index === -1) return prev;
+
+          const target = existing[index];
+          existing[index] = {
+            ...target,
+            metadata: {
+              ...(target.metadata || {}),
+              reactionCount: updatedCount,
+            },
+          };
+          return [...existing];
+        });
       } else {
-        console.log(res?.message);
+        console.log("Reaction failed:", res?.message);
       }
     });
   };
+
   const isUserMessage = (msg) => {
     const senderId = msg?.senderId?._id;
     return senderId === userId;
   };
 
   useEffect(() => {
-    // Fetch messages from API (disabled - using static seed data)
     fetchMessages();
   }, []);
-
+  console.log(messages);
   return (
     <ScreenWrapper
       scrollEnabled

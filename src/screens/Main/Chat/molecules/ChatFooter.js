@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Image,
   View,
+  Alert,
 } from "react-native";
 import fonts from "../../../../assets/fonts";
 import CustomText from "../../../../components/CustomText";
@@ -18,21 +19,26 @@ import { COLORS } from "../../../../utils/COLORS";
 import UploadChatModal from "./UploadChatModal";
 import { Images } from "../../../../assets/images";
 import AudioRecorder from "./AudioRecorder";
-import { uploadFileGetUrl } from "../../../../utils/constants";
-import { Alert } from "react-native";
+import { uploadFileGetUrl, uploadAndGetUrl } from "../../../../utils/constants";
+import UploadImageCustom from "../../../../components/UploadImageCustom";
+
 const quickMessages = ["Have you arrived?", "I'm outside"];
 
 const ChatFooter = ({
   inputText,
   setInputText,
   sendMessage,
-  showChatFeatures = true,
+  showChatFeatures = false,
   replyMessage,
   onClearReply,
   name,
 }) => {
   const [recordingMode, setRecordingMode] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [imageModal, setImageModal] = useState(false);
+  const [images, setImages] = useState([]);
+  const camera = useRef(null);
+
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(new Animated.Value(0));
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -179,19 +185,84 @@ const ChatFooter = ({
       Alert.alert("Error", "Failed to upload voice message");
     }
   };
+  const uploadMediaAndSend = async (localPath, mime, type) => {
+    console.log(localPath);
+    try {
+      const file = {
+        localUri: localPath,
+        name: localPath.split("/").pop(),
+      };
+      const img = {
+        uri: localPath,
+        type: "image/jpeg",
+      };
+      let res;
 
+      if (type === "image") {
+        res = await uploadAndGetUrl(img);
+        console.log(res);
+      } else {
+        res = await uploadFileGetUrl(file, mime);
+      }
+
+      const attachment = {
+        filename: file.name,
+        url: type == "image" ? res : res.file,
+        mimetype: mime,
+        size: 0,
+      };
+
+      sendMessage({
+        type: type == "image" ? type : "file",
+        attachment,
+        content: "",
+      });
+    } catch (err) {
+      console.log("Upload error", err);
+    }
+  };
+
+  const handleChange = async (result) => {
+    const path = result.path;
+    const mime = result.mime || result.mimeType || "";
+
+    const isVideo = mime.includes("video");
+
+    setImages((prev) => [...prev, path]);
+    setImageModal(false);
+
+    await uploadMediaAndSend(path, mime, isVideo ? "video" : "image");
+  };
+
+  const handleCapture = async () => {
+    try {
+      const photo = await camera.current.takePhoto({ flash: "off" });
+      const path = "file://" + photo.path;
+
+      setImages((prev) => [...prev, path]);
+      setImageModal(false);
+
+      await uploadMediaAndSend(path, "image/jpeg", "image");
+    } catch (e) {
+      console.log("capture error", e);
+    }
+  };
+
+  const handleDelete = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
   return (
     <>
       {showChatFeatures && (
         <View>
           <View style={styles.row}>
             <View style={styles.typeBox}>
-              {/* <View style={styles.dot} />
+              <View style={styles.dot} />
               <CustomText
                 fontSize={12}
                 label={"Marcus typing"}
                 lineHeight={12 * 1.4}
-              /> */}
+              />
             </View>
             <TouchableOpacity style={styles.arrowDown}>
               <Icons name={"arrow-down"} color={COLORS.white} size={20} />
@@ -295,7 +366,7 @@ const ChatFooter = ({
                 if (actionsOpen) closeActions();
               }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setImageModal(true)}>
               <Icons
                 size={20}
                 name={"camera"}
@@ -374,6 +445,16 @@ const ChatFooter = ({
       <UploadChatModal
         isVisible={visible}
         onDisable={() => setVisible(false)}
+      />
+      <UploadImageCustom
+        images={images}
+        camera={camera}
+        onDelete={handleDelete}
+        imageModal={imageModal}
+        imgLoading={false}
+        setImageModal={setImageModal}
+        handleChange={handleChange}
+        handleCapture={handleCapture}
       />
     </>
   );

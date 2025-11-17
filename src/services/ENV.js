@@ -3,14 +3,11 @@ export const endPoints = {
   BASE_URL: "https://bandmate.sola-group.ch/api/",
   SOCKET_BASE_URL: "https://bandmate.sola-group.ch",
 
-  //local host url https://7h1wmg7x-9000.inc1.devtunnels.ms/api/
-  // BASE_URL: "https://7h1wmg7x-9000.inc1.devtunnels.ms/api/",
-  // SOCKET_BASE_URL: "https://7h1wmg7x-9000.inc1.devtunnels.ms",
   // this app credes
-  // clientId: "db9f59d0366d4831baed0b0ddd719aa7",
-  // clientSecret: "2990cf5cf7494da894b98c0d13508827",
+  clientId: "db9f59d0366d4831baed0b0ddd719aa7",
+  clientSecret: "2990cf5cf7494da894b98c0d13508827",
 
   // chianai app creds
-  clientId: "5ffb5700820b4c1483fc349f2aeeec75",
-  clientSecret: "1a9d52595ea54104879fbe5d0bc3a204",
+  // clientId: "5ffb5700820b4c1483fc349f2aeeec75",
+  // clientSecret: "1a9d52595ea54104879fbe5d0bc3a204",
 };

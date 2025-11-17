@@ -11,7 +11,7 @@ import { COLORS } from "../../../../utils/COLORS";
 import { PNGIcons } from "../../../../assets/images/icons";
 import { formatDate } from "../../../../utils/constants";
 import SoundPlayer from "react-native-sound-player";
-
+import Video from "react-native-video";
 const ChatBubble = ({ isSender, item, onReply, onReact }) => {
   const message = item;
   const bg = isSender ? "#FFFFFF0A" : "#FFFFFF1F";
@@ -31,7 +31,35 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
       .map(() => new Animated.Value(2))
   );
 
-  // 🔊 Play / Stop toggle
+  useEffect(() => {
+    const finishedSub = SoundPlayer.addEventListener(
+      "FinishedPlaying",
+      ({ success }) => {
+        if (success) {
+          console.log("✅ Finished playing audio successfully");
+
+          setIsPlaying(false);
+          clearInterval(intervalRef.current);
+          setShowCurrentTime(false);
+          setCurrentTime(0);
+
+          waveAnimValues.forEach((val) => {
+            Animated.timing(val, {
+              toValue: 2,
+              duration: 200,
+              useNativeDriver: false,
+            }).start();
+          });
+        }
+      }
+    );
+
+    return () => {
+      finishedSub.remove();
+      clearInterval(intervalRef.current);
+      SoundPlayer.stop();
+    };
+  }, []);
   const togglePlay = async () => {
     if (!item.attachment?.url) return;
 
@@ -43,19 +71,26 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
       setCurrentTime(0);
     } else {
       try {
+        SoundPlayer.stop();
         await SoundPlayer.playUrl(item.attachment.url);
+
         setIsPlaying(true);
         setShowCurrentTime(true);
 
-        // Fetch total duration once
         const info = await SoundPlayer.getInfo();
         setDuration(info.duration || item.duration || 0);
 
-        // Start live progress updates
         intervalRef.current = setInterval(async () => {
           try {
             const info = await SoundPlayer.getInfo();
             setCurrentTime(info.currentTime);
+
+            if (info.currentTime >= info.duration) {
+              setIsPlaying(false);
+              clearInterval(intervalRef.current);
+              setShowCurrentTime(false);
+              setCurrentTime(0);
+            }
           } catch (e) {}
         }, 500);
       } catch (err) {
@@ -64,34 +99,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
     }
   };
 
-  useEffect(() => {
-    const finishedSub = SoundPlayer.addEventListener(
-      "FinishedPlayingSubscription",
-      ({ success }) => {
-        console.log("✅ Finished playing:", success);
-        setIsPlaying(false);
-        clearInterval(intervalRef.current);
-        setShowCurrentTime(false);
-        setCurrentTime(0);
-
-        waveAnimValues.forEach((val) => {
-          Animated.timing(val, {
-            toValue: 2,
-            duration: 200,
-            useNativeDriver: false,
-          }).start();
-        });
-      }
-    );
-
-    return () => {
-      finishedSub.remove();
-      clearInterval(intervalRef.current);
-      SoundPlayer.stop();
-    };
-  }, []); // 👈 re-attach listener when URL changes
-
-  // 🌊 Waveform animation
   useEffect(() => {
     let interval;
     if (isPlaying) {
@@ -196,11 +203,66 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
                 color={COLORS.white2}
                 marginTop={5}
                 marginBottom={5}
+                fontFamily={fonts.medium}
               />
             </View>
+            {item.replyTo && (
+              <View style={styles.replyWrapper}>
+                <CustomText
+                  label={
+                    item.replyTo.type === "text"
+                      ? item.replyTo.content
+                      : item.replyTo?.attachment?.filename ||
+                        (item.replyTo.type === "voice"
+                          ? "Voice message"
+                          : "Media message")
+                  }
+                  fontSize={12}
+                  color={COLORS.white}
+                  numberOfLines={1}
+                />
+              </View>
+            )}
+          </View>
+        ) : item.type === "image" && item?.attachment?.url ? (
+          <View style={styles.mediaWrapper}>
+            <ImageFast
+              source={{ uri: item.attachment.url }}
+              style={styles.imageStyle}
+              resizeMode="cover"
+            />
+          </View>
+        ) : item.type === "file" &&
+          item?.attachment?.mimetype === "video/mp4" &&
+          item?.attachment?.url ? (
+          <View style={styles.mediaWrapper}>
+            <Video
+              source={{ uri: item.attachment.url }}
+              style={styles.videoStyle}
+              resizeMode="cover"
+              controls
+              paused={true}
+            />
           </View>
         ) : (
           <View style={[styles.messageContainer, { backgroundColor: bg }]}>
+            {item.replyTo && (
+              <View style={styles.replyWrapper}>
+                <CustomText
+                  label={
+                    item.replyTo.type === "text"
+                      ? item.replyTo.content
+                      : item.replyTo?.attachment?.filename ||
+                        (item.replyTo.type === "voice"
+                          ? "Voice message"
+                          : "Media message")
+                  }
+                  fontSize={12}
+                  color={COLORS.white}
+                  numberOfLines={1}
+                />
+              </View>
+            )}
             <CustomText
               label={item?.content}
               lineHeight={14 * 1.4}
@@ -210,7 +272,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
           </View>
         )}
 
-        {/* reaction & info blocks unchanged */}
         {!isSender && (
           <View style={styles.row}>
             {[
@@ -238,6 +299,10 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
                 activeOpacity={0.6}
                 onPress={() => {
                   if (action?.name === "like") onReact(message);
+                  else if (action?.name === "Reply") {
+                    setShowReply(true);
+                    onReply(message);
+                  }
                 }}
               >
                 <ImageFast
@@ -283,7 +348,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
 
 export default ChatBubble;
 
-// 🎨 Styles same as before
 const styles = StyleSheet.create({
   mainContainer: { marginBottom: 10, alignItems: "flex-end" },
   messageContainer: {
@@ -338,5 +402,37 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white2,
     borderRadius: 1,
     marginHorizontal: 1,
+  },
+  mediaWrapper: {
+    width: 280,
+    height: 240,
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "#000",
+    marginVertical: 5,
+    borderWidth: 2,
+    borderColor: COLORS.btnColor,
+  },
+
+  imageStyle: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 12,
+  },
+
+  videoStyle: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 12,
+    backgroundColor: "#000",
+  },
+  replyWrapper: {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderLeftWidth: 2,
+    borderLeftColor: COLORS.btnColor,
+    marginBottom: 4,
+    borderRadius: 4,
   },
 });
