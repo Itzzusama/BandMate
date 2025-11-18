@@ -158,7 +158,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - NitroModules (0.31.5):
+  - NitroModules (0.31.6):
     - boost
     - DoubleConversion
     - fast_float
@@ -2137,6 +2137,34 @@ PODS:
     - SocketRocket
     - swift-vibrant (~> 1.0.0)
     - Yoga
+  - react-native-image-picker (8.2.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-maps (1.11.3):
     - React-Core
   - react-native-netinfo (11.4.1):
@@ -3633,6 +3661,7 @@ DEPENDENCIES:
   - react-native-google-maps (from `../node_modules/react-native-maps`)
   - "react-native-image-editor (from `../node_modules/@react-native-community/image-editor`)"
   - "react-native-image-palette (from `../node_modules/@somesoap/react-native-image-palette`)"
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-render-html (from `../node_modules/react-native-render-html`)
@@ -3842,6 +3871,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/image-editor"
   react-native-image-palette:
     :path: "../node_modules/@somesoap/react-native-image-palette"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-netinfo:
@@ -3996,7 +4027,7 @@ SPEC CHECKSUMS:
   MLKitVision: fa8dea9012ac59497c79ddbe9ebf32051047ac4c
   MLKitVisionKit: e8244baf4d19cf7669c65da7907662c402adcb05
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  NitroModules: afc462ff4c87c9a405ac7e93cd133137c407a7f9
+  NitroModules: edf2d33c02fd8cbb0021e031d380d286b17f527b
   NitroSound: ef03d951a0f7bb504f13bdc27ce1271c4c422e22
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
@@ -4041,6 +4072,7 @@ SPEC CHECKSUMS:
   react-native-google-maps: 4ff49ce2afcc53ae48220a05e9ac28bc6a390028
   react-native-image-editor: 42101557f6d66636dbddb255e83c652e3a244b0b
   react-native-image-palette: dc07968cce398d486330ba340e75b147e95b8c85
+  react-native-image-picker: 6051cfd030121b880a58f1cc0e5e33e9887804e4
   react-native-maps: a7783e616e0c3f2ee109ae315a15fb3c8608b1c3
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-render-html: 5afc4751f1a98621b3009432ef84c47019dcb2bd
