@@ -11,6 +11,7 @@ import {
   Image,
   View,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import fonts from "../../../../assets/fonts";
 import CustomText from "../../../../components/CustomText";
@@ -32,6 +33,8 @@ const ChatFooter = ({
   replyMessage,
   onClearReply,
   name,
+  addLocalMessage,
+  updateTempMessage,
 }) => {
   const [recordingMode, setRecordingMode] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -45,7 +48,7 @@ const ChatFooter = ({
   const actionsAnim = useRef(new Animated.Value(0)).current; // 0 closed, 1 open
   const inputFlexAnim = useRef(new Animated.Value(1)).current; // input container flex
   const autoCloseRef = useRef(null);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const keyboardShowEvent =
       Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
@@ -156,16 +159,39 @@ const ChatFooter = ({
   });
   const handleAudioSend = async (filePath, duration, size) => {
     try {
-      const file = {
-        localUri: filePath,
-        name: filePath.split("/").pop(),
+      const tempId = `temp_${Date.now()}`;
+      const fileName = filePath.split("/").pop();
+
+      const tempMessage = {
+        clientId: tempId,
+        content: "",
+        senderId: { _id: "local" },
+        createdAt: new Date().toISOString(),
+        isPending: true,
+        isSender: true,
+        replyTo: replyMessage?.id,
+        type: "voice",
+        attachment: {
+          filename: fileName,
+          localUri: filePath,
+          mimetype: "audio/m4a",
+          size: size || 0,
+        },
+        duration,
       };
 
-      const res = await uploadFileGetUrl(file, (filetype = "audio/mp4"));
+      addLocalMessage(tempMessage);
+
+      const file = {
+        localUri: filePath,
+        name: fileName,
+      };
+
+      const res = await uploadFileGetUrl(file, "audio/m4a");
 
       if (res?.file) {
         const attachment = {
-          filename: file.name,
+          filename: fileName,
           url: res.file,
           mimetype: "audio/m4a",
           size: size || 0,
@@ -176,17 +202,20 @@ const ChatFooter = ({
           attachment,
           content: "",
           duration,
+          tempMessage,
         });
       } else {
+        updateTempMessage(tempId, { isPending: false, sendFailed: true });
         Alert.alert("Upload Failed", "No URL returned from server");
       }
     } catch (err) {
       console.error("Upload error:", err);
+      updateTempMessage(tempId, { isPending: false, sendFailed: true });
       Alert.alert("Error", "Failed to upload voice message");
     }
   };
+
   const uploadMediaAndSend = async (localPath, mime, type) => {
-    console.log(localPath);
     try {
       const file = {
         localUri: localPath,
@@ -228,10 +257,68 @@ const ChatFooter = ({
 
     const isVideo = mime.includes("video");
 
+    const type = isVideo ? "video" : "image";
+
     setImages((prev) => [...prev, path]);
     setImageModal(false);
 
-    await uploadMediaAndSend(path, mime, isVideo ? "video" : "image");
+    const tempId = `temp_${Date.now()}`;
+    const fileName = path.split("/").pop();
+    const tempMessage = {
+      clientId: tempId,
+      content: "",
+      senderId: { _id: "local" },
+      createdAt: new Date().toISOString(),
+      isPending: true,
+      isSender: true,
+      replyTo: replyMessage?.id,
+      type: type === "image" ? "image" : "file",
+      attachment: {
+        filename: fileName,
+        localUri: path,
+        mimetype: mime,
+        size: 0,
+      },
+    };
+
+    addLocalMessage(tempMessage);
+
+    try {
+      const file = {
+        localUri: path,
+        name: fileName,
+      };
+      const img = {
+        uri: path,
+        type: "image/jpeg",
+      };
+
+      let res;
+      if (type === "image") {
+        res = await uploadAndGetUrl(img);
+      } else {
+        res = await uploadFileGetUrl(file, mime);
+      }
+
+      const url = type === "image" ? res : res.file;
+
+      const attachment = {
+        filename: fileName,
+        url,
+        mimetype: mime,
+        size: 0,
+      };
+
+      sendMessage({
+        type: type === "image" ? "image" : "file",
+        attachment,
+        content: "",
+        tempMessage,
+      });
+    } catch (err) {
+      console.log("Upload error", err);
+      updateTempMessage(tempId, { isPending: false, sendFailed: true });
+    }
   };
 
   const handleCapture = async () => {
@@ -366,7 +453,10 @@ const ChatFooter = ({
                 if (actionsOpen) closeActions();
               }}
             />
-            <TouchableOpacity onPress={() => setImageModal(true)}>
+            <TouchableOpacity
+              onPress={() => setImageModal(true)}
+              disabled={loading}
+            >
               <Icons
                 size={20}
                 name={"camera"}

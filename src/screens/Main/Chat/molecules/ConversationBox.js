@@ -7,11 +7,18 @@ import Icons from "../../../../components/Icons";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
 
-const ConversationBox = ({ item }) => {
+const ConversationBox = ({ item, isChat }) => {
   const navigation = useNavigation();
-
+  console.log(item);
   const otherUser = item?.otherUser;
-
+  const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return "00:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
   return (
     <TouchableOpacity
       style={styles.card}
@@ -93,11 +100,74 @@ const ConversationBox = ({ item }) => {
                 {item?.isRequest && item?._id === 1 && (
                   <View style={styles.Newdot} />
                 )}
-                <CustomText
-                  color={COLORS.white3}
-                  fontFamily={fonts.medium}
-                  label={item?.lastMessage?.content}
-                />
+                {item?.lastMessage?.type == "text" ? (
+                  <CustomText
+                    color={COLORS.white3}
+                    fontFamily={fonts.medium}
+                    label={item?.lastMessage?.content}
+                  />
+                ) : item?.lastMessage?.type == "voice" ? (
+                  <View style={styles.iconRow}>
+                    <Icons
+                      family={"Ionicons"}
+                      name={"mic"}
+                      size={16}
+                      color={COLORS.white3}
+                    />
+                    <CustomText
+                      color={COLORS.white3}
+                      fontFamily={fonts.medium}
+                      label={formatTime(
+                        item?.lastMessage?.attachment?.duration
+                      )}
+                      marginTop={1}
+                    />
+                  </View>
+                ) : item?.lastMessage?.type == "file" &&
+                  item?.lastMessage?.attachment?.mimetype === "video/mp4" ? (
+                  <View style={styles.iconRow}>
+                    <Icons
+                      family={"FontAwesome5"}
+                      name={"video"}
+                      color={COLORS.white3}
+                    />
+                    <CustomText
+                      color={COLORS.white3}
+                      fontFamily={fonts.medium}
+                      label={"video"}
+                      marginTop={1}
+                    />
+                  </View>
+                ) : item?.lastMessage?.type == "image" ? (
+                  <View style={styles.iconRow}>
+                    <Icons
+                      family={"Ionicons"}
+                      name={"image"}
+                      color={COLORS.white3}
+                    />
+                    <CustomText
+                      color={COLORS.white3}
+                      fontFamily={fonts.medium}
+                      label={"photo"}
+                      marginTop={1}
+                    />
+                  </View>
+                ) : (
+                  <View style={styles.iconRow}>
+                    <Icons
+                      family={"Octicons"}
+                      name={"file"}
+                      color={COLORS.white3}
+                    />
+                    <CustomText
+                      color={COLORS.white3}
+                      fontFamily={fonts.medium}
+                      label={"file"}
+                      marginTop={1}
+                    />
+                  </View>
+                )}
+
                 {item?.isRequest && item?._id === 1 && (
                   <>
                     <View style={styles.separatDot} />
@@ -255,5 +325,10 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignSelf: "flex-end",
     backgroundColor: "#262626",
+  },
+  iconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
 });

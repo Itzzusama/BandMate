@@ -98,7 +98,7 @@ const UploadImageCustom = ({
         if (result.path) {
           handleChange(result);
         }
-      }, 1000);
+      }, 500);
     } catch (error) {
       console.log("takePhotoFromLibrary error", error);
     }

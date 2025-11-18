@@ -5,7 +5,7 @@ import { Images } from "../../../assets/images";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import { useSocket } from "../../../components/SocketProvider";
 import { COLORS } from "../../../utils/COLORS";
-import { formatDate } from "../../../utils/constants";
+import { formatDate, formatRelativeDate } from "../../../utils/constants";
 import ChatBubble from "./molecules/ChatBubble";
 import ChatFooter from "./molecules/ChatFooter";
 import ChatHeader from "./molecules/ChatHeader";
@@ -51,7 +51,7 @@ const InboxScreen = ({ route }) => {
     socket.on("new:message", (data) => {
       flatListRef?.current?.scrollToEnd({ animated: true });
       if (data?.message) {
-        setMessages((prev = []) => [data?.message, ...prev]);
+        setMessages((prev = []) => [data.message, ...prev]);
       }
     });
 
@@ -66,6 +66,15 @@ const InboxScreen = ({ route }) => {
     };
   }, [socket, recipientId]);
 
+  useEffect(() => {
+    if (!flatListRef?.current) return;
+
+    const id = setTimeout(() => {
+      flatListRef.current?.scrollToOffset?.({ offset: 0, animated: true });
+    }, 50);
+    return () => clearTimeout(id);
+  }, [messages.length]);
+
   const handleReply = (message) => {
     console.log(message);
     setReplyMessage(message);
@@ -74,39 +83,54 @@ const InboxScreen = ({ route }) => {
   const clearReply = () => {
     setReplyMessage(null);
   };
-
-  const sendMsg = ({ type = "text", attachment, content, duration }) => {
-    console.log(type);
+  const addLocalMessage = (message) => {
+    setMessages((prev = []) => [message, ...prev]);
+  };
+  const updateTempMessage = (clientId, patch) => {
+    console.log(patch);
+    setMessages((prev) =>
+      prev.map((m) => (m.clientId === clientId ? { ...m, ...patch } : m))
+    );
+  };
+  const sendMsg = ({
+    type = "text",
+    attachment,
+    content,
+    duration,
+    tempMessage,
+  }) => {
     if (!socket) return;
-    if (type == "text" && !inputText.trim()) return;
 
-    const tempId = `temp_${Date.now()}`;
-    const tempMessage = {
-      clientId: tempId,
-      content: inputText,
-      senderId: { _id: userId },
-      createdAt: new Date().toISOString(),
-      isPending: true,
-      isSender: true,
-      replyTo: replyMessage?.id,
-      type: type,
-      attachment: attachment,
-      duration: duration,
-    };
+    if (type === "text") {
+      if (!inputText.trim()) return;
 
-    setInputText("");
+      const tempId = `temp_${Date.now()}`;
+      tempMessage = {
+        clientId: tempId,
+        content: inputText,
+        senderId: { _id: userId },
+        createdAt: new Date().toISOString(),
+        isPending: true,
+        isSender: true,
+        replyTo: replyMessage?.id,
+        type,
+        attachment,
+        duration,
+      };
+      setInputText("");
+      setMessages((prev = []) => [tempMessage, ...prev]);
+    }
+    flatListRef.current.scrollToOffset({ offset: 0, animated: true });
     setReplyMessage(null);
-
-    setMessages((prev = []) => [tempMessage, ...prev]);
 
     const payload = {
       participant_id: recipientId,
-      content: tempMessage.content,
+      content: tempMessage.content || "",
       type: type, //"text", "image", "voice", "file"
       attachment: attachment ? attachment : null,
       duration: duration ? duration : null,
       dimensions: type == "image" ? { height: 240, width: 280 } : null,
-      conversationType: "private", //"private", "group", "matching"
+      conversationType: "private",
       ...(replyMessage?.id ? { replyTo: replyMessage?.id } : {}),
     };
     console.log(payload);
@@ -114,18 +138,29 @@ const InboxScreen = ({ route }) => {
       replyMessage?.id ? "reply:message" : "send:message",
       payload,
       (res) => {
-        console.log(res);
-        if (res.success) {
-          console.log("sent");
-          setMessages((prev) => {
-            return [...prev, res.message];
-          });
+        if (res) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.clientId === tempMessage.clientId
+                ? { ...m, isPending: false }
+                : m
+            )
+          );
         } else {
-          console.log("---", res?.message);
+          console.log("send failed", res?.message);
+
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.clientId === tempMessage.clientId
+                ? { ...m, sendFailed: true, isPending: false }
+                : m
+            )
+          );
         }
       }
     );
   };
+
   const onReact = (message) => {
     if (!message?.id) return;
 
@@ -186,7 +221,7 @@ const InboxScreen = ({ route }) => {
   useEffect(() => {
     fetchMessages();
   }, []);
-  console.log(messages);
+
   return (
     <ScreenWrapper
       scrollEnabled
@@ -203,6 +238,8 @@ const InboxScreen = ({ route }) => {
           replyMessage={replyMessage}
           onClearReply={clearReply}
           name={recipientName}
+          addLocalMessage={addLocalMessage}
+          updateTempMessage={updateTempMessage}
         />
       )}
     >
@@ -213,9 +250,9 @@ const InboxScreen = ({ route }) => {
         </View>
       ) : (
         <FlatList
-          inverted
           ref={flatListRef}
           data={messages}
+          inverted
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
           keyExtractor={(item, i) => item._id || i.toString()}
@@ -227,6 +264,10 @@ const InboxScreen = ({ route }) => {
                 formatDate(previousItem?.createdAt);
             return (
               <>
+                {showDate && (
+                  <ListHeader title={formatRelativeDate(item?.createdAt)} />
+                )}
+
                 <ChatBubble
                   item={item}
                   isSender={item?.isSender ?? isUserMessage(item)}
@@ -235,6 +276,11 @@ const InboxScreen = ({ route }) => {
                 />
               </>
             );
+          }}
+          onContentSizeChange={() => {
+            if (flatListRef.current) {
+              flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+            }
           }}
         />
       )}
@@ -250,6 +296,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 10,
+    paddingTop: 90,
   },
   timeBox: {
     backgroundColor: COLORS.primaryColor,

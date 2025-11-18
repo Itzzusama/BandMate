@@ -12,6 +12,8 @@ import { PNGIcons } from "../../../../assets/images/icons";
 import { formatDate } from "../../../../utils/constants";
 import SoundPlayer from "react-native-sound-player";
 import Video from "react-native-video";
+import VideoPlayer from "react-native-video-player";
+import SimpleVideoPlayer from "./SimpleVideoPlayer";
 const ChatBubble = ({ isSender, item, onReply, onReact }) => {
   const message = item;
   const bg = isSender ? "#FFFFFF0A" : "#FFFFFF1F";
@@ -31,13 +33,19 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
       .map(() => new Animated.Value(2))
   );
 
+  // pick best source for media (URL from backend OR localUri)
+  const voiceSource =
+    item?.attachment?.url || item?.attachment?.localUri || null;
+  const imageSource =
+    item?.attachment?.url || item?.attachment?.localUri || null;
+  const videoSource =
+    item?.attachment?.url || item?.attachment?.localUri || null;
+
   useEffect(() => {
     const finishedSub = SoundPlayer.addEventListener(
       "FinishedPlaying",
       ({ success }) => {
         if (success) {
-          console.log("✅ Finished playing audio successfully");
-
           setIsPlaying(false);
           clearInterval(intervalRef.current);
           setShowCurrentTime(false);
@@ -60,8 +68,9 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
       SoundPlayer.stop();
     };
   }, []);
+
   const togglePlay = async () => {
-    if (!item.attachment?.url) return;
+    if (!voiceSource) return;
 
     if (isPlaying) {
       SoundPlayer.stop();
@@ -72,7 +81,7 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
     } else {
       try {
         SoundPlayer.stop();
-        await SoundPlayer.playUrl(item.attachment.url);
+        await SoundPlayer.playUrl(voiceSource);
 
         setIsPlaying(true);
         setShowCurrentTime(true);
@@ -144,7 +153,10 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
   };
 
   const handlePanStateChange = (event) => {
-    if (event.nativeEvent.oldState === State.ACTIVE) {
+    if (
+      event.nativeState === State.END ||
+      event.nativeState === State.CANCELLED
+    ) {
       Animated.spring(translateX, {
         toValue: 0,
         useNativeDriver: true,
@@ -165,6 +177,31 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
     ? `${formatTime(currentTime)} / ${formatTime(duration)}`
     : formatTime(duration || item.duration || item.attachment?.duration);
 
+  // sending state helpers
+  const isPending = item?.isPending;
+  const isFailed = item?.sendFailed;
+
+  const renderReplyPreview = () => {
+    if (!item.replyTo) return null;
+    const reply = item.replyTo;
+
+    return (
+      <View style={styles.replyWrapper}>
+        <CustomText
+          label={
+            reply.type === "text"
+              ? reply.content
+              : reply?.attachment?.filename ||
+                (reply.type === "voice" ? "Voice message" : "Media message")
+          }
+          fontSize={12}
+          color={COLORS.white}
+          numberOfLines={1}
+        />
+      </View>
+    );
+  };
+
   return (
     <PanGestureHandler
       onGestureEvent={handlePanGesture}
@@ -177,6 +214,8 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
           { transform: [{ translateX }] },
         ]}
       >
+        {/* CONTENT */}
+
         {item.type === "voice" ? (
           <View style={[styles.voiceWrapper, { backgroundColor: bg }]}>
             <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
@@ -206,63 +245,28 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
                 fontFamily={fonts.medium}
               />
             </View>
-            {item.replyTo && (
-              <View style={styles.replyWrapper}>
-                <CustomText
-                  label={
-                    item.replyTo.type === "text"
-                      ? item.replyTo.content
-                      : item.replyTo?.attachment?.filename ||
-                        (item.replyTo.type === "voice"
-                          ? "Voice message"
-                          : "Media message")
-                  }
-                  fontSize={12}
-                  color={COLORS.white}
-                  numberOfLines={1}
-                />
-              </View>
-            )}
+
+            {renderReplyPreview()}
           </View>
-        ) : item.type === "image" && item?.attachment?.url ? (
+        ) : item.type === "image" && imageSource ? (
           <View style={styles.mediaWrapper}>
+            {renderReplyPreview()}
             <ImageFast
-              source={{ uri: item.attachment.url }}
+              source={{ uri: imageSource }}
               style={styles.imageStyle}
               resizeMode="cover"
             />
           </View>
         ) : item.type === "file" &&
           item?.attachment?.mimetype === "video/mp4" &&
-          item?.attachment?.url ? (
+          videoSource ? (
           <View style={styles.mediaWrapper}>
-            <Video
-              source={{ uri: item.attachment.url }}
-              style={styles.videoStyle}
-              resizeMode="cover"
-              controls
-              paused={true}
-            />
+            {renderReplyPreview()}
+            <SimpleVideoPlayer videoSource={videoSource} />
           </View>
         ) : (
           <View style={[styles.messageContainer, { backgroundColor: bg }]}>
-            {item.replyTo && (
-              <View style={styles.replyWrapper}>
-                <CustomText
-                  label={
-                    item.replyTo.type === "text"
-                      ? item.replyTo.content
-                      : item.replyTo?.attachment?.filename ||
-                        (item.replyTo.type === "voice"
-                          ? "Voice message"
-                          : "Media message")
-                  }
-                  fontSize={12}
-                  color={COLORS.white}
-                  numberOfLines={1}
-                />
-              </View>
-            )}
+            {renderReplyPreview()}
             <CustomText
               label={item?.content}
               lineHeight={14 * 1.4}
@@ -272,6 +276,7 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
           </View>
         )}
 
+        {/* ACTIONS FOR RECEIVER */}
         {!isSender && (
           <View style={styles.row}>
             {[
@@ -298,10 +303,10 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
                 ]}
                 activeOpacity={0.6}
                 onPress={() => {
-                  if (action?.name === "like") onReact(message);
+                  if (action?.name === "like") onReact && onReact(message);
                   else if (action?.name === "Reply") {
                     setShowReply(true);
-                    onReply(message);
+                    onReply && onReply(message);
                   }
                 }}
               >
@@ -322,9 +327,27 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
           </View>
         )}
 
+        {/* STATUS ROW FOR SENDER */}
         {isSender && (
           <View style={styles.row}>
-            <Icons name={"checkmark-done-sharp"} color={"#A19375"} />
+            {isPending && !isFailed ? (
+              <Icons
+                name="clock"
+                family="Feather"
+                size={12}
+                color={COLORS.subtitle}
+              />
+            ) : isFailed ? (
+              <Icons
+                name="alert-circle"
+                family="Feather"
+                size={12}
+                color="red"
+              />
+            ) : (
+              <Icons name={"checkmark-done-sharp"} color={"#A19375"} />
+            )}
+
             <CustomText
               fontSize={12}
               lineHeight={14 * 1.4}
@@ -413,13 +436,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.btnColor,
   },
-
   imageStyle: {
     width: "100%",
     height: "100%",
     borderRadius: 12,
   },
-
   videoStyle: {
     width: "100%",
     height: "100%",

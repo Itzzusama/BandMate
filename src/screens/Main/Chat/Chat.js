@@ -23,10 +23,8 @@ const PindedData = [
       _id: 2,
       name: "John Doe",
     },
-    lastMessage: {
-      _id: 3,
-      content: "Hello, how are you?",
-    },
+
+    lastMessage: { type: "text", _id: 3, content: "Hello, how are you?" },
   },
   {
     _id: 2,
@@ -34,7 +32,9 @@ const PindedData = [
       _id: 42,
       name: "John Doe",
     },
+
     lastMessage: {
+      type: "text",
       _id: 332,
       content: "What is the price of the car?",
     },
@@ -49,10 +49,8 @@ const requestData = [
       _id: 2,
       name: "Viktor Sola",
     },
-    lastMessage: {
-      _id: 3,
-      content: "Heyy, how are you Julian?",
-    },
+
+    lastMessage: { type: "text", _id: 3, content: "Heyy, how are you Julian?" },
   },
   {
     _id: 2,
@@ -61,7 +59,9 @@ const requestData = [
       _id: 42,
       name: "Dani",
     },
+
     lastMessage: {
+      type: "text",
       _id: 332,
       content: "Hey, would you be available for...",
     },
@@ -254,7 +254,9 @@ const Chat = () => {
       <View style={{ paddingBottom: 90 }}>
         <FlatList
           data={chatData}
-          renderItem={({ item }) => <ConversationBox item={item} />}
+          renderItem={({ item }) => (
+            <ConversationBox item={item} isChat={true} />
+          )}
         />
       </View>
     </ScreenWrapper>
