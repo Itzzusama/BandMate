@@ -3,9 +3,13 @@ import fonts from "../../../../assets/fonts";
 import CustomText from "../../../../components/CustomText";
 import { COLORS } from "../../../../utils/COLORS";
 
-const ListHeader = ({ title = "You matched with Catie on Jan 4, 2023" }) => {
+const ListHeader = ({
+  title = "You matched with Catie on Jan 4, 2023",
+  marginTop = 10,
+  marginBottom,
+}) => {
   return (
-    <View style={styles.box}>
+    <View style={[styles.box, { marginTop, marginBottom }]}>
       <View style={styles.border} />
       <CustomText
         fontSize={12}

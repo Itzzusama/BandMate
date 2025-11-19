@@ -101,8 +101,7 @@ export const uploadAndGetUrl = async (file) => {
 };
 
 export const uploadFileGetUrl = async (file, filetype = "application/pdf") => {
-  console.log(`Uploading file: ${file?.localUri} with URI: ${file.localUri}`);
-  console.log(filetype);
+  console.log(file);
   try {
     const formData = new FormData();
 

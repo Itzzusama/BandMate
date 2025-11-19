@@ -158,7 +158,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - NitroModules (0.31.6):
+  - NitroModules (0.31.7):
     - boost
     - DoubleConversion
     - fast_float
@@ -2258,7 +2258,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-skia (2.3.10):
+  - react-native-skia (2.3.13):
     - boost
     - DoubleConversion
     - fast_float
@@ -3422,7 +3422,7 @@ PODS:
     - React-Core
   - RNSoundPlayer (0.14.5):
     - React-Core
-  - RNSVG (15.14.0):
+  - RNSVG (15.15.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3448,10 +3448,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.14.0)
+    - RNSVG/common (= 15.15.0)
     - SocketRocket
     - Yoga
-  - RNSVG/common (15.14.0):
+  - RNSVG/common (15.15.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3585,16 +3585,16 @@ PODS:
     - StripeCore (= 24.25.0)
   - swift-vibrant (1.0.0)
   - TOCropViewController (2.7.4)
-  - VisionCamera (4.7.2):
-    - VisionCamera/Core (= 4.7.2)
-    - VisionCamera/FrameProcessors (= 4.7.2)
-    - VisionCamera/React (= 4.7.2)
-  - VisionCamera/Core (4.7.2)
-  - VisionCamera/FrameProcessors (4.7.2):
+  - VisionCamera (4.7.3):
+    - VisionCamera/Core (= 4.7.3)
+    - VisionCamera/FrameProcessors (= 4.7.3)
+    - VisionCamera/React (= 4.7.3)
+  - VisionCamera/Core (4.7.3)
+  - VisionCamera/FrameProcessors (4.7.3):
     - React
     - React-callinvoker
     - react-native-worklets-core
-  - VisionCamera/React (4.7.2):
+  - VisionCamera/React (4.7.3):
     - React-Core
     - VisionCamera/FrameProcessors
   - VisionCameraFaceDetector (1.9.1):
@@ -4027,7 +4027,7 @@ SPEC CHECKSUMS:
   MLKitVision: fa8dea9012ac59497c79ddbe9ebf32051047ac4c
   MLKitVisionKit: e8244baf4d19cf7669c65da7907662c402adcb05
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  NitroModules: edf2d33c02fd8cbb0021e031d380d286b17f527b
+  NitroModules: 2b8e47e87095d5753797a75d0820167fab3a3787
   NitroSound: ef03d951a0f7bb504f13bdc27ce1271c4c422e22
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
@@ -4077,7 +4077,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-render-html: 5afc4751f1a98621b3009432ef84c47019dcb2bd
   react-native-safe-area-context: 0a3b034bb63a5b684dd2f5fffd3c90ef6ed41ee8
-  react-native-skia: 87c2b79691e8290b875c0aece7864acdda9c8e29
+  react-native-skia: 66a186a915d3a168b392a383397895d1ae9ef4e2
   react-native-slider: 0f87d2b0a6df64094c027e2308b3cd5b490fde74
   react-native-video: d9d12aa2325ae06222e97e8bd801bbc31df2675d
   react-native-webview: cdce419e8022d0ef6f07db21890631258e7a9e6e
@@ -4127,7 +4127,7 @@ SPEC CHECKSUMS:
   RNSensors: 111159597ac51505df10413c61b28bcd28e88983
   RNSnackbar: c1b235eb606b03938c693ce769ed3059c31dff9b
   RNSoundPlayer: 7961678d02c7339d9e9cfb78b9f3e8fde17f9df2
-  RNSVG: 65335d69b8e372837ccad79307b1190d5cc1d0a9
+  RNSVG: f2979aa72b14050b9220415c19de398f9cec9aaf
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
@@ -4142,7 +4142,7 @@ SPEC CHECKSUMS:
   StripeUICore: 55ebd4a7a2c12600645526bfdd6e5bd8ea1c5335
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
-  VisionCamera: 4146fa2612c154f893a42a9b1feedf868faa6b23
+  VisionCamera: 0044a94f7489f19e19d5938e97dfc36f4784af3c
   VisionCameraFaceDetector: 1aac3e7353161c7c822cf1c616760bd44a2758c4
   VisionCameraImageLabeling: c09a1fc11d4d9dc054810e6342c1e33b152baa19
   Yoga: cc4a6600d61e4e9276e860d4d68eebb834a050ba

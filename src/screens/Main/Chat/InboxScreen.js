@@ -264,16 +264,15 @@ const InboxScreen = ({ route }) => {
                 formatDate(previousItem?.createdAt);
             return (
               <>
-                {showDate && (
-                  <ListHeader title={formatRelativeDate(item?.createdAt)} />
-                )}
-
                 <ChatBubble
                   item={item}
                   isSender={item?.isSender ?? isUserMessage(item)}
                   onReply={handleReply}
                   onReact={onReact}
                 />
+                {showDate && (
+                  <ListHeader title={formatRelativeDate(item?.createdAt)} />
+                )}
               </>
             );
           }}

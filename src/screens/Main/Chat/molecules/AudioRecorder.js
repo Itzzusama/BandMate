@@ -9,6 +9,7 @@ import {
   PermissionsAndroid,
 } from "react-native";
 import {
+  createSound,
   useSoundWithStates,
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
@@ -16,12 +17,13 @@ import {
 } from "react-native-nitro-sound";
 import { COLORS } from "../../../../utils/COLORS";
 import Icons from "../../../../components/Icons";
+import { useRef } from "react";
 
 export default function AudioRecorder({ onSend, onCancel }) {
   const [recordingPath, setRecordingPath] = useState("");
   const [duration, setDuration] = useState(0);
   const { state, startRecorder, stopRecorder, mmssss } = useSoundWithStates();
-
+  const soundRef = useRef(createSound());
   const requestMicPermission = async () => {
     if (Platform.OS === "android") {
       try {
@@ -76,21 +78,6 @@ export default function AudioRecorder({ onSend, onCancel }) {
       if (state.isRecording) stopRecorder();
     };
   }, []);
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  const formatDuration = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  };
-
   const stopAndSend = async () => {
     try {
       const path = await stopRecorder();
@@ -105,9 +92,7 @@ export default function AudioRecorder({ onSend, onCancel }) {
       } catch (err) {
         console.warn("File size fetch error:", err);
       }
-
-      const formattedDuration = formatDuration(recordedDuration);
-
+      console.log(path);
       onSend?.(path, recordedDuration, fileSize);
     } catch (e) {
       Alert.alert("Stop error", String(e));

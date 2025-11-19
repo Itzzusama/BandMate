@@ -131,6 +131,7 @@ instance.interceptors.request.use(
     try {
       await checkInternetConnection();
       const token = store.getState()?.authConfig?.token;
+      console.log(token);
       const socketId = await AsyncStorage.getItem("socketId");
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
