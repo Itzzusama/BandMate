@@ -122,18 +122,18 @@ const UploadImageCustom = ({
 
   let message = "";
 
-  if (!isPermissionChecked) {
-    message = "Loading camera...";
-    return;
-  }
+  // if (!isPermissionChecked) {
+  //   message = "Loading camera...";
+  //   return;
+  // }
 
-  if (!hasPermission) {
-    message = "Please grant permission to use camera!";
-    return;
-  } else if (device == null) {
-    message = "Please grant permission to use camera!";
-    return;
-  }
+  // if (!hasPermission) {
+  //   message = "Please grant permission to use camera!";
+  //   return;
+  // } else if (device == null) {
+  //   message = "Please grant permission to use camera!";
+  //   return;
+  // }
 
   return (
     <View>
@@ -167,7 +167,7 @@ const UploadImageCustom = ({
                     </View>
                   )}
                   <Reanimated.View style={[styles.cameraBox]}>
-                    <ReanimatedCamera
+                    {/* <ReanimatedCamera
                       photo
                       ref={camera}
                       exposure={0}
@@ -179,7 +179,7 @@ const UploadImageCustom = ({
                       isActive={isActive && active}
                       style={StyleSheet.absoluteFill}
                       lowLightBoost={device.supportsLowLightBoost}
-                    />
+                    /> */}
                   </Reanimated.View>
                 </TouchableOpacity>
                 <View style={styles.line} />

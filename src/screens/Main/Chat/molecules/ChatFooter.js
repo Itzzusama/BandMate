@@ -456,7 +456,7 @@ const ChatFooter = ({
           <Animated.View
             style={[styles.inputContainer, { flex: inputFlexAnim }]}
           >
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={toggleActions}
               onLongPress={() => setVisible(true)}
             >
@@ -466,7 +466,7 @@ const ChatFooter = ({
                 family={"Entypo"}
                 color={COLORS.white3}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TextInput
               value={inputText}
               style={[styles.input]}

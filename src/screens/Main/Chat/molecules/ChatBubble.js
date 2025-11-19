@@ -154,7 +154,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
 
   const handlePanStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
-      // When gesture ends, spring back to original position
       Animated.spring(translateX, {
         toValue: 0,
         useNativeDriver: true,
@@ -175,23 +174,90 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
     ? `${formatTime(currentTime)} / ${formatTime(duration)}`
     : formatTime(duration || item.duration || item.attachment?.duration);
 
-  // sending state helpers
   const isPending = item?.isPending;
   const isFailed = item?.sendFailed;
+  const truncate = (text, max = 60) => {
+    if (!text) return "";
+    return text.length > max ? text.slice(0, max) + "..." : text;
+  };
 
   const renderReplyPreview = () => {
     if (!item.replyTo) return null;
     const reply = item.replyTo;
 
+    const replyType = reply.type;
+    const replyAttachment = reply.attachment || {};
+    const replyImageSource = replyAttachment.url || replyAttachment.localUri;
+    const replyVideoSource = replyAttachment.url || replyAttachment.localUri;
+
+    const durationSecs =
+      reply.duration ||
+      replyAttachment.duration ||
+      replyAttachment.metadata?.duration ||
+      0;
+
+    if (replyType === "text") {
+      return (
+        <View style={styles.replyWrapper}>
+          <CustomText
+            label={truncate(reply.content || "")}
+            fontSize={12}
+            color={COLORS.white}
+            numberOfLines={2}
+          />
+        </View>
+      );
+    }
+
+    if (replyType === "image" && replyImageSource) {
+      return (
+        <View style={styles.replyWrapperMediaRow}>
+          <ImageFast
+            source={{ uri: replyImageSource }}
+            style={styles.replyImageThumb}
+            resizeMode="cover"
+          />
+        </View>
+      );
+    }
+
+    if (
+      replyType === "file" &&
+      replyAttachment.mimetype === "video/mp4" &&
+      replyVideoSource
+    ) {
+      return (
+        <View
+          style={[styles.replyWrapperMediaRow, { margin: 0, marginBottom: 8 }]}
+        >
+          <Video
+            source={{ uri: replyVideoSource }}
+            style={styles.replyVideoThumb}
+            paused={true}
+            muted={true}
+            resizeMode="cover"
+          />
+        </View>
+      );
+    }
+
+    if (replyType === "voice") {
+      return (
+        <View style={[styles.replyWrapper]}>
+          <CustomText
+            label={`Voice message · ${formatTime(durationSecs)}`}
+            fontSize={12}
+            color={COLORS.white}
+            numberOfLines={1}
+          />
+        </View>
+      );
+    }
+
     return (
       <View style={styles.replyWrapper}>
         <CustomText
-          label={
-            reply.type === "text"
-              ? reply.content
-              : reply?.attachment?.filename ||
-                (reply.type === "voice" ? "Voice message" : "Media message")
-          }
+          label={replyAttachment.filename || reply.content || "Media message"}
           fontSize={12}
           color={COLORS.white}
           numberOfLines={1}
@@ -213,39 +279,56 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
         ]}
       >
         {item.type === "voice" ? (
-          <View style={[styles.voiceWrapper, { backgroundColor: bg }]}>
-            <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
-              <Icons
-                name={isPlaying ? "pause" : "play-arrow"}
-                family="MaterialIcons"
-                size={24}
-                color={COLORS.white}
-              />
-            </TouchableOpacity>
+          <View
+            style={{
+              paddingHorizontal: 12,
+              borderRadius: 12,
 
-            <View style={styles.waveformAndDuration}>
-              <View style={styles.waveformContainer}>
-                {waveAnimValues.map((val, idx) => (
-                  <Animated.View
-                    key={idx}
-                    style={[styles.waveBar, { height: val }]}
-                  />
-                ))}
-              </View>
-              <CustomText
-                label={timeLabel}
-                fontSize={12}
-                color={COLORS.white2}
-                marginTop={5}
-                marginBottom={5}
-                fontFamily={fonts.medium}
-              />
-            </View>
-
+              backgroundColor: bg,
+            }}
+          >
             {renderReplyPreview()}
+
+            <View style={[styles.voiceWrapper]}>
+              <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
+                <Icons
+                  name={isPlaying ? "pause" : "play-arrow"}
+                  family="MaterialIcons"
+                  size={24}
+                  color={COLORS.white}
+                />
+              </TouchableOpacity>
+
+              <View style={styles.waveformAndDuration}>
+                <View style={styles.waveformContainer}>
+                  {waveAnimValues.map((val, idx) => (
+                    <Animated.View
+                      key={idx}
+                      style={[styles.waveBar, { height: val }]}
+                    />
+                  ))}
+                </View>
+                <CustomText
+                  label={timeLabel}
+                  fontSize={12}
+                  color={COLORS.white2}
+                  marginTop={5}
+                  marginBottom={5}
+                  fontFamily={fonts.medium}
+                />
+              </View>
+            </View>
           </View>
         ) : item.type === "image" && imageSource ? (
-          <View style={styles.mediaWrapper}>
+          <View
+            style={[
+              styles.mediaWrapper,
+              {
+                width: item?.replyTo ? 280 : 292,
+                height: item?.replyTo ? 252 : 240,
+              },
+            ]}
+          >
             {renderReplyPreview()}
             <ImageFast
               source={{ uri: imageSource }}
@@ -400,9 +483,7 @@ const styles = StyleSheet.create({
   voiceWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    maxWidth: "60%",
+    width: "70%",
   },
   playButton: { paddingRight: 6, marginBottom: 7 },
   waveformAndDuration: { flex: 0.5 },
@@ -449,5 +530,19 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.btnColor,
     marginBottom: 4,
     borderRadius: 4,
+  },
+  replyWrapperMediaRow: {
+    margin: 8,
+  },
+  replyImageThumb: {
+    width: 50,
+    height: 50,
+    borderRadius: 4,
+  },
+  replyVideoThumb: {
+    width: 50,
+    height: 50,
+    borderRadius: 4,
+    backgroundColor: "#000",
   },
 });
