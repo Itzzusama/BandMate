@@ -338,6 +338,14 @@ const ChatFooter = ({
   const handleDelete = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
+  const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return "00:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
   return (
     <>
       {showChatFeatures && (
@@ -390,12 +398,28 @@ const ChatFooter = ({
                   fontFamily={fonts.medium}
                 />
               </View>
-              <CustomText
-                label={`${replyMessage.content}`}
-                fontSize={12}
-                color={COLORS.white}
-                marginTop={4}
-              />
+              {replyMessage?.type == "voice" ? (
+                <CustomText
+                  label={formatTime(replyMessage?.attachment?.duration)}
+                  fontSize={12}
+                  color={COLORS.white}
+                  marginTop={4}
+                />
+              ) : replyMessage?.type == "text" ? (
+                <CustomText
+                  label={`${replyMessage.content}`}
+                  fontSize={12}
+                  color={COLORS.white}
+                  marginTop={4}
+                />
+              ) : (
+                <CustomText
+                  label={`${replyMessage.attachment?.filename}`}
+                  fontSize={12}
+                  color={COLORS.white}
+                  marginTop={4}
+                />
+              )}
             </View>
             <TouchableOpacity onPress={onClearReply} style={styles.closeReply}>
               <Icons
@@ -545,6 +569,7 @@ const ChatFooter = ({
         setImageModal={setImageModal}
         handleChange={handleChange}
         handleCapture={handleCapture}
+        mediaType="any"
       />
     </>
   );

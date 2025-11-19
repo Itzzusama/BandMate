@@ -34,6 +34,7 @@ const UploadImageCustom = ({
   handleChange,
   handleCapture,
   setImageModal,
+  mediaType = "photo",
 }) => {
   const isFocused = useIsFocused();
   const isForeground = useIsForeground();
@@ -91,7 +92,7 @@ const UploadImageCustom = ({
       setImageModal(false);
       setTimeout(async () => {
         const result = await openPicker({
-          mediaType: "any",
+          mediaType: mediaType,
           quality: 0.8,
         });
 

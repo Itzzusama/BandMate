@@ -33,7 +33,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
       .map(() => new Animated.Value(2))
   );
 
-  // pick best source for media (URL from backend OR localUri)
   const voiceSource =
     item?.attachment?.url || item?.attachment?.localUri || null;
   const imageSource =
@@ -101,7 +100,7 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
               setCurrentTime(0);
             }
           } catch (e) {}
-        }, 500);
+        }, 100);
       } catch (err) {
         console.log("Cannot play the file", err);
       }
@@ -119,7 +118,7 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
             useNativeDriver: false,
           }).start();
         });
-      }, 200);
+      }, 100);
     } else {
       waveAnimValues.forEach((val) => {
         Animated.timing(val, {
@@ -134,6 +133,7 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
 
   const handlePanGesture = (event) => {
     const { translationX } = event.nativeEvent;
+
     if (translationX > 50 && !showReply) {
       setShowReply(true);
       onReply && onReply(item);
@@ -153,10 +153,8 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
   };
 
   const handlePanStateChange = (event) => {
-    if (
-      event.nativeState === State.END ||
-      event.nativeState === State.CANCELLED
-    ) {
+    if (event.nativeEvent.oldState === State.ACTIVE) {
+      // When gesture ends, spring back to original position
       Animated.spring(translateX, {
         toValue: 0,
         useNativeDriver: true,
@@ -214,8 +212,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
           { transform: [{ translateX }] },
         ]}
       >
-        {/* CONTENT */}
-
         {item.type === "voice" ? (
           <View style={[styles.voiceWrapper, { backgroundColor: bg }]}>
             <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
@@ -276,7 +272,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
           </View>
         )}
 
-        {/* ACTIONS FOR RECEIVER */}
         {!isSender && (
           <View style={styles.row}>
             {[
@@ -327,7 +322,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
           </View>
         )}
 
-        {/* STATUS ROW FOR SENDER */}
         {isSender && (
           <View style={styles.row}>
             {isPending && !isFailed ? (
@@ -360,7 +354,7 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
               size={12}
               name={"lock-outline"}
               family="MaterialIcons"
-              color={COLORS.subtitle}
+              color={COLORS.white3}
             />
           </View>
         )}

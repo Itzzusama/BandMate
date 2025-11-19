@@ -49,7 +49,6 @@ const InboxScreen = ({ route }) => {
     if (!socket) return;
 
     socket.on("new:message", (data) => {
-      flatListRef?.current?.scrollToEnd({ animated: true });
       if (data?.message) {
         setMessages((prev = []) => [data.message, ...prev]);
       }
@@ -65,15 +64,6 @@ const InboxScreen = ({ route }) => {
       socket.off("message:error");
     };
   }, [socket, recipientId]);
-
-  useEffect(() => {
-    if (!flatListRef?.current) return;
-
-    const id = setTimeout(() => {
-      flatListRef.current?.scrollToOffset?.({ offset: 0, animated: true });
-    }, 50);
-    return () => clearTimeout(id);
-  }, [messages.length]);
 
   const handleReply = (message) => {
     console.log(message);
@@ -120,8 +110,10 @@ const InboxScreen = ({ route }) => {
       setInputText("");
       setMessages((prev = []) => [tempMessage, ...prev]);
     }
-    flatListRef.current.scrollToOffset({ offset: 0, animated: true });
     setReplyMessage(null);
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+    }
 
     const payload = {
       participant_id: recipientId,
@@ -271,7 +263,11 @@ const InboxScreen = ({ route }) => {
                   onReact={onReact}
                 />
                 {showDate && (
-                  <ListHeader title={formatRelativeDate(item?.createdAt)} />
+                  <ListHeader
+                    title={formatRelativeDate(item?.createdAt)}
+                    marginTop={0}
+                    marginBottom={10}
+                  />
                 )}
               </>
             );
@@ -295,7 +291,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 10,
-    paddingTop: 90,
   },
   timeBox: {
     backgroundColor: COLORS.primaryColor,
