@@ -16,7 +16,7 @@ const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
   const insets = useSafeAreaInsets();
 
   const user = useSelector((state) => state.users.userData);
-
+  console.log(user);
   return (
     <View style={[styles.header, { marginTop: insets.top }]}>
       <Pressable onPress={() => navigation.navigate("Settings")}>
@@ -28,7 +28,11 @@ const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
 
       <View style={styles.profileInfo}>
         <CustomText
-          label={`Hi ${user?.display_name || "Myles"} 👋`}
+          label={`Hi ${
+            user?.role == "solo"
+              ? user?.display_name
+              : user?.bandName || "Myles"
+          } 👋`}
           fontSize={17}
           lineHeight={17 * 1.4}
           color={COLORS.white}

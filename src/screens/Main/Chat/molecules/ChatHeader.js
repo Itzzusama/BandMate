@@ -10,11 +10,13 @@ import CustomText from "../../../../components/CustomText";
 import Icons from "../../../../components/Icons";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
+import { useSelector } from "react-redux";
 
 const ChatHeader = ({ title, source, showIcons = true }) => {
   const navigation = useNavigation();
   const [isViewModal, setIsViewModal] = useState(false);
-
+  const { userData, savedLocations } = useSelector((state) => state.users);
+  console.log(savedLocations);
   return (
     <View style={[styles.mainContainer]}>
       <TouchableOpacity
@@ -56,7 +58,7 @@ const ChatHeader = ({ title, source, showIcons = true }) => {
           <View style={styles.sparator} />
 
           <CustomText
-            label={"Solo Artist"}
+            label={userData?.role == "solo" ? "Solo Artist" : "Band"}
             fontFamily={fonts.semiBold}
             color={"#828186"}
             fontSize={12}
@@ -65,7 +67,11 @@ const ChatHeader = ({ title, source, showIcons = true }) => {
       </View>
       {showIcons && (
         <>
-          <TouchableOpacity activeOpacity={0.6} style={[styles.backIcon]}>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={[styles.backIcon]}
+            onPress={() => navigation.navigate("ReportChat")}
+          >
             <ImageFast
               resizeMode="contain"
               source={Images.ChatSetting}

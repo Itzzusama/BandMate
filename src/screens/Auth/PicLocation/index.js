@@ -272,7 +272,7 @@ const PicLocation = () => {
   };
 
   const handleBackPress = () => {
-    setgooglPlacesModal(true);
+    // navigation.goBack();
   };
 
   return (

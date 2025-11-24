@@ -6,7 +6,7 @@ import { setSpotifyTokens } from "../store/reducer/spotifyAuthSlice";
 const config = {
   clientId: endPoints.clientId,
   clientSecret: endPoints.clientSecret,
-  redirectUrl: "com.solagroup.bandmate://oauth/", // "com.chainai.app://oauth/",
+  redirectUrl: "com.chainai.app://oauth/", // "com.solagroup.bandmate://oauth/"
   scopes: [
     "user-read-email",
     "user-top-read",
@@ -130,8 +130,13 @@ export const checkSpotifyTokenValidity = () => async (dispatch) => {
 };
 
 const getAccessToken = async (dispatch) => {
-  const token = await dispatch(checkSpotifyTokenValidity());
-  return token;
+  try {
+    const token = await dispatch(checkSpotifyTokenValidity());
+    console.log("sp token", token);
+    return token;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const spotifyDataService = {
@@ -288,9 +293,9 @@ export const getAllArtistsTopTracks = async (dispatch, artistIds) => {
         `https://api.spotify.com/v1/artists/${artistId}`,
         { headers }
       );
-
+      console.log(artistRes);
       const artistData = await artistRes.json();
-
+      console.log(artistData);
       if (!artistData?.name) continue;
 
       const artistName = artistData.name;

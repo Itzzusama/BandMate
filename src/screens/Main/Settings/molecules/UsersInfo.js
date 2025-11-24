@@ -22,7 +22,9 @@ const UsersInfo = () => {
         style={styles.avatar}
       />
       <CustomText
-        label={`Hi ${user?.display_name || "Victor"}`}
+        label={`Hi ${
+          user?.role == "solo" ? user?.display_name : user?.bandName || "Victor"
+        }`}
         fontFamily={fonts.medium}
         fontSize={32}
         lineHeight={32 * 1.4}
@@ -30,7 +32,11 @@ const UsersInfo = () => {
       />
       <View style={styles.row}>
         <CustomText
-          label={` ${user?.display_name || "username"}`}
+          label={`Hi ${
+            user?.role == "solo"
+              ? user?.display_name
+              : user?.bandName || "username"
+          }`}
           fontFamily={fonts.medium}
           lineHeight={14 * 1.4}
           color={COLORS.white3}

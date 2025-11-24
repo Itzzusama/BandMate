@@ -5,6 +5,7 @@ import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import EditButton from "./EditButton";
+import { useSelector } from "react-redux";
 
 const data = [
   { name: "Bass", level: "Beginner" },
@@ -14,6 +15,7 @@ const data = [
 ];
 
 const Levels = ({ myPage }) => {
+  const { userData } = useSelector((state) => state.users);
   return (
     <View style={{ paddingHorizontal: 12 }}>
       {myPage && (
@@ -21,10 +23,10 @@ const Levels = ({ myPage }) => {
           <EditButton />
         </View>
       )}
-      {data.map((item, index) => (
+      {userData?.Instruments?.map((item, index) => (
         <>
           <CustomText
-            label={item?.name}
+            label={item?.instrument}
             fontFamily={fonts.medium}
             color={COLORS.white}
             fontSize={17}

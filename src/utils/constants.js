@@ -156,6 +156,25 @@ export const addDurationToNow = (duration = "0 min") => {
 
   return newTime.format("h:mm A");
 };
+export const getAgeFromDob = (dobString) => {
+  if (!dobString) return null;
+
+  const dob = new Date(dobString);
+  if (isNaN(dob.getTime())) return null; // invalid date
+
+  const today = new Date();
+
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  const dayDiff = today.getDate() - dob.getDate();
+
+  // If birthday hasn't happened yet this year, subtract 1
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age--;
+  }
+
+  return age;
+};
 
 export const COUNTRIES = [
   { code: "AD", label: "Andorra", phone: "376" },

@@ -17,13 +17,13 @@ import Icons from "./Icons";
 import ImageFast from "./ImageFast";
 import { BlurView } from "@react-native-community/blur";
 import { useSelector } from "react-redux";
+import { getAgeFromDob } from "../utils/constants";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const ArtistDetailCard = ({ images, color }) => {
+const ArtistDetailCard = ({ images, color, userData }) => {
   const navigation = useNavigation();
-  const { userData } = useSelector((state) => state.users);
-  console.log(userData);
+
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
@@ -199,48 +199,24 @@ const ArtistDetailCard = ({ images, color }) => {
       >
         {/* Image Carousel */}
         {images && images?.length > 0 ? (
-          <ImageFast source={images[currentImageIndex]} style={styles.imgStyle}>
+          <ImageFast
+            source={{ uri: images[currentImageIndex] }}
+            style={styles.imgStyle}
+          >
             <LinearGradient
               colors={["#14141499", "#14141440", "#60606000"]}
               start={{ x: 0.5, y: 1 }}
               end={{ x: 0.5, y: 0 }}
               style={styles.bottomGradient}
             />
-            <View style={styles.row}>
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                activeOpacity={0.6}
-                style={{
-                  height: 40,
-                  width: 40,
-                  borderRadius: 99,
-                  overflow: "hidden",
-                }}
-              >
-                <BlurView
-                  style={{
-                    flex: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  blurType="materialDark"
-                  blurAmount={16}
-                  reducedTransparencyFallbackColor={color}
-                >
-                  <Icons
-                    name="chevron-back"
-                    family="Ionicons"
-                    color="rgba(255, 255, 255, 0.64)"
-                    size={14}
-                  />
-                </BlurView>
-              </TouchableOpacity>
 
-              <Image source={PNGIcons.qr} style={{ height: 48, width: 48 }} />
-            </View>
             <View style={styles.innerContainer}>
               <CustomText
-                label={userData?.first_name + ", 18"}
+                label={
+                  userData?.role == "solo"
+                    ? userData?.display_name
+                    : userData?.bandName + ", " + getAgeFromDob(userData.dob)
+                }
                 fontSize={44}
                 lineHeight={44 * 1.4}
                 fontFamily={fonts.abril}
@@ -271,7 +247,7 @@ const ArtistDetailCard = ({ images, color }) => {
                   size={9}
                 />
                 <CustomText
-                  label={"Solo Artist"}
+                  label={userData?.role == "solo" ? "Solo Artist" : "Band"}
                   fontFamily={fonts.medium}
                   fontSize={12}
                   lineHeight={12 * 1.4}

@@ -22,7 +22,11 @@ import { PNGIcons } from "../../../../assets/images/icons";
 import CustomText from "../../../../components/CustomText";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
-
+import { post } from "../../../../services/ApiRequest";
+import { ToastMessage } from "../../../../utils/ToastMessage";
+import { getAgeFromDob } from "../../../../utils/constants";
+import { useSelector } from "react-redux";
+import { getDistance } from "geolib";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const profileImages = [
@@ -53,11 +57,13 @@ const profileImages = [
   },
 ];
 
-const HomeCard = ({ data }) => {
+const HomeCard = ({ data, getUserProfile, tab }) => {
   const navigation = useNavigation();
+  const { userData } = useSelector((state) => state.users);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [cards, setCards] = useState([...profileImages]);
+  const [cards, setCards] = useState([...data]);
   const sliderAnimation = useRef(new Animated.Value(0)).current;
 
   // Current card animations
@@ -136,7 +142,8 @@ const HomeCard = ({ data }) => {
 
   const goToNextImage = () => {
     const currentProfile = cards[0];
-    const nextIndex = (currentImageIndex + 1) % currentProfile.images.length;
+    const nextIndex =
+      (currentImageIndex + 1) % currentProfile?.pictures?.length;
 
     // Update the image index first
     setCurrentImageIndex(nextIndex);
@@ -168,7 +175,7 @@ const HomeCard = ({ data }) => {
     handleButtonPress(index);
   };
 
-  const handleButtonPress = (index) => {
+  const handleButtonPress = async (index) => {
     const action = buttonActions[index];
 
     // Set gradient colors
@@ -213,10 +220,11 @@ const HomeCard = ({ data }) => {
     ]).start();
 
     // Animate card movement after a short delay
-    setTimeout(() => {
+    setTimeout(async () => {
       const animations = [];
 
       if (action.direction === "left") {
+        await handleReaction("dislike");
         animations.push(
           Animated.timing(translateX, {
             toValue: -screenWidth * 1.5,
@@ -232,6 +240,7 @@ const HomeCard = ({ data }) => {
           })
         );
       } else if (action.direction === "right") {
+        await handleReaction("like");
         animations.push(
           Animated.timing(translateX, {
             toValue: screenWidth * 1.5,
@@ -262,6 +271,23 @@ const HomeCard = ({ data }) => {
         }, 100);
       });
     }, 400);
+  };
+
+  const handleReaction = async (reaction) => {
+    const payLoad = {
+      toUser: currentProfile?._id,
+      interactionType: reaction,
+    };
+
+    try {
+      const res = await post("matching/interactions", payLoad);
+      getUserProfile?.();
+      if (res?.data?.success) {
+        ToastMessage(res?.data?.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const goToNextCard = () => {
@@ -497,254 +523,273 @@ const HomeCard = ({ data }) => {
   const currentProfile = cards[0];
   const nextProfile = cards[1];
 
-  const renderCard = (profile, isCurrent = true) => (
-    <TouchableOpacity
-      activeOpacity={0.6}
-      onPress={() => navigation.navigate("Detail", { images: profile?.images })}
-      style={styles.imageContainer}
-    >
-      {/* Simple Image Display - No Carousel Animation */}
-      <ImageFast
-        source={profile.images[isCurrent ? currentImageIndex : 0]}
-        style={styles.image}
-      />
+  const renderCard = (profile, isCurrent = true) => {
+    const pointA = {
+      latitude: profile?.address?.address
+        ? profile?.address?.location?.coordinates[1]
+        : 24.8607,
+      longitude: profile?.address?.address
+        ? profile?.address?.location?.coordinates[0]
+        : 67.0011,
+    };
+    const pointB = {
+      latitude: userData?.address?.address
+        ? userData?.address?.location?.coordinates[1]
+        : 31.5204,
+      longitude: userData?.address?.address
+        ? userData?.address?.location?.coordinates[0]
+        : 74.3587,
+    };
+    console.log(pointA);
+    const distanceMeters = getDistance(pointA, pointB);
 
-      <View style={styles.overlay} />
+    const distanceKm = distanceMeters / 1000;
+    return (
+      <TouchableOpacity
+        activeOpacity={0.6}
+        onPress={() =>
+          navigation.navigate("Detail", {
+            images: profile?.pictures,
+            profile: profile,
+          })
+        }
+        style={styles.imageContainer}
+      >
+        {/* Simple Image Display - No Carousel Animation */}
+        <ImageFast
+          source={{ uri: profile?.pictures[isCurrent ? currentImageIndex : 0] }}
+          style={styles.image}
+        />
 
-      <View style={styles.innerContainer}>
-        <View style={styles.headerRow}>
-          <View style={styles.row}>
-            <Image
-              source={
-                profile.premium ? Images.goldenVerified : Images.verifiedBadge
-              }
-              style={styles.verifyStar}
-            />
-            <CustomText
-              label={"VERIFIED SOLO ARTIST"}
-              fontSize={12}
-              lineHeight={12 * 1.4}
-              marginLeft={8}
-              fontFamily={fonts.medium}
-            />
-          </View>
-          <View style={styles.bg}>
-            <CustomText
-              label={"64%"}
-              fontFamily={fonts.semiBold}
-              lineHeight={14 * 1.4}
-            />
-          </View>
-        </View>
+        <View style={styles.overlay} />
 
-        {/* footer */}
-        <View>
-          <CustomText
-            label={"Myles, 27"}
-            fontSize={44}
-            lineHeight={44 * 1.4}
-            fontFamily={fonts.abril}
-          />
-
-          <View style={styles.locationRow}>
-            <Image source={PNGIcons.pin} style={styles.pinIcon} />
-            <CustomText
-              label={"Austin, US"}
-              fontSize={12}
-              lineHeight={12 * 1.4}
-              fontFamily={fonts.medium}
-              marginLeft={3}
-            />
-            <CustomText
-              label={"17 km"}
-              fontSize={12}
-              lineHeight={12 * 1.4}
-              color={COLORS.white2}
-              fontFamily={fonts.medium}
-              marginLeft={4}
-            />
-          </View>
-
-          <CustomText
-            label={"528 monthly profile views"}
-            fontSize={11}
-            fontFamily={fonts.medium}
-            marginTop={8}
-          />
-          {profile.premium && (
-            <>
-              <CustomText
-                label={"Shares the same passion for"}
-                fontSize={11}
-                fontFamily={fonts.medium}
-                marginTop={8}
+        <View style={styles.innerContainer}>
+          <View style={styles.headerRow}>
+            <View style={styles.row}>
+              <Image
+                source={
+                  profile?.premium
+                    ? Images.goldenVerified
+                    : Images.verifiedBadge
+                }
+                style={styles.verifyStar}
               />
-              <View style={[styles.genreRow, { marginBottom: 0 }]}>
-                <View
-                  style={[
-                    styles.genrePill,
-                    {
-                      borderWidth: 1,
-                      borderColor: "#A19375",
-                      backgroundColor: "#FFCF83" + 40,
-                    },
-                  ]}
-                >
-                  <CustomText
-                    label={"Elvis Presley"}
-                    fontFamily={fonts.medium}
-                    fontSize={12}
-                    lineHeight={12 * 1.4}
-                    color={"#FFCF83"}
-                  />
-                </View>
-                <View
-                  style={[
-                    styles.genrePill,
-                    {
-                      borderWidth: 1,
-                      borderColor: "#A19375",
-                      backgroundColor: "#FFCF83" + 40,
-                    },
-                  ]}
-                >
-                  <CustomText
-                    label={"Michael Jackson"}
-                    fontFamily={fonts.medium}
-                    fontSize={12}
-                    lineHeight={12 * 1.4}
-                    color={"#FFCF83"}
-                  />
-                </View>
-                <View
-                  style={[
-                    styles.genrePill,
-                    {
-                      borderWidth: 1,
-                      borderColor: "#A19375",
-                      backgroundColor: "#FFCF83" + 40,
-                    },
-                  ]}
-                >
-                  <CustomText
-                    label={"& 34 more"}
-                    fontFamily={fonts.medium}
-                    fontSize={12}
-                    lineHeight={12 * 1.4}
-                    color={"#FFCF83"}
-                  />
-                </View>
-              </View>
-            </>
-          )}
-
-          <View style={styles.genreRow}>
-            <View style={styles.genrePill}>
               <CustomText
-                label={"Blue"}
-                fontFamily={fonts.medium}
+                label={"VERIFIED SOLO ARTIST"}
                 fontSize={12}
                 lineHeight={12 * 1.4}
+                marginLeft={8}
+                fontFamily={fonts.medium}
               />
             </View>
-            <View style={styles.genrePill}>
+            <View style={styles.bg}>
               <CustomText
-                label={"Rock"}
-                fontFamily={fonts.medium}
-                fontSize={12}
-                lineHeight={12 * 1.4}
-              />
-            </View>
-            <View style={styles.genrePill}>
-              <CustomText
-                label={"Soul"}
-                fontFamily={fonts.medium}
-                fontSize={12}
-                lineHeight={12 * 1.4}
+                label={"64%"}
+                fontFamily={fonts.semiBold}
+                lineHeight={14 * 1.4}
               />
             </View>
           </View>
 
-          <View style={styles.footerRow}>
+          {/* footer */}
+          <View>
             <CustomText
               label={
-                "Lead guitarist looking for a band. Into classic rock and blues."
+                profile?.role == "solo"
+                  ? profile?.display_name
+                  : profile?.bandName + ", " + getAgeFromDob(profile?.dob)
               }
-              fontSize={12}
-              lineHeight={12 * 1.4}
-              fontFamily={fonts.medium}
+              fontSize={44}
+              lineHeight={44 * 1.4}
+              fontFamily={fonts.abril}
             />
-            <Image source={PNGIcons.forward} style={styles.forwardIcon} />
-          </View>
 
-          {/* Dynamic Slider */}
-          <View style={styles.sliderContainer}>
-            <View style={styles.sliderTrack}>
-              {Array.from({ length: profile.images.length }).map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.block,
-                    {
-                      backgroundColor: "#FFFFFF17",
-                      borderRadius: 99,
-                      overflow: "hidden",
-                    },
-                  ]}
-                >
-                  {index === currentImageIndex && isCurrent && (
-                    <Animated.View
-                      style={[
-                        StyleSheet.absoluteFill,
-                        {
-                          backgroundColor: COLORS.authHeader,
-                          width: sliderAnimation.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: ["0%", "100%"],
-                          }),
-                        },
-                      ]}
+            <View style={styles.locationRow}>
+              <Image source={PNGIcons.pin} style={styles.pinIcon} />
+              <CustomText
+                label={profile?.address?.address || "Location"}
+                fontSize={12}
+                lineHeight={12 * 1.4}
+                fontFamily={fonts.medium}
+                marginLeft={3}
+              />
+              <CustomText
+                label={`${distanceKm.toFixed(1)} km`}
+                fontSize={12}
+                lineHeight={12 * 1.4}
+                color={COLORS.white2}
+                fontFamily={fonts.medium}
+                marginLeft={4}
+              />
+            </View>
+
+            <CustomText
+              label={"528 monthly profile views"}
+              fontSize={11}
+              fontFamily={fonts.medium}
+              marginTop={8}
+            />
+            {profile?.premium && (
+              <>
+                <CustomText
+                  label={"Shares the same passion for"}
+                  fontSize={11}
+                  fontFamily={fonts.medium}
+                  marginTop={8}
+                />
+                <View style={[styles.genreRow, { marginBottom: 0 }]}>
+                  <View
+                    style={[
+                      styles.genrePill,
+                      {
+                        borderWidth: 1,
+                        borderColor: "#A19375",
+                        backgroundColor: "#FFCF83" + 40,
+                      },
+                    ]}
+                  >
+                    <CustomText
+                      label={"Elvis Presley"}
+                      fontFamily={fonts.medium}
+                      fontSize={12}
+                      lineHeight={12 * 1.4}
+                      color={"#FFCF83"}
                     />
-                  )}
-                  {index < currentImageIndex && isCurrent && (
-                    <View
-                      style={[
-                        StyleSheet.absoluteFill,
-                        {
-                          backgroundColor: COLORS.authHeader,
-                        },
-                      ]}
+                  </View>
+                  <View
+                    style={[
+                      styles.genrePill,
+                      {
+                        borderWidth: 1,
+                        borderColor: "#A19375",
+                        backgroundColor: "#FFCF83" + 40,
+                      },
+                    ]}
+                  >
+                    <CustomText
+                      label={"Michael Jackson"}
+                      fontFamily={fonts.medium}
+                      fontSize={12}
+                      lineHeight={12 * 1.4}
+                      color={"#FFCF83"}
                     />
-                  )}
+                  </View>
+                  <View
+                    style={[
+                      styles.genrePill,
+                      {
+                        borderWidth: 1,
+                        borderColor: "#A19375",
+                        backgroundColor: "#FFCF83" + 40,
+                      },
+                    ]}
+                  >
+                    <CustomText
+                      label={"& 34 more"}
+                      fontFamily={fonts.medium}
+                      fontSize={12}
+                      lineHeight={12 * 1.4}
+                      color={"#FFCF83"}
+                    />
+                  </View>
+                </View>
+              </>
+            )}
+
+            <View style={styles.genreRow}>
+              {profile?.Genres?.map((item, index) => (
+                <View style={styles.genrePill} key={index}>
+                  <CustomText
+                    label={item}
+                    fontFamily={fonts.medium}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                  />
                 </View>
               ))}
             </View>
+
+            <View style={styles.footerRow}>
+              <CustomText
+                label={profile?.profile?.bio}
+                fontSize={12}
+                lineHeight={12 * 1.4}
+                fontFamily={fonts.medium}
+              />
+              <Image source={PNGIcons.forward} style={styles.forwardIcon} />
+            </View>
+
+            {/* Dynamic Slider */}
+            <View style={styles.sliderContainer}>
+              <View style={styles.sliderTrack}>
+                {Array.from({ length: profile?.pictures?.length }).map(
+                  (_, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.block,
+                        {
+                          backgroundColor: "#FFFFFF17",
+                          borderRadius: 99,
+                          overflow: "hidden",
+                        },
+                      ]}
+                    >
+                      {index === currentImageIndex && isCurrent && (
+                        <Animated.View
+                          style={[
+                            StyleSheet.absoluteFill,
+                            {
+                              backgroundColor: COLORS.authHeader,
+                              width: sliderAnimation.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: ["0%", "100%"],
+                              }),
+                            },
+                          ]}
+                        />
+                      )}
+                      {index < currentImageIndex && isCurrent && (
+                        <View
+                          style={[
+                            StyleSheet.absoluteFill,
+                            {
+                              backgroundColor: COLORS.authHeader,
+                            },
+                          ]}
+                        />
+                      )}
+                    </View>
+                  )
+                )}
+              </View>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Animated Gradient Overlay - only for current card */}
-      {isCurrent && (
-        <Animated.View
-          style={[
-            styles.gradientOverlay,
-            {
-              opacity: gradientOpacity,
-              transform: [{ translateY: gradientTranslateY }],
-            },
-          ]}
-          pointerEvents="none"
-        >
-          <LinearGradient
-            colors={currentGradientColors}
-            start={{ x: 0.5, y: 1 }}
-            end={{ x: 0.5, y: 0 }}
-            style={styles.gradientFill}
-          />
-        </Animated.View>
-      )}
-    </TouchableOpacity>
-  );
+        {/* Animated Gradient Overlay - only for current card */}
+        {isCurrent && (
+          <Animated.View
+            style={[
+              styles.gradientOverlay,
+              {
+                opacity: gradientOpacity,
+                transform: [{ translateY: gradientTranslateY }],
+              },
+            ]}
+            pointerEvents="none"
+          >
+            <LinearGradient
+              colors={currentGradientColors}
+              start={{ x: 0.5, y: 1 }}
+              end={{ x: 0.5, y: 0 }}
+              style={styles.gradientFill}
+            />
+          </Animated.View>
+        )}
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -766,34 +811,37 @@ const HomeCard = ({ data }) => {
         </Animated.View>
       )}
 
-      {/* Current Card */}
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[
-          styles.cardWrapper,
-          styles.currentCard,
-          {
-            backgroundColor: currentProfile.premium ? "#FFCF83" : "#FFFFFF29",
-            transform: [
-              {
-                translateX: Animated.add(
-                  Animated.add(pan.x, translateX),
-                  gyroX
-                ),
-              },
-              {
-                translateY: Animated.add(
-                  Animated.add(pan.y, translateY),
-                  gyroY
-                ),
-              },
-              { rotate: combinedRotate },
-            ],
-          },
-        ]}
-      >
-        {renderCard(currentProfile, true)}
-      </Animated.View>
+      {currentProfile && (
+        <Animated.View
+          {...panResponder.panHandlers}
+          style={[
+            styles.cardWrapper,
+            styles.currentCard,
+            {
+              backgroundColor: currentProfile?.premium
+                ? "#FFCF83"
+                : "#FFFFFF29",
+              transform: [
+                {
+                  translateX: Animated.add(
+                    Animated.add(pan.x, translateX),
+                    gyroX
+                  ),
+                },
+                {
+                  translateY: Animated.add(
+                    Animated.add(pan.y, translateY),
+                    gyroY
+                  ),
+                },
+                { rotate: combinedRotate },
+              ],
+            },
+          ]}
+        >
+          {renderCard(currentProfile, true)}
+        </Animated.View>
+      )}
 
       {/* Bottom Buttons */}
       <View style={styles.bottomContainer}>

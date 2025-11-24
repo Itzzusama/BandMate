@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import InboxScreen from "../screens/Main/Chat/InboxScreen";
+import ReportChat from "../screens/Main/Chat/ReportChat";
 import FilterScreen from "../screens/Main/Home/FilterScreen";
 import Notification from "../screens/Main/Notification";
 
@@ -54,6 +55,7 @@ const MainStack = () => {
       <Stack.Screen name="AppLanguage" component={AppLanguage} />
       <Stack.Screen name="PicLocation" component={PicLocation} />
       <Stack.Screen name="SongsList" component={SongsList} />
+      <Stack.Screen name="ReportChat" component={ReportChat} />
     </Stack.Navigator>
   );
 };

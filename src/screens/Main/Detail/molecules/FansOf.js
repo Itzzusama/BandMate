@@ -13,6 +13,7 @@ import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
 import EditButton from "./EditButton";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 
 const artists = [
   { name: "Arctic Monkeys", img: ArtistImgs.img6 },
@@ -20,7 +21,7 @@ const artists = [
   { name: "Beastie Boys", img: ArtistImgs.img3 },
 ];
 
-const FansOf = ({ myPage }) => {
+const FansOf = ({ myPage, userData }) => {
   const navigation = useNavigation();
   return (
     <>
@@ -51,16 +52,16 @@ const FansOf = ({ myPage }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContainer}
         >
-          {artists.map((artist, index) => (
+          {userData?.Artists.map((artist, index) => (
             <TouchableOpacity key={index} activeOpacity={0.8}>
               <View style={styles.card}>
                 <Image
-                  source={artist.img}
+                  source={{ uri: artist.image }}
                   style={styles.image}
                   resizeMode="cover"
                 />
                 <CustomText
-                  label={artist.name}
+                  label={artist?.artist}
                   fontSize={12}
                   color={COLORS.white}
                   fontFamily={fonts.medium}

@@ -105,29 +105,29 @@ const AddPictures = () => {
   const handleNext = async () => {
     navigation.navigate("AddDescription");
 
-    // if (images.length < MAX_IMAGES) {
-    //   setError(`Please upload all ${MAX_IMAGES} pictures.`);
-    //   return;
-    // }
+    if (images.length < MAX_IMAGES) {
+      setError(`Please upload all ${MAX_IMAGES} pictures.`);
+      return;
+    }
 
-    // setIsLoading(true);
-    // try {
-    //   setError("");
-    //   const res = await put("user/profile", { pictures: images });
+    setIsLoading(true);
+    try {
+      setError("");
+      const res = await put("user/profile", { pictures: images });
 
-    //   if (res?.data?.success) {
-    //     dispatch(setUserData(res?.data?.user));
-    //     ToastMessage("Your photos have been uploaded successfully!", "success");
-    //     navigation.navigate("AddDescription");
-    //   } else {
-    //     setError("Failed to update profile. Please try again.");
-    //   }
-    // } catch (err) {
-    //   console.log("Submit error:", err);
-    //   setError("Something went wrong while saving.");
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      if (res?.data?.success) {
+        dispatch(setUserData(res?.data?.user));
+        ToastMessage("Your photos have been uploaded successfully!", "success");
+        navigation.navigate("AddDescription");
+      } else {
+        setError("Failed to update profile. Please try again.");
+      }
+    } catch (err) {
+      console.log("Submit error:", err);
+      setError("Something went wrong while saving.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBack = () => {

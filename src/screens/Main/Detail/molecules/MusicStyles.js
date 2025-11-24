@@ -4,13 +4,11 @@ import InfoCard from "./InfoCard";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
-import Icons from "../../../../components/Icons";
-import { PNGIcons } from "../../../../assets/images/icons";
+
 import EditButton from "./EditButton";
+import { useSelector } from "react-redux";
 
-const data = ["Blues", "Rock", "Soul"];
-
-const MusicStyles = ({ myPage }) => {
+const MusicStyles = ({ myPage, userData }) => {
   return (
     <View style={{ paddingHorizontal: 12 }}>
       <View style={styles.flexRow}>
@@ -29,7 +27,7 @@ const MusicStyles = ({ myPage }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
       >
-        {data.map((item, index) => (
+        {userData?.Genres?.map((item, index) => (
           <InfoCard key={index} name={item} showIcon type="music" />
         ))}
       </ScrollView>

@@ -16,7 +16,7 @@ const RootNavigation = () => {
     const missingGenres = !user?.Genres || user.Genres.length === 0;
     const missingImages = !user?.pictures || user.pictures.length === 0;
     return (
-      missingInstruments || missingArtists || missingGenres //|| missingImages
+      missingInstruments || missingArtists || missingGenres || missingImages
     );
   };
 

@@ -34,7 +34,9 @@ import {
 } from "../utils/LocationUtils";
 import ImageFast from "./ImageFast";
 import Icons from "./Icons";
+import { put } from "../services/ApiRequest";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ToastMessage } from "../utils/ToastMessage";
 const API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 
 // Custom Skeleton Loader Component
@@ -406,6 +408,26 @@ const CustomModalGooglePlaces = ({
 
       addToRecentSearches(locationData);
       onLocationSelect(locationData);
+      const payLoad = {
+        address: {
+          address: locationData.address,
+          location: {
+            type: "Point",
+            coordinates: [locationData?.longitude, locationData?.latitude],
+          },
+        },
+      };
+      console.log(payLoad);
+      try {
+        const res = await put("user/profile", payLoad);
+        if (res?.data?.success) {
+          ToastMessage(
+            res?.data?.message || "Profile updated successfully",
+            "success"
+          );
+        }
+      } catch (err) {}
+
       closeModal();
       return;
     }

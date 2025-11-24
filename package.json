@@ -33,6 +33,7 @@
     "@stripe/stripe-react-native": "^0.56.0",
     "axios": "^1.10.0",
     "formik": "^2.4.6",
+    "geolib": "^3.3.4",
     "glob": "^11.0.3",
     "jwt-decode": "^4.0.0",
     "moment": "^2.30.1",

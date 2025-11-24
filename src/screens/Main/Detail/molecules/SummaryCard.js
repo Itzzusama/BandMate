@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginHorizontal: 12,
     marginBottom: 18,
-    marginTop:16
+    marginTop: 16,
   },
   statsContainer: {
     flexDirection: "row",
@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   statItem: {
-    flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
   statValue: {
     fontSize: 16,

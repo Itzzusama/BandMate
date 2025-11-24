@@ -80,6 +80,7 @@ const Chat = () => {
       );
       if (res?.data?.success) {
         setChatData(res?.data?.data);
+        console.log("no res", res?.data?.data);
       }
     } catch (err) {
     } finally {
@@ -90,42 +91,6 @@ const Chat = () => {
   useEffect(() => {
     getChats();
   }, []);
-
-  // const chatData = [
-  //   {
-  //     _id: 1,
-  //     otherUser: {
-  //       _id: 2,
-  //       name: "John Doe",
-  //     },
-  //     lastMessage: {
-  //       _id: 3,
-  //       content: "Hello, how are you?",
-  //     },
-  //   },
-  //   {
-  //     _id: 2,
-  //     otherUser: {
-  //       _id: 42,
-  //       name: "John Doe",
-  //     },
-  //     lastMessage: {
-  //       _id: 332,
-  //       content: "What is the price of the car?",
-  //     },
-  //   },
-  //   {
-  //     _id: 3,
-  //     otherUser: {
-  //       _id: 42,
-  //       name: "John Doe",
-  //     },
-  //     lastMessage: {
-  //       _id: 332,
-  //       content: "What is the price of the car?",
-  //     },
-  //   },
-  // ];
 
   return (
     <ScreenWrapper
@@ -150,7 +115,7 @@ const Chat = () => {
 
       <Divider thickness={5} marginVertical={9} />
 
-      <View style={styles.headerSection}>
+      {/* <View style={styles.headerSection}>
         <View style={styles.row}>
           <View style={styles.row}>
             <ImageFast
@@ -219,7 +184,7 @@ const Chat = () => {
         />
       </View>
 
-      <Divider thickness={5} marginVertical={0} />
+      <Divider thickness={5} marginVertical={0} /> */}
 
       <View style={[styles.headerSection, { marginTop: 10 }]}>
         <View style={styles.row}>

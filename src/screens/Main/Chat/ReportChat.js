@@ -11,13 +11,13 @@ import CustomButton from "../../../components/CustomButton";
 
 const InfoBox = ({ title }) => (
   <View style={styles.info}>
-    <Icons name={"info"} family={"Feather"} size={12} color={COLORS.subtitle} />
+    <Icons name={"info"} family={"Feather"} size={12} color={COLORS.white3} />
     <CustomText
       fontSize={12}
       label={title}
       lineHeight={12 * 1.4}
       textTransform={"none"}
-      color={COLORS.subtitle}
+      color={COLORS.white3}
     />
   </View>
 );
@@ -28,7 +28,7 @@ const ReportChat = () => {
       scrollEnabled
       headerUnScrollable={() => <Header title={"Submit a report"} />}
     >
-      <View style={styles.topRow}>
+      {/* <View style={styles.topRow}>
         <View style={styles.stepBox}>
           <CustomText label={"1"} fontFamily={fonts.medium} fontSize={12} />
         </View>
@@ -36,7 +36,7 @@ const ReportChat = () => {
         <View style={styles.stepBox}>
           <CustomText label={"2"} fontFamily={fonts.medium} fontSize={12} />
         </View>
-      </View>
+      </View> */}
       <CustomText
         fontSize={16}
         label={"Author"}
@@ -55,7 +55,7 @@ const ReportChat = () => {
           <CustomText
             lineHeight={1.4 * 14}
             label={"Solo Artist"}
-            color={COLORS.subtitle}
+            color={COLORS.white3}
           />
         </View>
       </View>
@@ -76,12 +76,17 @@ const ReportChat = () => {
           />
           <CustomText
             lineHeight={1.4 * 14}
-            color={COLORS.subtitle}
+            color={COLORS.white3}
             label={"Inappropriate images/videos shared."}
           />
         </View>
         <TouchableOpacity>
-          <Icons name={"chevron-down"} family={"Entypo"} size={22} />
+          <Icons
+            name={"chevron-down"}
+            family={"Entypo"}
+            size={22}
+            color={COLORS.white2}
+          />
         </TouchableOpacity>
       </View>
       <InfoBox
@@ -120,7 +125,7 @@ const ReportChat = () => {
         alignSelf={"center"}
         lineHeight={12 * 1.4}
         textTransform={"none"}
-        color={COLORS.subtitle}
+        color={COLORS.white3}
         label={"🤝 Thank you for keeping move a safe space."}
       />
     </ScreenWrapper>
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   userBox: {
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.inputBg,
     borderRadius: 12,
     padding: 12,
     marginTop: 12,
@@ -173,7 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.inputBg,
     paddingVertical: 8,
   },
   info: {
@@ -183,7 +188,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   input: {
-    backgroundColor: COLORS.lightGray,
+    backgroundColor: COLORS.inputBg,
     borderRadius: 12,
     height: 104,
     paddingHorizontal: 12,

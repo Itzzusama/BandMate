@@ -24,18 +24,29 @@ const Home = ({ navigation }) => {
   const [profileData, setProfileData] = useState([]);
   const [refreshing, setRefreshing] = useState(true);
 
-  const getUserProfile = async () => {
-    setRefreshing(true);
+  const getUserProfile = async (selectedTab = tab) => {
     try {
-      const response = await get("matching/recommendations");
-      setProfileData(response.data?.recommendations);
+      setRefreshing(true);
+
+      let url = "matching/recommendations";
+
+      if (selectedTab === "Nearby") {
+        url += "?distance=2";
+      }
+
+      const response = await get(url);
+
+      setProfileData(response.data?.recommendations || []);
       setRefreshing(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log("getUserProfile error", error);
+      setRefreshing(false);
+    }
   };
 
   useEffect(() => {
     getUserProfile();
-  }, [isFocus]);
+  }, [isFocus, tab]);
 
   return (
     <ScreenWrapper
@@ -79,7 +90,11 @@ const Home = ({ navigation }) => {
             <ActivityIndicator size={"large"} />
           </View>
         ) : (
-          <HomeCard data={profileData} />
+          <HomeCard
+            data={profileData}
+            getUserProfile={getUserProfile}
+            tab={tab}
+          />
         )}
       </LinearGradient>
     </ScreenWrapper>
