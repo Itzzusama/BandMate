@@ -1,13 +1,13 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import React from "react";
 import SearchInput from "../../../../components/SearchInput";
-import Icons from "../../../../components/Icons";
 import { COLORS } from "../../../../utils/COLORS";
 import { useNavigation } from "@react-navigation/native";
 import { PNGIcons } from "../../../../assets/images/icons";
-const SearchEventHeader = () => {
+
+const SearchEventHeader = ({ query, setQuery }) => {
   const navigation = useNavigation();
-  const [query, setQuery] = useState("");
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
@@ -17,6 +17,7 @@ const SearchEventHeader = () => {
           isCross
           value={query}
           onChangeText={(text) => setQuery(text)}
+          isClear={() => setQuery("")}
         />
       </View>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useEffectEvent, useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -14,9 +14,60 @@ import { TOP_LANGUAGES } from "../../../utils/TOP_LANGUAGES";
 import CountryFlag from "react-native-country-flag";
 import Icons from "../../../components/Icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-const AppLanguage = () => {
-  const [selectedLang, setSelectedLang] = useState("English (US)");
+import { setUserData } from "../../../store/reducer/usersSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastMessage } from "../../../utils/ToastMessage";
+import { put } from "../../../services/ApiRequest";
+const AppLanguage = ({ navigation }) => {
+  const { userData } = useSelector((state) => state.users);
+  console.log(userData);
+  const [selectedLang, setSelectedLang] = useState("");
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (userData?.profile?.language) {
+      const userLanguage = userData.profile.language;
+
+      const foundLanguage = TOP_LANGUAGES.find(
+        (lang) =>
+          lang.language.toLowerCase() === userLanguage.toLowerCase() ||
+          lang.native.toLowerCase().includes(userLanguage.toLowerCase())
+      );
+
+      if (foundLanguage) {
+        setSelectedLang(foundLanguage.language);
+      }
+    }
+  }, [userData]);
+  const handleSelectLanguage = async (language) => {
+    setSelectedLang(language);
+    setLoading(true);
+
+    const body = {
+      profile: {
+        language: language.toLowerCase(),
+      },
+    };
+    try {
+      const response = await put("user/profile", body);
+
+      if (response?.data?.success) {
+        dispatch(setUserData(response.data.user));
+        ToastMessage("Language updated", "success");
+        setLoading(false);
+        navigation.goBack();
+      } else {
+        ToastMessage("Failed to update profile", "error");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      ToastMessage("Failed to update language", "error");
+      setLoading(false);
+    }
+  };
   return (
     <ScreenWrapper
       scrollEnabled
@@ -47,13 +98,11 @@ const AppLanguage = () => {
                     : "rgba(255,255,255,0.08)",
               },
             ]}
-            onPress={() => setSelectedLang(item.language)}
+            onPress={() => handleSelectLanguage(item.language)}
             activeOpacity={0.7}
+            disabled={loading || selectedLang === item.language}
           >
             <View style={styles.langLeft}>
-              {/* Rounded Flag */}
-
-              {/* Language Text */}
               <View>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View style={styles.roundFlagContainer}>

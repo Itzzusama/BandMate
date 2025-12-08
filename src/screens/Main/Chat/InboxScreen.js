@@ -216,7 +216,6 @@ const InboxScreen = ({ route }) => {
 
   return (
     <ScreenWrapper
-      scrollEnabled
       statusBarColor="rgba(38, 38, 38, 0.64)"
       paddingHorizontal={12}
       headerUnScrollable={() => (

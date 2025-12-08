@@ -15,6 +15,7 @@ import TopTabWithBG from "../../../components/TopTabWithBG";
 import { get } from "../../../services/ApiRequest";
 import HomeCard from "./molecules/HomeCard";
 import HomeHeader from "./molecules/HomeHeader";
+import { useSelector } from "react-redux";
 
 const Home = ({ navigation }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -26,8 +27,6 @@ const Home = ({ navigation }) => {
 
   const getUserProfile = async (selectedTab = tab) => {
     try {
-      setRefreshing(true);
-
       let url = "matching/recommendations";
 
       if (selectedTab === "Nearby") {
@@ -46,7 +45,7 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     getUserProfile();
-  }, [isFocus, tab]);
+  }, [tab]);
 
   return (
     <ScreenWrapper
@@ -65,17 +64,20 @@ const Home = ({ navigation }) => {
         locations={[1, 0]}
         style={styles.gradientContainer}
       >
-        <TopTabWithBG
-          alignSelf="center"
-          tabNames={["For You", "Nearby"]}
-          tab={tab}
-          setTab={setTab}
-          marginBottom={0.1}
-          marginTop={12}
-          height={40}
-          activeFontFamily={fonts.medium}
-          width={"55%"}
-        />
+        {profileData?.length > 0 && (
+          <TopTabWithBG
+            alignSelf="center"
+            tabNames={["For You", "Nearby"]}
+            tab={tab}
+            setTab={setTab}
+            marginBottom={0.1}
+            marginTop={12}
+            height={40}
+            activeFontFamily={fonts.medium}
+            width={"55%"}
+          />
+        )}
+
         {refreshing ? (
           <View
             style={{

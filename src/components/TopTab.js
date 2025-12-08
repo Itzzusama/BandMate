@@ -26,15 +26,15 @@ const TopTab = ({
   paddingHorizontal = 10,
   fontFamily = fonts.medium,
   scrollViewPaddingHorizontal = 0,
-  activeColor = "white",
+  activeColor = COLORS.cardColor,
   imgMarginRight,
   borderRadius,
   oval,
   borderWidth,
   borderColor,
   ovalBg,
-  activeTintColor = COLORS.black,
-  inactiveTintColor = COLORS.white,
+  activeTintColor = COLORS.cardColor,
+  inactiveTintColor = COLORS.white2,
 }) => {
   return (
     <>
@@ -56,13 +56,13 @@ const TopTab = ({
               style={[
                 styles.roundedContainer,
                 {
-                  borderWidth,
-                  borderColor,
+                  borderWidth: tab == index ? 0 : 1,
+                  borderColor: tab == index ? COLORS.black : COLORS.cardColor,
                   borderRadius: borderRadius || 99,
                   backgroundColor:
                     tab == index
                       ? activeColor || COLORS.primaryColor
-                      : ovalBg || "#FFFFFF0A",
+                      : ovalBg || COLORS.black,
                   height: height || 34,
                   paddingVertical: paddingVertical,
                   paddingHorizontal: paddingHorizontal,
@@ -95,10 +95,10 @@ const TopTab = ({
                     oval && tab == index
                       ? COLORS.buttonColor
                       : rounded && tab == index
-                      ? COLORS.black
+                      ? COLORS.white
                       : oval
                       ? COLORS.buttonColor
-                      : COLORS.white
+                      : COLORS.white2
                   }
                 />
               ) : null}

@@ -9,7 +9,7 @@ import Video from "react-native-video";
 import Icons from "../../../../components/Icons";
 import { COLORS } from "../../../../utils/COLORS";
 
-const SimpleVideoPlayer = ({ videoSource }) => {
+const SimpleVideoPlayer = ({ videoSource, isReply }) => {
   const videoRef = useRef(null);
   const [paused, setPaused] = useState(true);
   const [isBuffering, setIsBuffering] = useState(false);

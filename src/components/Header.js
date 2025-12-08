@@ -8,6 +8,7 @@ import { COLORS } from "../utils/COLORS";
 import fonts from "../assets/fonts";
 import { PNGIcons } from "../assets/images/icons";
 import CustomButton from "./CustomButton";
+import { Images } from "../assets/images";
 
 const Header = ({
   title,
@@ -81,12 +82,7 @@ const Header = ({
             ]}
             onPress={onBackPress ? onBackPress : handleGoBack}
           >
-            <Icons
-              name="keyboard-arrow-left"
-              family="MaterialIcons"
-              size={20}
-              color={textColor || COLORS.primaryColor}
-            />
+            <Image source={Images.app_back} style={{ height: 24, width: 24 }} />
           </TouchableOpacity>
         )}
         {isImage && (
@@ -166,7 +162,7 @@ const Header = ({
             <Image
               source={PNGIcons.bag}
               tintColor={COLORS.black}
-              style={{ width: 20, height: 20 }}
+              style={{ width: 20, height: 20, tintColor: COLORS.white }}
             />
           </TouchableOpacity>
         ) : null}

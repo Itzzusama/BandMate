@@ -37,7 +37,7 @@ const AddPictures = () => {
   const totalSteps = userData?.role == "band" ? 15 : 16;
   const cameraRef = useRef(null);
   const [images, setImages] = useState([]);
-  const [uploading, setUploading] = useState([]); // individual image loaders
+  const [uploading, setUploading] = useState([]);
   const [error, setError] = useState("");
   const [imageModal, setImageModal] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
@@ -103,8 +103,6 @@ const AddPictures = () => {
   };
 
   const handleNext = async () => {
-    navigation.navigate("AddDescription");
-
     if (images.length < MAX_IMAGES) {
       setError(`Please upload all ${MAX_IMAGES} pictures.`);
       return;

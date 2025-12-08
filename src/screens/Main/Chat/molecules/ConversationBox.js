@@ -9,8 +9,9 @@ import { COLORS } from "../../../../utils/COLORS";
 
 const ConversationBox = ({ item, isChat }) => {
   const navigation = useNavigation();
-  console.log(item);
+  console.log("******", item);
   const otherUser = item?.otherUser;
+  console.log(otherUser);
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return "00:00";
     const mins = Math.floor(seconds / 60);
@@ -208,7 +209,7 @@ const ConversationBox = ({ item, isChat }) => {
       </View>
 
       <View style={styles.row}>
-        {!item?.isRequest && (
+        {/* {!item?.isRequest && (
           <View style={styles.badge}>
             <CustomText
               label={10}
@@ -218,7 +219,7 @@ const ConversationBox = ({ item, isChat }) => {
               fontFamily={fonts.medium}
             />
           </View>
-        )}
+        )} */}
 
         {!item?.isRequest && (
           <TouchableOpacity>

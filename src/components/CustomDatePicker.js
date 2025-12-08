@@ -25,6 +25,8 @@ const CustomDatePicker = ({
   height = 56,
   isIcon = false,
   isIcon1 = false,
+  minDate,
+  hideError = false,
 }) => {
   const [isModal, setModal] = useState(false);
   const [showSuccessColor, setShowSuccessColor] = useState(false);
@@ -41,11 +43,8 @@ const CustomDatePicker = ({
     setPrevError(error);
   }, [error]);
 
-  // ✅ Choose formatted text for display
   const formattedLabel = value
-    ? moment(value).format(
-        type === "date" ? "MMMM DD, YYYY" : "h:mm A" // 🧠 "April 10, 2027"
-      )
+    ? moment(value).format(type === "date" ? "MMMM DD, YYYY" : "h:mm A")
     : placeholder;
 
   return (
@@ -77,6 +76,7 @@ const CustomDatePicker = ({
             justifyContent: isIcon ? "space-between" : "center",
           },
         ]}
+        activeOpacity={0.8}
       >
         <View style={isIcon ? styles.contentContainer : null}>
           {withLabel && (
@@ -94,12 +94,12 @@ const CustomDatePicker = ({
           <View style={isIcon1 ? styles.dateRow : null}>
             {isIcon1 && (
               <Image
-                source={Images.smallCalender}
+                source={type == "time" ? Images.timer : Images.smallCalender}
                 style={{
                   height: 16,
                   width: 16,
                   marginRight: 4,
-                  tintColor: COLORS.btnColor,
+                  tintColor: COLORS.white3,
                 }}
               />
             )}
@@ -131,7 +131,7 @@ const CustomDatePicker = ({
         )}
       </TouchableOpacity>
 
-      {(error || defaultError) && (
+      {!hideError && (error || defaultError) && (
         <ErrorComponent
           error={error}
           isValid={showSuccessColor}
@@ -158,7 +158,8 @@ const CustomDatePicker = ({
           mode={type}
           theme="dark"
           textColor={COLORS.black}
-          maximumDate={maxDate || new Date()}
+          {...(maxDate ? { maximumDate: maxDate || new Date() } : {})}
+          {...(minDate ? { minimumDate: minDate } : {})}
         />
       )}
     </>

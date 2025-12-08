@@ -7,10 +7,12 @@ import { COLORS } from "../../../../utils/COLORS";
 import Icons from "../../../../components/Icons";
 import { PNGIcons } from "../../../../assets/images/icons";
 import EditButton from "./EditButton";
+import { useNavigation } from "@react-navigation/native";
 
 const data = ["English", "French", "German"];
 
-const Language = ({ myPage }) => {
+const Language = ({ myPage, userData }) => {
+  const navigation = useNavigation();
   return (
     <View style={{ paddingHorizontal: 12 }}>
       <View style={styles.flexRow}>
@@ -21,7 +23,9 @@ const Language = ({ myPage }) => {
           fontSize={17}
           lineHeight={17 * 1.4}
         />
-        {myPage && <EditButton />}
+        {myPage && (
+          <EditButton onPress={() => navigation.navigate("AppLanguage")} />
+        )}
       </View>
 
       <ScrollView
@@ -29,9 +33,7 @@ const Language = ({ myPage }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
       >
-        {data.map((item, index) => (
-          <InfoCard key={index} name={item} showIcon type="language" />
-        ))}
+        <InfoCard name={userData?.profile?.language} showIcon type="language" />
       </ScrollView>
     </View>
   );

@@ -62,7 +62,7 @@ const SkeletonLoader = ({ type = "default", style }) => {
 
   const interpolatedBackground = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ["#e0e0e0", "#c0c0c0"],
+    outputRange: [COLORS.cardColor, COLORS.inputBg],
   });
 
   if (type === "prediction") {
@@ -161,6 +161,7 @@ const CustomModalGooglePlaces = ({
   onLocationSelect,
   initialValue = "",
   debounceDelay = 300,
+  isEvent = false,
 }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -394,6 +395,7 @@ const CustomModalGooglePlaces = ({
   );
 
   const handlePredictionPress = async (item) => {
+    console.log(item);
     if (item?.latitude && item?.longitude) {
       const locationData = {
         address: item.description || item.address,
@@ -417,16 +419,17 @@ const CustomModalGooglePlaces = ({
           },
         },
       };
-      console.log(payLoad);
-      try {
-        const res = await put("user/profile", payLoad);
-        if (res?.data?.success) {
-          ToastMessage(
-            res?.data?.message || "Profile updated successfully",
-            "success"
-          );
-        }
-      } catch (err) {}
+      if (!isEvent) {
+        try {
+          const res = await put("user/profile", payLoad);
+          if (res?.data?.success) {
+            ToastMessage(
+              res?.data?.message || "Profile updated successfully",
+              "success"
+            );
+          }
+        } catch (err) {}
+      }
 
       closeModal();
       return;

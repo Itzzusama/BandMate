@@ -6,7 +6,7 @@ import { setSpotifyTokens } from "../store/reducer/spotifyAuthSlice";
 const config = {
   clientId: endPoints.clientId,
   clientSecret: endPoints.clientSecret,
-  redirectUrl: "com.chainai.app://oauth/", // "com.solagroup.bandmate://oauth/"
+  redirectUrl: "com.solagroup.bandmate://oauth/", //"com.chainai.app://oauth/"
   scopes: [
     "user-read-email",
     "user-top-read",
@@ -126,10 +126,10 @@ export const checkSpotifyTokenValidity = () => async (dispatch) => {
     return dispatch(refreshSpotifyToken());
   }
 
-  return dispatch(loginWithSpotify());
+  return null;
 };
 
-const getAccessToken = async (dispatch) => {
+const getAccessToken = () => async (dispatch) => {
   try {
     const token = await dispatch(checkSpotifyTokenValidity());
     console.log("sp token", token);

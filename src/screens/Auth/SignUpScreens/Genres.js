@@ -22,7 +22,9 @@ import { genres } from "../../../utils/constants";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import AuthHeader from "../../../components/Auth/AuthHeader";
 import AuthFooter from "../../../components/Auth/AuthFooter";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import Header from "../../../components/Header";
+import CustomButton from "../../../components/CustomButton";
 
 const Genres = () => {
   const { width } = useWindowDimensions();
@@ -38,6 +40,7 @@ const Genres = () => {
   const [prevError, setPrevError] = useState("");
   const [showSuccessColor, setShowSuccessColor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const route = useRoute();
 
   useEffect(() => {
     if (prevError && !error) {
@@ -78,6 +81,11 @@ const Genres = () => {
       return;
     }
     setError("");
+    if (route?.params?.fromScreen === "Event") {
+      route?.params?.onSelect(selectedGenres);
+      navigation.goBack();
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -148,20 +156,35 @@ const Genres = () => {
     <ScreenWrapper
       paddingBottom={12}
       scrollEnabled
-      footerUnScrollable={() => (
-        <AuthFooter
-          paddingHorizontal={12}
-          onPress={handleNext}
-          onBackPress={handleBack}
-          btnLoading={isLoading}
+      footerUnScrollable={() =>
+        route?.params?.fromScreen === "Event" ? (
+          <View style={{ padding: 12 }}>
+            <CustomButton
+              title={"Submit"}
+              marginBottom={24}
+              onPress={handleNext}
+            />
+          </View>
+        ) : (
+          <AuthFooter
+            paddingHorizontal={12}
+            onPress={handleNext}
+            onBackPress={handleBack}
+            btnLoading={isLoading}
+          />
+        )
+      }
+      headerUnScrollable={() =>
+        route?.params?.fromScreen === "Event" && <Header title={"Add Genres"} />
+      }
+    >
+      {route?.params?.fromScreen !== "Event" && (
+        <AuthHeader
+          step={step}
+          totalSteps={totalSteps}
+          subtitle="Select your favorite genres"
         />
       )}
-    >
-      <AuthHeader
-        step={step}
-        totalSteps={totalSteps}
-        subtitle="Select your favorite genres"
-      />
 
       <View style={styles.container}>
         <CustomText

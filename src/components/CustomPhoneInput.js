@@ -135,6 +135,7 @@ const CustomPhoneInput = ({
             height,
             width: isChange ? "auto" : "100%",
             borderRadius: borderRadius || 10,
+            borderWidth: error ? 1 : 0,
             backgroundColor: error
               ? "#EE10450A"
               : showSuccessColor

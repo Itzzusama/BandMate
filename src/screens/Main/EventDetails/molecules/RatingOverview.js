@@ -1,0 +1,157 @@
+import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
+import React from "react";
+import { COLORS } from "../../../../utils/COLORS";
+import CustomText from "../../../../components/CustomText";
+import fonts from "../../../../assets/fonts";
+import Icons from "../../../../components/Icons";
+import { Images } from "../../../../assets/images";
+
+const RatingOverview = ({
+  name = "Alté–Rèbè Festival",
+  rating = 4.7,
+  reviews = "1.2k",
+  tags = ["Pop", "Dancehall"],
+  discount = "-20%",
+  stock = "Less than 5 left!",
+  isBest = true,
+}) => {
+  return (
+    <TouchableOpacity activeOpacity={0.9} style={styles.card}>
+      <View style={styles.discount}>
+        <CustomText
+          label={discount}
+          fontSize={16}
+          fontFamily={fonts.medium}
+          color={COLORS.black}
+        />
+      </View>
+      <View style={styles.topRow}>
+        <View style={styles.ratingRow}>
+          {[...Array(5)].map((_, i) => (
+            <Image
+              source={Images.star}
+              style={{ height: 20, width: 20, resizeMode: "contain" }}
+            />
+          ))}
+
+          <CustomText
+            label={` ${rating}`}
+            fontSize={16}
+            fontFamily={fonts.semiBold}
+            color={COLORS.white2}
+          />
+
+          <CustomText
+            label={` (${reviews} reviews)`}
+            fontSize={12}
+            color={COLORS.white2}
+            fontFamily={fonts.medium}
+          />
+
+          {isBest && (
+            <View style={styles.bestTag}>
+              <CustomText
+                label="Best"
+                fontSize={12}
+                fontFamily={fonts.medium}
+                color={COLORS.btnColor}
+              />
+            </View>
+          )}
+        </View>
+      </View>
+
+      <View style={styles.tagRow}>
+        {tags.map((tag, index) => (
+          <View key={index} style={styles.tag}>
+            <CustomText label={tag} fontSize={12} color={COLORS.white} />
+          </View>
+        ))}
+      </View>
+      <CustomText
+        label={name}
+        fontSize={24}
+        fontFamily={fonts.semiBold}
+        color={COLORS.white}
+        style={styles.title}
+      />
+      <View style={styles.stock}>
+        <CustomText
+          label={stock}
+          fontSize={12}
+          fontFamily={fonts.medium}
+          color={COLORS.btnColor}
+        />
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+export default RatingOverview;
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 12,
+    marginTop: 8,
+    marginVertical: 12,
+
+    backgroundColor: COLORS.black,
+    borderRadius: 18,
+  },
+
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  ratingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  bestTag: {
+    backgroundColor: "#A1937529",
+    marginLeft: 6,
+    borderRadius: 4,
+    paddingHorizontal: 3,
+  },
+
+  discount: {
+    backgroundColor: COLORS.btnColor,
+    height: 56,
+    width: 56,
+    borderRadius: 99,
+    alignItems: "center",
+    justifyContent: "center",
+    right: 0,
+    position: "absolute",
+    top: 3,
+  },
+
+  tagRow: {
+    flexDirection: "row",
+    marginTop: 8,
+    gap: 6,
+    marginBottom: 12,
+  },
+
+  tag: {
+    backgroundColor: COLORS.cardColor,
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+
+  title: {
+    marginTop: 10,
+  },
+
+  stock: {
+    marginTop: 12,
+    backgroundColor: "#A193750A",
+    alignSelf: "flex-start",
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+});

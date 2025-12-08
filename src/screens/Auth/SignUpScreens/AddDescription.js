@@ -12,7 +12,7 @@ import AuthFooter from "../../../components/Auth/AuthFooter";
 
 import fonts from "../../../assets/fonts";
 import { COLORS } from "../../../utils/COLORS";
-import { put } from "../../../services/ApiRequest";
+import { get, put } from "../../../services/ApiRequest";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { ToastMessage } from "../../../utils/ToastMessage";
 import CustomButton from "../../../components/CustomButton";
@@ -58,7 +58,8 @@ const AddDescription = () => {
       });
 
       if (res?.data?.success) {
-        dispatch(setUserData(res?.data?.user));
+        const resp = await get("user/me");
+        dispatch(setUserData(resp?.data?.data));
         ToastMessage("Profile updated successfully!", "success");
         if (fromScreen == "Home") {
           navigation.goBack();
@@ -147,6 +148,7 @@ const AddDescription = () => {
             paddingVertical={10}
             height={104}
             editable={!isLoading}
+            showErrorMessage={false}
             onChangeText={(text) => {
               setDescription(text);
               if (error) {
@@ -160,6 +162,7 @@ const AddDescription = () => {
           <ErrorComponent
             errorTitle={`Maximum ${description.length}/${MAX_LENGTH} characters.`}
             color={error ? "#EE1045" : showSuccessColor ? COLORS.success : ""}
+            error={error}
           />
         </View>
       </View>

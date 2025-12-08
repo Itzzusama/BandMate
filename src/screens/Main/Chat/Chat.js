@@ -80,7 +80,7 @@ const Chat = () => {
       );
       if (res?.data?.success) {
         setChatData(res?.data?.data);
-        console.log("no res", res?.data?.data);
+        console.log("no resggg", res?.data?.data);
       }
     } catch (err) {
     } finally {

@@ -5,10 +5,12 @@ import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import CustomText from "../../../../components/CustomText";
 import ConnentAccount from "./ConnentAccount";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { loginWithSpotify } from "../../../../services/spotifyAuthService";
 
 const PopularRelease = ({ title, data, showDots, name, onSeeAllPress }) => {
   const { accessToken } = useSelector((state) => state?.spotifyAuth);
+  const dispatch = useDispatch();
   return (
     <View>
       <View style={{ paddingHorizontal: 12 }}>
@@ -37,7 +39,13 @@ const PopularRelease = ({ title, data, showDots, name, onSeeAllPress }) => {
             onPress={onSeeAllPress}
           />
         </View>
-        {!accessToken && <ConnentAccount bottom={16} accName={name} />}
+        {!accessToken && name == "Spotify" && (
+          <ConnentAccount
+            bottom={16}
+            accName={name}
+            onPress={() => dispatch(loginWithSpotify())}
+          />
+        )}
         {name == "SoundCloud" && <ConnentAccount bottom={16} accName={name} />}
         {data?.map((item, index) => (
           <View style={[styles.row, { marginBottom: 16 }]} key={index}>

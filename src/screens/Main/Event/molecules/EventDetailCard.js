@@ -7,20 +7,26 @@ import ImageFast from "../../../../components/ImageFast";
 import { EventImages } from "../../../../assets/images/eventImages";
 import { PNGIcons } from "../../../../assets/images/icons";
 import Icons from "../../../../components/Icons";
+import {
+  formatDateToDayMonth,
+  getDay,
+  getShortMonth,
+} from "../../../../utils/constants";
 
-const EventDetailCard = ({ marginBottom }) => {
+const EventDetailCard = ({ marginBottom, data }) => {
+  console.log(data);
   return (
     <View style={[styles.container, { marginBottom: marginBottom }]}>
       <View style={styles.dateContainer}>
         <CustomText
-          label="MAR"
+          label={getShortMonth(data?.startDate)}
           fontSize={16}
           color={COLORS.white3}
           lineHeight={16 * 1.4}
           textAlign="center"
         />
         <CustomText
-          label="31"
+          label={getDay(data?.startDate)}
           color={COLORS.white}
           fontSize={30}
           lineHeight={30 * 1.4}
@@ -31,7 +37,7 @@ const EventDetailCard = ({ marginBottom }) => {
 
       <View style={styles.rightContainer}>
         <View style={styles.imageWrapper}>
-          <ImageFast source={EventImages.eventImg2} style={styles.img}>
+          <ImageFast source={{ uri: data?.media[0]?.url }} style={styles.img}>
             <Image source={PNGIcons.logo} style={styles.icon} />
           </ImageFast>
         </View>
@@ -70,7 +76,7 @@ const EventDetailCard = ({ marginBottom }) => {
         </View>
 
         <CustomText
-          label="COMING ON 31 MARCH"
+          label={"COMING ON " + formatDateToDayMonth(data?.startDate)}
           fontSize={14}
           fontFamily={fonts.medium}
           color={COLORS.white}
@@ -80,7 +86,7 @@ const EventDetailCard = ({ marginBottom }) => {
         />
 
         <CustomText
-          label="Kill Boksoon"
+          label={data?.eventName}
           fontSize={28}
           fontFamily={fonts.abril}
           color={COLORS.white}
@@ -95,16 +101,20 @@ const EventDetailCard = ({ marginBottom }) => {
             color={COLORS.gray6}
           />
           <CustomText
-            label="ROCK, R’N’B, POP"
+            label={data?.genres.join(", ")}
             fontSize={12}
             color={COLORS.gray6}
             fontFamily={fonts.medium}
             marginLeft={7}
+            marginRight={12}
           />
         </View>
 
         <CustomText
-          label="At work, she’s a renowned assassin. At home, she’s a single mom to a teenage daughter. Killing? That’s easy. It’s parenting that’s the hard part."
+          label={
+            data?.aboutThisEvent ||
+            "At work, she’s a renowned assassin. At home, she’s a single mom to a teenage daughter. Killing? That’s easy. It’s parenting that’s the hard part."
+          }
           fontSize={12}
           color={COLORS.gray6}
           lineHeight={12 * 1.3}
@@ -172,6 +182,7 @@ const styles = StyleSheet.create({
     height: 170,
     borderRadius: 8,
     resizeMode: "cover",
+    backgroundColor: COLORS.cardColor,
   },
   imageHeader: {
     position: "absolute",

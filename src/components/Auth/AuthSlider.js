@@ -1,10 +1,21 @@
 import { StyleSheet, View } from "react-native";
 import { COLORS } from "../../utils/COLORS";
 
-const AuthSlider = ({ min, max, marginTop, marginBottom, gap, height = 4 }) => {
+const AuthSlider = ({
+  min,
+  max,
+  marginTop,
+  marginBottom,
+  gap,
+  height = 4,
+  marginHorizontal,
+}) => {
   return (
     <View
-      style={[styles.container, { marginTop: marginTop || 20, marginBottom }]}
+      style={[
+        styles.container,
+        { marginTop: marginTop || 20, marginBottom, marginHorizontal },
+      ]}
     >
       <View style={[styles.sliderTrack, { gap }]}>
         {Array.from({ length: max }).map((_, index) => (
@@ -13,7 +24,7 @@ const AuthSlider = ({ min, max, marginTop, marginBottom, gap, height = 4 }) => {
             style={[
               styles.block,
               {
-                backgroundColor: index < min ? COLORS.authHeader : "#FFFFFF17",
+                backgroundColor: index < min ? COLORS.btnColor : "#FFFFFF17",
                 height,
                 borderRadius: gap && 99,
               },

@@ -897,3 +897,51 @@ export const genres = [
   { name: "Sould", color: "#8D67AB", img: GenresImgs.img13 },
   { name: "Trap", color: "#B16138", img: GenresImgs.img21 },
 ];
+export const formatDateToDayMonth = (dateString) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, "0");
+
+  const monthNames = [
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER",
+  ];
+
+  const month = monthNames[date.getMonth()];
+  return `${day} ${month}`;
+};
+export const getDay = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return String(date.getDate()).padStart(2, "0");
+};
+export const getShortMonth = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const monthNamesShort = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+  return monthNamesShort[date.getMonth()];
+};

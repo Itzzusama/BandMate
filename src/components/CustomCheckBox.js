@@ -13,7 +13,12 @@ const CustomCheckbox = ({ value, onValueChange }) => {
     >
       {value && (
         <View style={styles.checkbox}>
-          <Icons name="check" family="AntDesign" size={15} color="white" />
+          <Icons
+            name="check"
+            family="AntDesign"
+            size={15}
+            color={COLORS.black}
+          />
         </View>
       )}
     </TouchableOpacity>
@@ -29,7 +34,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     overflow: "hidden",
     borderRadius: 100,
-    borderColor: COLORS.border,
+    borderColor: COLORS.white4,
   },
   checkbox: {
     width: 20,
@@ -37,7 +42,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    backgroundColor: COLORS.black,
+    backgroundColor: COLORS.btnColor,
   },
 });
 

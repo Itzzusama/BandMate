@@ -21,6 +21,7 @@ const InfoCard = ({ name, showIcon, type, marginBottom = 20 }) => {
         fontSize={14}
         lineHeight={14 * 1.4}
         marginBottom={1}
+        textTransform={"capitalize"}
       />
     </View>
   );

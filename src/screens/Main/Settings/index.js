@@ -20,6 +20,8 @@ import RateApp from "./molecules/RateApp";
 import FeedbackSection from "./molecules/FeedbackSection";
 import { logout } from "../../../store/reducer/AuthConfig";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { clearSpotifyTokens } from "../../../store/reducer/spotifyAuthSlice";
 
 const Settings = () => {
   const navigation = useNavigation();
@@ -33,7 +35,7 @@ const Settings = () => {
       scrollEnabled
       headerUnScrollable={() => <Header />}
     >
-      <UsersInfo  />
+      <UsersInfo />
       <View style={styles.row}>
         <InfoCard
           icon={PNGIcons.tire}
@@ -82,8 +84,10 @@ const Settings = () => {
         backgroundColor={COLORS.cardColor}
         marginBottom={8}
         fontSize={16}
-        onPress={() => {
+        onPress={async () => {
           dispatch(logout());
+          await AsyncStorage.clear();
+          dispatch(clearSpotifyTokens());
           navigation.reset({
             index: 0,
             routes: [{ name: "AuthStack" }],

@@ -2,6 +2,7 @@ export const COLORS = {
   primaryColor: "#ffffff",
   authHeader: "#FFFFFF",
   btnColor: "#A19375",
+  btnSoftColor: "#A1937529",
   bg: "#0F1B35",
   dotColor: "#d0d1d1",
   borderColor: "#ececec",
@@ -9,8 +10,9 @@ export const COLORS = {
   white: "#FFFFFF",
   white2: "#FFFFFFA3", //white 64%
   white3: "#FFFFFF7A", //white 48%
-  white4: "#FFFFFF29",
+  white4: "#FFFFFF29", //white 16%
   cardColor: "#FFFFFF0A", //white 4%
+  inputBg: "#FFFFFF14", //white 8%
   red: "#EE1045",
   red1: "#EE1045",
   green: "#64CD75",
@@ -35,7 +37,7 @@ export const COLORS = {
   lightGray: "#f6f6f6",
   bgGray: "#ECECEC",
   iconCOLOR: "#041b08",
-  inputBg: "#FFFFFF14", //white 8%
+
   darkGreen: "#006450",
   darkPurple: "#4347FF",
   low: "#4347FF29",

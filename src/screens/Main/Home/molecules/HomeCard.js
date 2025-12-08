@@ -29,34 +29,6 @@ import { useSelector } from "react-redux";
 import { getDistance } from "geolib";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const profileImages = [
-  {
-    id: 1,
-    images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
-    premium: true,
-  },
-  {
-    id: 2,
-    images: [PNGIcons.dala, PNGIcons.ProductCard, PNGIcons.bandImage],
-    premium: true,
-  },
-  {
-    id: 3,
-    images: [PNGIcons.ProductCard, PNGIcons.bandImage, PNGIcons.dala],
-    premium: true,
-  },
-  {
-    id: 4,
-    images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
-    premium: true,
-  },
-  {
-    id: 5,
-    images: [PNGIcons.dala, PNGIcons.bandImage, PNGIcons.ProductCard],
-    premium: true,
-  },
-];
-
 const HomeCard = ({ data, getUserProfile, tab }) => {
   const navigation = useNavigation();
   const { userData } = useSelector((state) => state.users);
@@ -540,7 +512,7 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
         ? userData?.address?.location?.coordinates[0]
         : 74.3587,
     };
-    console.log(pointA);
+
     const distanceMeters = getDistance(pointA, pointB);
 
     const distanceKm = distanceMeters / 1000;
@@ -842,32 +814,35 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
           {renderCard(currentProfile, true)}
         </Animated.View>
       )}
-
+      {cards?.length > 0 && (
+        <View style={styles.bottomContainer}>
+          {[
+            PNGIcons.btn1,
+            PNGIcons.btn2,
+            PNGIcons.btn3,
+            PNGIcons.btn4,
+            PNGIcons.btn5,
+          ]?.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleButtonPress(index)}
+              activeOpacity={0.8}
+            >
+              <ImageFast
+                source={item}
+                removeLoading
+                style={[
+                  styles.btnStyle,
+                  index === 0 || index === 4
+                    ? styles.smallBtn
+                    : styles.largeBtn,
+                ]}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
       {/* Bottom Buttons */}
-      <View style={styles.bottomContainer}>
-        {[
-          PNGIcons.btn1,
-          PNGIcons.btn2,
-          PNGIcons.btn3,
-          PNGIcons.btn4,
-          PNGIcons.btn5,
-        ]?.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleButtonPress(index)}
-            activeOpacity={0.8}
-          >
-            <ImageFast
-              source={item}
-              removeLoading
-              style={[
-                styles.btnStyle,
-                index === 0 || index === 4 ? styles.smallBtn : styles.largeBtn,
-              ]}
-            />
-          </TouchableOpacity>
-        ))}
-      </View>
     </View>
   );
 };

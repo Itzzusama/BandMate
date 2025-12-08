@@ -253,17 +253,6 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
         </View>
       );
     }
-
-    return (
-      <View style={styles.replyWrapper}>
-        <CustomText
-          label={replyAttachment.filename || reply.content || "Media message"}
-          fontSize={12}
-          color={COLORS.white}
-          numberOfLines={1}
-        />
-      </View>
-    );
   };
 
   return (
@@ -283,7 +272,7 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
             style={{
               paddingHorizontal: 12,
               borderRadius: 12,
-
+              paddingTop: item.replyTo ? 12 : 0,
               backgroundColor: bg,
             }}
           >
@@ -339,9 +328,14 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
         ) : item.type === "file" &&
           item?.attachment?.mimetype === "video/mp4" &&
           videoSource ? (
-          <View style={styles.mediaWrapper}>
+          <View
+            style={[styles.mediaWrapper, { height: item?.replyTo ? 340 : 240 }]}
+          >
             {renderReplyPreview()}
-            <SimpleVideoPlayer videoSource={videoSource} />
+            <SimpleVideoPlayer
+              videoSource={videoSource}
+              isReply={item?.replyTo}
+            />
           </View>
         ) : (
           <View style={[styles.messageContainer, { backgroundColor: bg }]}>
@@ -535,12 +529,11 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   replyImageThumb: {
-    width: 50,
-    height: 50,
+    height: 40,
     borderRadius: 4,
+    opacity: 0.7,
   },
   replyVideoThumb: {
-    width: 50,
     height: 50,
     borderRadius: 4,
     backgroundColor: "#000",

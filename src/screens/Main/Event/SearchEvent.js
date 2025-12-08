@@ -1,5 +1,12 @@
-import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import Header from "./molecules/Header";
 import EventDetailCard from "./molecules/EventDetailCard";
@@ -8,11 +15,45 @@ import { COLORS } from "../../../utils/COLORS";
 import CustomText from "../../../components/CustomText";
 import fonts from "../../../assets/fonts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { get } from "../../../services/ApiRequest";
+
 const tabs = ["Rock", "Pop", "Jazz", "Blues", "Rap"];
 
 const SearchEvent = () => {
   const [selectedTab, setSelectedTab] = useState("Rock");
+  const [query, setQuery] = useState("");
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const insets = useSafeAreaInsets();
+
+  const getEvents = async (genre, search) => {
+    try {
+      let url = `events?genres=${genre}`;
+
+      if (search?.trim()) {
+        url += `&search=${search.trim()}`;
+      }
+
+      const res = await get(url);
+
+      if (res?.data?.success) {
+        setEvents(res?.data?.data || []);
+      }
+    } catch (err) {
+      console.log("Search Event Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      getEvents(selectedTab, query);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [selectedTab, query]);
 
   return (
     <ScreenWrapper
@@ -21,7 +62,8 @@ const SearchEvent = () => {
       scrollEnabled
       headerUnScrollable={() => (
         <View>
-          <SearchEventHeader />
+          <SearchEventHeader query={query} setQuery={setQuery} />
+
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -53,9 +95,32 @@ const SearchEvent = () => {
       )}
     >
       <View>
-        <EventDetailCard />
-        <EventDetailCard />
-        <EventDetailCard marginBottom={insets.bottom + 10} />
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color={COLORS.white}
+            style={{ marginTop: 20 }}
+          />
+        )}
+
+        {!loading && (
+          <FlatList
+            data={!loading ? events : []}
+            keyExtractor={(item, index) => item?._id || index.toString()}
+            renderItem={({ item, index }) => (
+              <EventDetailCard
+                data={item}
+                marginBottom={
+                  index === events.length - 1 ? insets.bottom + 10 : 0
+                }
+              />
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingBottom: insets.bottom + 10,
+            }}
+          />
+        )}
       </View>
     </ScreenWrapper>
   );

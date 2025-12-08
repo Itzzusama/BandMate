@@ -121,20 +121,25 @@ const Artists = () => {
   const [prevError, setPrevError] = useState("");
   const [showSuccessColor, setShowSuccessColor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [hasSpotify, setHasSpotify] = useState(false);
+  const { accessToken } = useSelector((state) => state?.spotifyAuth);
+  useEffect(() => {
+    AsyncStorage.getItem("spToken").then((t) => {
+      setHasSpotify(!!t);
+    });
+  }, []);
   const step = userData?.role === "band" ? 13 : 14;
   const totalSteps = userData?.role === "band" ? 15 : 16;
 
   useEffect(() => {
     setSpotifyArtists(DEFAULT_ARTISTS);
 
-    const checkTokenAndFetch = async () => {
-      const token = await AsyncStorage.getItem("spToken");
-      if (token) getSpotifyArtists();
-    };
     checkTokenAndFetch();
-  }, []);
-
+  }, [accessToken]);
+  const checkTokenAndFetch = async () => {
+    const token = await AsyncStorage.getItem("spToken");
+    if (token) getSpotifyArtists();
+  };
   useEffect(() => {
     if (prevError && !error) {
       setShowSuccessColor(true);
@@ -148,7 +153,7 @@ const Artists = () => {
     try {
       setLoadingSpotify(true);
       let token = await dispatch(checkSpotifyTokenValidity());
-      console.log(token);
+      console.log("=========>", token);
       const idsQuery = SPOTIFY_ARTIST_IDS.join(",");
       const res = await fetch(
         `https://api.spotify.com/v1/search?type=artist&q=${encodeURIComponent(
@@ -167,13 +172,12 @@ const Artists = () => {
           img: { uri: artist.images?.[0]?.url || "" },
         }));
         setSpotifyArtists(formatted);
-        // ToastMessage("Spotify artists loaded successfully!", "success");
       } else {
         setSpotifyArtists(DEFAULT_ARTISTS);
       }
     } catch (err) {
       console.error("Spotify fetch artists error:", err);
-      // ToastMessage("Failed to fetch Spotify artists", "error");
+
       setSpotifyArtists(DEFAULT_ARTISTS);
     } finally {
       setLoadingSpotify(false);
@@ -184,10 +188,8 @@ const Artists = () => {
     setSelectedArtists((prev) => {
       const exists = prev.find((a) => a.spotifyId === artist.id);
       if (exists) {
-        // Remove artist if already selected
         return prev.filter((a) => a.spotifyId !== artist.id);
       } else {
-        // Add artist object
         return [
           ...prev,
           {
@@ -211,15 +213,25 @@ const Artists = () => {
       return;
     }
     setError("");
+    if (route?.params?.isEvent) {
+      console.log(selectedArtists);
+      route?.params?.onSelect(selectedArtists);
+      navigation.goBack();
+      return;
+    }
     setIsLoading(true);
-    console.log(selectedArtists);
+
     try {
       const res = await put("user/profile", { Artists: selectedArtists });
 
       if (res?.data?.success) {
         dispatch(setUserData(res?.data?.user));
         ToastMessage("Your favorite artists have been added!", "success");
-        navigation.navigate("AddPictures");
+        if (route?.params?.fromScreen == "Home") {
+          navigation.goBack();
+        } else {
+          navigation.navigate("AddPictures");
+        }
       }
     } catch (err) {
       console.log(err);
@@ -236,12 +248,21 @@ const Artists = () => {
     <ScreenWrapper
       scrollEnabled
       headerUnScrollable={() =>
-        fromScreen === "Home" && <Header title={"Edit Artists"} />
+        fromScreen === "Home" && (
+          <Header
+            title={route?.params?.isEvent ? "Add Artists" : "Edit Artists"}
+          />
+        )
       }
       footerUnScrollable={() =>
         fromScreen === "Home" ? (
           <View style={{ padding: 12 }}>
-            <CustomButton title={"Submit"} marginBottom={24} />
+            <CustomButton
+              title={"Submit"}
+              marginBottom={24}
+              onPress={handleNext}
+              btnLoading={isLoading}
+            />
           </View>
         ) : (
           <AuthFooter
@@ -287,16 +308,14 @@ const Artists = () => {
           marginTop={4}
         />
 
-        {/* ✅ Show connect button only if no token exists */}
-        {!AsyncStorage.getItem("spToken") && (
+        {!accessToken && (
           <ConnentAccount
             accName="Spotify"
-            onPress={getSpotifyArtists}
+            onPress={() => dispatch(loginWithSpotify())}
             bottom={12}
             disabled={loadingSpotify}
           />
         )}
-
         {loadingSpotify && (
           <ActivityIndicator
             color={COLORS.btnColor}

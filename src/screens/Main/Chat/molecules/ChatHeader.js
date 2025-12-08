@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import fonts from "../../../../assets/fonts";
 import { Images } from "../../../../assets/images";
 import CustomButton from "../../../../components/CustomButton";
@@ -11,6 +11,7 @@ import Icons from "../../../../components/Icons";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
 import { useSelector } from "react-redux";
+import { PNGIcons } from "../../../../assets/images/icons";
 
 const ChatHeader = ({ title, source, showIcons = true }) => {
   const navigation = useNavigation();
@@ -24,12 +25,7 @@ const ChatHeader = ({ title, source, showIcons = true }) => {
         style={[styles.backIcon, { marginRight: 16 }]}
         onPress={() => navigation.goBack()}
       >
-        <Icons
-          size={26}
-          family="MaterialIcons"
-          color={COLORS.white}
-          name="keyboard-arrow-left"
-        />
+        <Image source={Images.app_back} style={{ height: 24, width: 24 }} />
       </TouchableOpacity>
 
       {/* <ImageFast resizeMode="cover" source={source} style={styles.userImage} /> */}

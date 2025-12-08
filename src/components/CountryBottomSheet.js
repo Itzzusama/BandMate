@@ -35,6 +35,7 @@ const CountryBottomSheet = ({
   onClose,
   selectedCountry,
   onCountrySelect,
+  hideCode = true,
 }) => {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -149,12 +150,16 @@ const CountryBottomSheet = ({
                         color={isSelected ? COLORS.primaryColor : COLORS.white}
                         style={{ flex: 1 }}
                       />
-                      <CustomText
-                        label={item.dialCode}
-                        fontSize={14}
-                        fontFamily={fonts.regular}
-                        color={isSelected ? COLORS.primaryColor : COLORS.white3}
-                      />
+                      {hideCode && (
+                        <CustomText
+                          label={item.dialCode}
+                          fontSize={14}
+                          fontFamily={fonts.regular}
+                          color={
+                            isSelected ? COLORS.primaryColor : COLORS.white3
+                          }
+                        />
+                      )}
                     </View>
                   </View>
                   <Icons

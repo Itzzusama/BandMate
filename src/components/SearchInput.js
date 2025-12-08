@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import {
   Image,
+  Pressable,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -35,6 +36,7 @@ const SearchInput = ({
   isChange, // 🔹 new prop
   CameraPress, // 🔹 optional handler
   borderRadius = 12,
+  isClear,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const navigation = useNavigation();
@@ -143,15 +145,17 @@ const SearchInput = ({
           onPress={() => onChangeText("")}
         >
           {isCross && value && (
-            <Image
-              source={PNGIcons.crossBg}
-              style={{
-                height: 24,
-                width: 24,
-                marginTop: 2,
-                tintColor: COLORS.white,
-              }}
-            />
+            <Pressable onPress={isClear}>
+              <Image
+                source={PNGIcons.crossBg}
+                style={{
+                  height: 24,
+                  width: 24,
+                  marginTop: 2,
+                  tintColor: COLORS.white,
+                }}
+              />
+            </Pressable>
           )}
         </TouchableOpacity>
         {/* If isChange is true → show Cross + Camera inside */}

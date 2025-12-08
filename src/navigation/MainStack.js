@@ -22,12 +22,17 @@ import TabStack from "./TabStack";
 import AppLanguage from "../screens/Main/Settings/AppLanguage";
 import PicLocation from "../screens/Auth/PicLocation";
 import SongsList from "../screens/Main/SongsList";
+import CreateEvent from "../screens/Main/CreateEvent";
+import AddSponsor from "../screens/Main/CreateEvent/AddSponsor";
+import Branding from "../screens/Main/CreateEvent/Branding";
+import FoodBeverage from "../screens/Main/CreateEvent/FoodBeverage";
+import TicketDetail from "../screens/Main/CreateEvent/TicketDetail";
+import EventDetail from "../screens/Main/EventDetails";
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName="TabStack"
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
@@ -56,6 +61,14 @@ const MainStack = () => {
       <Stack.Screen name="PicLocation" component={PicLocation} />
       <Stack.Screen name="SongsList" component={SongsList} />
       <Stack.Screen name="ReportChat" component={ReportChat} />
+
+      {/* create events screens */}
+      <Stack.Screen name="CreateEvent" component={CreateEvent} />
+      <Stack.Screen name="AddSponsor" component={AddSponsor} />
+      <Stack.Screen name="Branding" component={Branding} />
+      <Stack.Screen name="FoodBeverage" component={FoodBeverage} />
+      <Stack.Screen name="TicketDetail" component={TicketDetail} />
+      <Stack.Screen name="EventDetail" component={EventDetail} />
     </Stack.Navigator>
   );
 };

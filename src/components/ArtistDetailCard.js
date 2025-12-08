@@ -18,12 +18,13 @@ import ImageFast from "./ImageFast";
 import { BlurView } from "@react-native-community/blur";
 import { useSelector } from "react-redux";
 import { getAgeFromDob } from "../utils/constants";
-
+import { getDistance } from "geolib";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const ArtistDetailCard = ({ images, color, userData }) => {
+const ArtistDetailCard = ({ images, color, userData, myPage }) => {
   const navigation = useNavigation();
-
+  console.log(userData);
+  const user = useSelector((state) => state?.users?.userData);
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
@@ -42,7 +43,26 @@ const ArtistDetailCard = ({ images, color, userData }) => {
     { colors: ["#007AFE", "#007AFE00"], direction: "up", rotation: 0 }, // blue
     { colors: ["#1ED760", "#1ED76000"], direction: "right", rotation: 8 }, // green
   ];
+  const pointA = {
+    latitude: user?.address?.address
+      ? user?.address?.location?.coordinates[1]
+      : 24.8607,
+    longitude: user?.address?.address
+      ? user?.address?.location?.coordinates[0]
+      : 67.0011,
+  };
+  const pointB = {
+    latitude: userData?.address?.address
+      ? userData?.address?.location?.coordinates[1]
+      : 31.5204,
+    longitude: userData?.address?.address
+      ? userData?.address?.location?.coordinates[0]
+      : 74.3587,
+  };
 
+  const distanceMeters = getDistance(pointA, pointB);
+
+  const distanceKm = distanceMeters / 1000;
   // Auto-advance slider every 3 seconds
   useEffect(() => {
     if (!images || images?.length <= 1) return;
@@ -214,7 +234,9 @@ const ArtistDetailCard = ({ images, color, userData }) => {
               <CustomText
                 label={
                   userData?.role == "solo"
-                    ? userData?.display_name
+                    ? userData?.display_name +
+                      ", " +
+                      getAgeFromDob(userData.dob)
                     : userData?.bandName + ", " + getAgeFromDob(userData.dob)
                 }
                 fontSize={44}
@@ -224,14 +246,14 @@ const ArtistDetailCard = ({ images, color, userData }) => {
               <View style={styles.locationRow}>
                 <Image source={PNGIcons.pin} style={styles.pinIcon} />
                 <CustomText
-                  label={"Los Angeles, CA"}
+                  label={userData?.address?.address}
                   fontSize={12}
                   lineHeight={12 * 1.4}
                   fontFamily={fonts.medium}
                   marginLeft={3}
                 />
                 <CustomText
-                  label={"33 km"}
+                  label={`${distanceKm.toFixed(1)} km`}
                   fontSize={12}
                   lineHeight={12 * 1.4}
                   color={COLORS.white2}
@@ -255,7 +277,6 @@ const ArtistDetailCard = ({ images, color, userData }) => {
                 />
               </View>
 
-              {/* Dynamic Slider - Only show if multiple images */}
               {images && images.length > 1 && (
                 <View style={styles.sliderContainer}>
                   <View style={styles.sliderTrack}>
@@ -327,22 +348,23 @@ const ArtistDetailCard = ({ images, color, userData }) => {
           </View>
         )}
       </Animated.View>
-
-      <View style={styles.bottomContainer}>
-        {[PNGIcons.btn2, PNGIcons.btn3, PNGIcons.btn4]?.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleButtonPress(index)}
-            activeOpacity={0.8}
-          >
-            <ImageFast
-              source={item}
-              removeLoading
-              style={[styles.btnStyle, styles.largeBtn]}
-            />
-          </TouchableOpacity>
-        ))}
-      </View>
+      {!myPage && (
+        <View style={styles.bottomContainer}>
+          {[PNGIcons.btn2, PNGIcons.btn3, PNGIcons.btn4]?.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleButtonPress(index)}
+              activeOpacity={0.8}
+            >
+              <ImageFast
+                source={item}
+                removeLoading
+                style={[styles.btnStyle, styles.largeBtn]}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 };
