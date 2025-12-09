@@ -1,16 +1,33 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Pressable, View } from "react-native";
+
 import { COLORS } from "../../../../utils/COLORS";
 import { PNGIcons } from "../../../../assets/images/icons";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
-const OrderList = () => {
+
+const OrderList = ({ sortOrder, setSortOrder, viewMode, setViewMode }) => {
   return (
     <View style={[styles.container, styles.row]}>
-      <View style={[styles.row, { flex: 1 }]}>
+      <Pressable
+        style={[styles.row, { flex: 1, gap: 4 }]}
+        onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+      >
         <Image style={styles.img} source={PNGIcons.arrowUpDown} />
-        <CustomText label={"A-Z"} fontSize={12} fontFamily={fonts.medium} />
-      </View>
-      <Image style={styles.img} source={PNGIcons.grid} />
+        <CustomText
+          label={sortOrder === "asc" ? "A-Z" : "Z-A"}
+          fontSize={12}
+          fontFamily={fonts.medium}
+        />
+      </Pressable>
+
+      <Pressable
+      // onPress={() => setViewMode(viewMode === "list" ? "grid" : "list")}
+      >
+        <Image
+          style={styles.img}
+          source={viewMode === "list" ? PNGIcons.grid : PNGIcons.list}
+        />
+      </Pressable>
     </View>
   );
 };
@@ -23,11 +40,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderTopWidth: 4,
     borderColor: COLORS.cardColor,
+    justifyContent: "space-between",
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
   },
   img: {
     height: 24,

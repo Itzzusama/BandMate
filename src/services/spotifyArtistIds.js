@@ -32,7 +32,7 @@ export const fetchSpotifyArtistsWithFallback = async (
     const res = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(
         query
-      )}&type=artist&limit=20`,
+      )}&type=artist&limit=30`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -44,8 +44,15 @@ export const fetchSpotifyArtistsWithFallback = async (
       console.warn("⚠️ No dynamic artists found. Using fallback list.");
       return SPOTIFY_ARTIST_IDS;
     }
-
-    const dynamicIds = data.artists.items.map((artist) => artist.id);
+    const cleaned = data.artists.items
+      .filter(
+        (artist) =>
+          artist.name && artist.images?.[0]?.url && isValidArtist(artist.name)
+      )
+      .map((artist) => ({
+        id: artist.id,
+      }));
+    const dynamicIds = cleaned;
 
     console.log(`✅ Fetched ${dynamicIds.length} Spotify artists dynamically.`);
     return dynamicIds;

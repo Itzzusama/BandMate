@@ -13,10 +13,13 @@ import {
   getShortMonth,
 } from "../../../../utils/constants";
 
-const EventDetailCard = ({ marginBottom, data }) => {
-  console.log(data);
+const EventDetailCard = ({ marginBottom, data, onPress }) => {
   return (
-    <View style={[styles.container, { marginBottom: marginBottom }]}>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={[styles.container, { marginBottom: marginBottom }]}
+      // onPress={onPress}
+    >
       <View style={styles.dateContainer}>
         <CustomText
           label={getShortMonth(data?.startDate)}
@@ -151,7 +154,7 @@ const EventDetailCard = ({ marginBottom, data }) => {
           ))}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

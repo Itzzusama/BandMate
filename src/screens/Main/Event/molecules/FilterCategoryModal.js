@@ -8,9 +8,62 @@ import MultiRangeSlider from "../../../../components/RangeSliderTwoWay";
 import CustomButton from "../../../../components/CustomButton";
 import { PNGIcons } from "../../../../assets/images/icons";
 
-const FilterCategoryModal = ({ filterType, onBack }) => {
-  const [selectedSort, setSelectedSort] = useState("Recommended");
-  const [selectedDate, setSelectedDate] = useState("Today");
+const FilterCategoryModal = ({ filterType, onBack, filters, onApply }) => {
+  const [selectedSort, setSelectedSort] = useState(filters.sortBy);
+  const [selectedDate, setSelectedDate] = useState(filters.date);
+  const [distance, setDistance] = useState(filters.distance);
+
+  const applyFilter = () => {
+    if (filterType === "Sort By") {
+      const mapSortKeys = {
+        Latest: "latest",
+        "Best Rated": "bestRating",
+        "Lowest to Highest Price": "priceLowToHigh",
+        "Highest Price To Lowest": "priceHighToLow",
+      };
+
+      onApply({ sortBy: mapSortKeys[selectedSort] || null });
+    } else if (filterType === "Date") {
+      const dateMap = {
+        "Within A Day": 1,
+        "Within 3 Days": 3,
+        "Within 7 Days": 7,
+        "Within 2 Weeks": 14,
+        "Within A Month": 30,
+      };
+
+      const days = dateMap[selectedDate];
+
+      if (days) {
+        const today = new Date();
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + days);
+
+        const format = (d) =>
+          d.getFullYear() +
+          "-" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(d.getDate()).padStart(2, "0");
+
+        onApply({
+          startDateFrom: format(today),
+          startDateTo: format(targetDate),
+        });
+      } else {
+        onApply({ startDateFrom: null, startDateTo: null });
+      }
+    } else if (filterType === "Distance") {
+      // Convert km to meters
+      const min = (distance?.min ?? 3) * 1000;
+      const max = (distance?.max ?? 50) * 1000;
+
+      onApply({
+        minDistance: min,
+        maxDistance: max,
+      });
+    }
+  };
 
   const dateOptions = [
     "Within A Day",
@@ -136,8 +189,21 @@ const FilterCategoryModal = ({ filterType, onBack }) => {
           height={48}
           backgroundColor={COLORS.inputBg}
           color={COLORS.white}
+          onPress={() => {
+            if (filterType === "Sort By") onApply({ sortBy: null });
+
+            if (filterType === "Date") onApply({ startDateFrom: null });
+
+            if (filterType === "Distance")
+              onApply({ minDistance: 3, maxDistance: 50 });
+          }}
         />
-        <CustomButton title="Confirm" width="48%" height={48} />
+        <CustomButton
+          title="Confirm"
+          width="48%"
+          height={48}
+          onPress={applyFilter}
+        />
       </View>
     </View>
   );

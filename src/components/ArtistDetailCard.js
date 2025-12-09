@@ -21,7 +21,13 @@ import { getAgeFromDob } from "../utils/constants";
 import { getDistance } from "geolib";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const ArtistDetailCard = ({ images, color, userData, myPage }) => {
+const ArtistDetailCard = ({
+  images,
+  color,
+  userData,
+  myPage,
+  getUserProfile,
+}) => {
   const navigation = useNavigation();
   console.log(userData);
   const user = useSelector((state) => state?.users?.userData);
@@ -111,6 +117,7 @@ const ArtistDetailCard = ({ images, color, userData, myPage }) => {
   };
 
   const handleButtonPress = (index) => {
+    console.log(index);
     const action = buttonActions[index];
     setCurrentGradientColors(action.colors);
     gradientTranslateY.setValue(200);
@@ -348,13 +355,12 @@ const ArtistDetailCard = ({ images, color, userData, myPage }) => {
           </View>
         )}
       </Animated.View>
-      {!myPage && (
+      {/* {!myPage && (
         <View style={styles.bottomContainer}>
           {[PNGIcons.btn2, PNGIcons.btn3, PNGIcons.btn4]?.map((item, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => handleButtonPress(index)}
-              activeOpacity={0.8}
             >
               <ImageFast
                 source={item}
@@ -364,7 +370,7 @@ const ArtistDetailCard = ({ images, color, userData, myPage }) => {
             </TouchableOpacity>
           ))}
         </View>
-      )}
+      )} */}
     </View>
   );
 };

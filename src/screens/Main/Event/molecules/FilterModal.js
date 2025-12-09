@@ -15,15 +15,22 @@ import CustomButton from "../../../../components/CustomButton";
 import Icons from "../../../../components/Icons";
 import FilterCategoryModal from "./FilterCategoryModal";
 
-const FilterModal = ({ isVisible, onModalClose }) => {
+const FilterModal = ({ isVisible, onModalClose, filters, setFilters }) => {
   const [activeFilter, setActiveFilter] = useState(null);
-
+  const handleConfirm = (updatedValues) => {
+    console.log(updatedValues);
+    setFilters((prev) => ({ ...prev, ...updatedValues }));
+    // onModalClose();
+    setActiveFilter(null);
+  };
   const renderContent = () => {
     if (activeFilter) {
       return (
         <FilterCategoryModal
           filterType={activeFilter}
+          filters={filters}
           onBack={() => setActiveFilter(null)}
+          onApply={handleConfirm}
         />
       );
     }
@@ -87,8 +94,17 @@ const FilterModal = ({ isVisible, onModalClose }) => {
             height={48}
             backgroundColor={COLORS.cardColor}
             color={COLORS.white}
+            onPress={() => {
+              setFilters({});
+              onModalClose();
+            }}
           />
-          <CustomButton title={"Confirm"} width="48%" height={48} />
+          <CustomButton
+            title={"Confirm"}
+            width="48%"
+            height={48}
+            onPress={onModalClose}
+          />
         </View>
       </>
     );

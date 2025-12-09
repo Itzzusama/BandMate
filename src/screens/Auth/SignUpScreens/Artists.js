@@ -149,7 +149,21 @@ const Artists = () => {
     setPrevError(error);
   }, [error]);
 
-  const getSpotifyArtists = async (query = "top artists", limit = 30) => {
+  const CLEAN_PATTERNS = [
+    /top/i,
+    /best/i,
+    /hits/i,
+    /playlist/i,
+    /mix/i,
+    /various/i,
+    /^\d+$/,
+    /^\d{4}/,
+  ];
+
+  const isValidArtist = (name) => {
+    return !CLEAN_PATTERNS.some((pattern) => pattern.test(name));
+  };
+  const getSpotifyArtists = async (query = "top artists", limit = 40) => {
     try {
       setLoadingSpotify(true);
       let token = await dispatch(checkSpotifyTokenValidity());
@@ -164,14 +178,21 @@ const Artists = () => {
         }
       );
       const data = await res.json();
-      console.log(data);
       if (data?.artists?.items?.length > 0) {
-        const formatted = data?.artists?.items?.map((artist) => ({
-          id: artist.id,
-          name: artist.name,
-          img: { uri: artist.images?.[0]?.url || "" },
-        }));
-        setSpotifyArtists(formatted);
+        const cleaned = data.artists.items
+          .filter(
+            (artist) =>
+              artist.name &&
+              artist.images?.[0]?.url &&
+              isValidArtist(artist.name)
+          )
+          .map((artist) => ({
+            id: artist.id,
+            name: artist.name,
+            img: { uri: artist.images[0].url },
+          }));
+
+        setSpotifyArtists(cleaned.length > 0 ? cleaned : DEFAULT_ARTISTS);
       } else {
         setSpotifyArtists(DEFAULT_ARTISTS);
       }

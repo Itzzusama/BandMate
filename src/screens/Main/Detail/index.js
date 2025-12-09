@@ -32,6 +32,8 @@ import {
 import { BlurView } from "@react-native-community/blur";
 import Icons from "../../../components/Icons";
 import { PNGIcons } from "../../../assets/images/icons";
+import { Images } from "../../../assets/images";
+import { COLORS } from "../../../utils/COLORS";
 
 const Detail = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -40,10 +42,11 @@ const Detail = ({ navigation, route }) => {
   const profile = route?.params?.profile;
   const img = images ? images : null;
   const myPage = route?.params?.myPage;
+  const getUserProfile = route?.params?.getUserProfile || {};
   const { accessToken } = useSelector((state) => state?.spotifyAuth);
   const user = useSelector((state) => state?.users?.userData);
   const artistId = "7dGJo4pcD2V6oG8kP0tJRR";
-  const HEADER_MAX_HEIGHT = myPage ? 395 : 460;
+  const HEADER_MAX_HEIGHT = myPage ? 395 : 395;
   const HEADER_MIN_HEIGHT = 70;
   const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
   const [bgColor, setBgColor] = useState("#000");
@@ -127,6 +130,7 @@ const Detail = ({ navigation, route }) => {
           color={bgColor}
           userData={userData}
           myPage={myPage}
+          getUserProfile={getUserProfile}
         />
       </Animated.View>
 
@@ -237,19 +241,36 @@ const Detail = ({ navigation, route }) => {
               style={styles.backButtonBlur}
               blurType="materialDark"
               blurAmount={16}
-              reducedTransparencyFallbackColor={bgColor}
+              reducedTransparencyFallbackColor={"#12121252"}
             >
-              <Icons
-                name="chevron-back"
-                family="Ionicons"
-                color="rgba(255, 255, 255, 0.64)"
-                size={14}
+              <Image
+                source={Images.app_back}
+                style={{ height: 24, width: 24, tintColor: COLORS.white2 }}
               />
             </BlurView>
           </TouchableOpacity>
         </View>
-
-        <Image source={PNGIcons.qr} style={{ height: 48, width: 48 }} />
+        <View
+          style={{
+            height: 48,
+            width: 48,
+            borderRadius: 8,
+            overflow: "hidden",
+          }}
+        >
+          <BlurView
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            blurType="materialDark"
+            blurAmount={16}
+            reducedTransparencyFallbackColor={"#12121252"}
+          >
+            <Image source={PNGIcons.qr} style={{ height: 40, width: 40 }} />
+          </BlurView>
+        </View>
       </Animated.View>
     </View>
   );

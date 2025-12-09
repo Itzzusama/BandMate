@@ -25,6 +25,8 @@ const SongsList = () => {
   const [tab, setTab] = useState("All");
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [viewMode, setViewMode] = useState("list");
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -55,11 +57,16 @@ const SongsList = () => {
   const filteredSongs = songs
     .map((artist) => ({
       ...artist,
-      songs: artist.songs.filter(
-        (track) =>
-          track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          artist.artistName.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
+      songs: artist.songs
+        .filter(
+          (track) =>
+            track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            artist.artistName.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) => {
+          if (sortOrder === "asc") return a.title.localeCompare(b.title);
+          return b.title.localeCompare(a.title);
+        }),
     }))
     .filter((artist) => artist.songs.length > 0);
 
@@ -128,14 +135,15 @@ const SongsList = () => {
       )}
     >
       {loading ? (
-        <ActivityIndicator
-          size="large"
-          color={COLORS.btnColor}
-          style={{ marginTop: 30 }}
-        />
+        <ActivityIndicator size="large" style={{ marginTop: 30 }} />
       ) : (
         <>
-          <OrderList />
+          <OrderList
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+          />
           <FlatList
             data={filteredSongs}
             keyExtractor={(item, index) => index.toString()}

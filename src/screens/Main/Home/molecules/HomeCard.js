@@ -523,6 +523,7 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
           navigation.navigate("Detail", {
             images: profile?.pictures,
             profile: profile,
+            getUserProfile: getUserProfile,
           })
         }
         style={styles.imageContainer}

@@ -6,7 +6,7 @@ import { setSpotifyTokens } from "../store/reducer/spotifyAuthSlice";
 const config = {
   clientId: endPoints.clientId,
   clientSecret: endPoints.clientSecret,
-  redirectUrl: "com.solagroup.bandmate://oauth/", //"com.chainai.app://oauth/"
+  redirectUrl: "com.solagroup.bandmate://oauth/",
   scopes: [
     "user-read-email",
     "user-top-read",
@@ -24,6 +24,20 @@ const config = {
   prefersEphemeralSession: false,
 };
 
+const CLEAN_PATTERNS = [
+  /top/i,
+  /best/i,
+  /hits/i,
+  /playlist/i,
+  /mix/i,
+  /various/i,
+  /^\d+$/,
+  /^\d{4}/,
+];
+
+const isValidArtist = (name) => {
+  return !CLEAN_PATTERNS.some((pattern) => pattern.test(name));
+};
 export const loginWithSpotify = () => async (dispatch) => {
   try {
     const authState = await authorize(config);
@@ -312,6 +326,7 @@ export const getAllArtistsTopTracks = async (dispatch, artistIds) => {
         title: track.name,
         duration: formatDuration(track.duration_ms),
         img: track.album?.images?.[0]?.url,
+        id: track?.id,
       }));
 
       results.push({
