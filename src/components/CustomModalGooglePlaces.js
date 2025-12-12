@@ -37,7 +37,7 @@ import Icons from "./Icons";
 import { put } from "../services/ApiRequest";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ToastMessage } from "../utils/ToastMessage";
-const API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
+const API_KEY = "AIzaSyBfyE9UE7c7C36Lnbmj71I8Tl1c6Srw1cc";
 
 // Custom Skeleton Loader Component
 const SkeletonLoader = ({ type = "default", style }) => {

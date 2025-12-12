@@ -27,6 +27,7 @@ const InboxScreen = ({ route }) => {
   const recipientId = route?.params?.recipientId;
   const conversationId = route?.params?.conversationId;
   const recipientName = route?.params?.recipientName || "Chat";
+  const address = route?.params?.address || "";
 
   const fetchMessages = async () => {
     try {
@@ -219,7 +220,11 @@ const InboxScreen = ({ route }) => {
       statusBarColor="rgba(38, 38, 38, 0.64)"
       paddingHorizontal={12}
       headerUnScrollable={() => (
-        <ChatHeader source={Images.user} title={recipientName || "Chat"} />
+        <ChatHeader
+          source={Images.user}
+          title={recipientName || "Chat"}
+          address={address}
+        />
       )}
       footerUnScrollable={() => (
         <ChatFooter

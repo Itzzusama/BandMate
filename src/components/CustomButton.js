@@ -54,6 +54,8 @@ const CustomButton = ({
   iconColor,
   textTransform,
   leftView,
+  subText,
+  subTextStyle,
 }) => {
   const [animation] = useState(new Animated.Value(1));
 
@@ -158,15 +160,20 @@ const CustomButton = ({
         {!loading && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {leftView && leftView}
-            <CustomText
-              textStyle={customText}
-              label={title}
-              color={color || COLORS.black}
-              fontFamily={fontFamily || fonts.medium}
-              fontSize={fontSize}
-              lineHeight={fontSize * 1.4}
-              textTransform={textTransform || "capitalize"}
-            />
+            <View style={{ alignItems: "center" }}>
+              <CustomText
+                textStyle={customText}
+                label={title}
+                color={color || COLORS.black}
+                fontFamily={fontFamily || fonts.medium}
+                fontSize={fontSize}
+                lineHeight={fontSize * 1.4}
+                textTransform={textTransform || "capitalize"}
+              />
+              {subText && (
+                <CustomText label={subText} textStyle={subTextStyle} />
+              )}
+            </View>
 
             {secondText && (
               <CustomText

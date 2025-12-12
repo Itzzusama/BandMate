@@ -23,7 +23,7 @@ import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { put } from "../../../services/ApiRequest";
-const GOOGLE_API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
+const GOOGLE_API_KEY = "AIzaSyBfyE9UE7c7C36Lnbmj71I8Tl1c6Srw1cc";
 const darkMapStyle = [
   { elementType: "geometry", stylers: [{ color: "#212121" }] },
   { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
@@ -247,8 +247,7 @@ const PicLocation = () => {
       };
       navigation.replace("UserAddress", { addressData, item });
     } else {
-      //   navigation.goBack();
-      navigation.navigate("Success");
+      // navigation.navigate("Success");
       const {
         setValue,
         setLatLong,
@@ -268,11 +267,12 @@ const PicLocation = () => {
       if (setCity) setCity(addressComponents.city);
       if (setZipCode) setZipCode(addressComponents.zipCode);
       if (setCountry) setCountry(addressComponents.country);
+      navigation.goBack();
     }
   };
 
   const handleBackPress = () => {
-    // navigation.goBack();
+    navigation.goBack();
   };
 
   return (

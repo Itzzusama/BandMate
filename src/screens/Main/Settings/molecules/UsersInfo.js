@@ -13,7 +13,7 @@ import ImageFast from "../../../../components/ImageFast";
 const UsersInfo = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.users.userData);
-  console.log(user);
+
   return (
     <View style={styles.container}>
       <ImageFast

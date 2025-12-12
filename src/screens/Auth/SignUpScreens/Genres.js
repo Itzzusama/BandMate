@@ -32,15 +32,17 @@ const Genres = () => {
   const CARD_HEIGHT = 100;
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const route = useRoute();
   const { userData } = useSelector((state) => state.users);
   const [step, setStep] = useState(userData?.role == "band" ? 12 : 13);
   const totalSteps = userData?.role == "band" ? 15 : 16;
-  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState(
+    route?.params?.isHome ? userData?.Genres : []
+  );
   const [error, setError] = useState("");
   const [prevError, setPrevError] = useState("");
   const [showSuccessColor, setShowSuccessColor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const route = useRoute();
 
   useEffect(() => {
     if (prevError && !error) {
@@ -81,7 +83,7 @@ const Genres = () => {
       return;
     }
     setError("");
-    if (route?.params?.fromScreen === "Event") {
+    if (route?.params?.fromScreen === "Event" && !route?.params?.isHome) {
       route?.params?.onSelect(selectedGenres);
       navigation.goBack();
       return;
@@ -96,7 +98,11 @@ const Genres = () => {
       if (res?.data?.success) {
         dispatch(setUserData(res?.data?.user));
         ToastMessage("Your music genres have been saved!", "success");
-        navigation.navigate("Artists");
+        if (route?.params?.isHome) {
+          navigation?.goBack();
+        } else {
+          navigation.navigate("Artists");
+        }
       }
     } catch (err) {
       console.log(err);
@@ -175,7 +181,11 @@ const Genres = () => {
         )
       }
       headerUnScrollable={() =>
-        route?.params?.fromScreen === "Event" && <Header title={"Add Genres"} />
+        route?.params?.fromScreen === "Event" && (
+          <Header
+            title={route?.params?.isHome ? "Edit Genres" : "Add Genres"}
+          />
+        )
       }
     >
       {route?.params?.fromScreen !== "Event" && (

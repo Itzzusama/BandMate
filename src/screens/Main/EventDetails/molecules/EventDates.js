@@ -4,16 +4,30 @@ import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { Image } from "react-native";
 import { Images } from "../../../../assets/images";
-import { PNGIcons } from "../../../../assets/images/icons";
 import { COLORS } from "../../../../utils/COLORS";
 import Icons from "../../../../components/Icons";
 
-const DateRow = ({ tile }) => {
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+
+  const date = new Date(dateString);
+
+  const options = {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  };
+
+  return date.toLocaleDateString("en-US", options);
+};
+
+const DateRow = ({ title, date }) => {
   return (
     <View style={[styles.datesCard, styles.row]}>
       <View style={{ flex: 1 }}>
         <CustomText
-          label={"Starting Date"}
+          label={title}
           color={COLORS.white2}
           fontFamily={fonts.medium}
           fontSize={12}
@@ -26,7 +40,7 @@ const DateRow = ({ tile }) => {
             style={[styles.icon, { tintColor: COLORS.white }]}
           />
           <CustomText
-            label={"Friday, July 12, 2025"}
+            label={formatDate(date)}
             fontFamily={fonts.medium}
             fontSize={16}
             lineHeight={16 * 1.4}
@@ -45,7 +59,7 @@ const DateRow = ({ tile }) => {
   );
 };
 
-const EventDates = () => {
+const EventDates = ({ detail }) => {
   return (
     <View style={[styles.container]}>
       <View style={[styles.row, { marginBottom: 12 }]}>
@@ -66,8 +80,9 @@ const EventDates = () => {
           size={22}
         />
       </View>
-      <DateRow />
-      <DateRow />
+
+      <DateRow title={"Starting date"} date={detail?.startDate} />
+      <DateRow title={"Ending date"} date={detail?.endDate} />
     </View>
   );
 };

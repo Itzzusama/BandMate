@@ -18,7 +18,7 @@ const EventDetailCard = ({ marginBottom, data, onPress }) => {
     <TouchableOpacity
       activeOpacity={0.9}
       style={[styles.container, { marginBottom: marginBottom }]}
-      // onPress={onPress}
+      onPress={onPress}
     >
       <View style={styles.dateContainer}>
         <CustomText

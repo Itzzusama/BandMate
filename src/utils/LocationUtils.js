@@ -7,7 +7,7 @@ import {
 } from "react-native";
 
 const { GetCurrentLocation } = NativeModules;
-const API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
+const API_KEY = "AIzaSyBfyE9UE7c7C36Lnbmj71I8Tl1c6Srw1cc";
 
 // Global variables to manage location requests
 let isLocationRequestInProgress = false;
@@ -122,7 +122,10 @@ export const getCurrentLocation = async (options = {}) => {
         }
 
         // Get location from native module (guard if unavailable on iOS)
-        if (!GetCurrentLocation || typeof GetCurrentLocation.getCurrentLocation !== "function") {
+        if (
+          !GetCurrentLocation ||
+          typeof GetCurrentLocation.getCurrentLocation !== "function"
+        ) {
           const moduleError = new Error("Native location module unavailable");
           moduleError.code = "NATIVE_MODULE_UNAVAILABLE";
           throw moduleError;

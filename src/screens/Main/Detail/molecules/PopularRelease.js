@@ -50,12 +50,12 @@ const PopularRelease = ({ title, data, showDots, name, onSeeAllPress }) => {
         {data?.map((item, index) => (
           <View style={[styles.row, { marginBottom: 16 }]} key={index}>
             <Image
-              source={item.img}
+              source={item?.song?.image ? { uri: item?.song?.image } : item.img}
               style={showDots ? styles.img2 : styles.img1}
             />
             <View style={{ marginLeft: 12, flex: 1 }}>
               <CustomText
-                label={item.title}
+                label={item.title || item?.song?.title}
                 fontFamily={fonts.medium}
                 color={COLORS.white}
                 fontSize={17}
@@ -63,7 +63,11 @@ const PopularRelease = ({ title, data, showDots, name, onSeeAllPress }) => {
                 numberOfLines={1}
                 // lineHeight={17 * 1.4}
               />
-              <CustomText label={item.des} color={COLORS.gray3} fontSize={12} />
+              <CustomText
+                label={item.des || item?.song?.artist}
+                color={COLORS.gray3}
+                fontSize={12}
+              />
             </View>
             {showDots && (
               <Icons

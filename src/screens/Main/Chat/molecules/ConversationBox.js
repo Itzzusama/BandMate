@@ -11,7 +11,7 @@ const ConversationBox = ({ item, isChat }) => {
   const navigation = useNavigation();
   console.log("******", item);
   const otherUser = item?.otherUser;
-  console.log(otherUser);
+  console.log("========", otherUser);
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return "00:00";
     const mins = Math.floor(seconds / 60);
@@ -27,13 +27,14 @@ const ConversationBox = ({ item, isChat }) => {
       onPress={() =>
         navigation.navigate("InboxScreen", {
           recipientId: otherUser?._id,
-          conversationId: item?.lastMessage?.conversationId,
+          conversationId: item?.lastMessage?.conversationId || otherUser?._id,
           recipientName: otherUser?.first_name,
+          address: otherUser?.address?.address,
         })
       }
     >
       <ImageFast
-        source={Images.ChatUserProfile}
+        source={{ uri: otherUser?.pictures[0] } || Images.ChatUserProfile}
         style={item?.isRequest ? styles.avatarRequest : styles.avatar}
       />
       <View style={styles.textBox}>
@@ -95,92 +96,94 @@ const ConversationBox = ({ item, isChat }) => {
                   </>
                 )}
               </View>
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
-              >
-                {item?.isRequest && item?._id === 1 && (
-                  <View style={styles.Newdot} />
-                )}
-                {item?.lastMessage?.type == "text" ? (
-                  <CustomText
-                    color={COLORS.white3}
-                    fontFamily={fonts.medium}
-                    label={item?.lastMessage?.content}
-                  />
-                ) : item?.lastMessage?.type == "voice" ? (
-                  <View style={styles.iconRow}>
-                    <Icons
-                      family={"Ionicons"}
-                      name={"mic"}
-                      size={16}
-                      color={COLORS.white3}
-                    />
+              {item?.lastMessage && (
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
+                >
+                  {item?.isRequest && item?._id === 1 && (
+                    <View style={styles.Newdot} />
+                  )}
+                  {item?.lastMessage?.type == "text" ? (
                     <CustomText
                       color={COLORS.white3}
                       fontFamily={fonts.medium}
-                      label={formatTime(
-                        item?.lastMessage?.attachment?.duration
-                      )}
-                      marginTop={1}
+                      label={item?.lastMessage?.content}
                     />
-                  </View>
-                ) : item?.lastMessage?.type == "file" &&
-                  item?.lastMessage?.attachment?.mimetype === "video/mp4" ? (
-                  <View style={styles.iconRow}>
-                    <Icons
-                      family={"FontAwesome5"}
-                      name={"video"}
-                      color={COLORS.white3}
-                    />
-                    <CustomText
-                      color={COLORS.white3}
-                      fontFamily={fonts.medium}
-                      label={"video"}
-                      marginTop={1}
-                    />
-                  </View>
-                ) : item?.lastMessage?.type == "image" ? (
-                  <View style={styles.iconRow}>
-                    <Icons
-                      family={"Ionicons"}
-                      name={"image"}
-                      color={COLORS.white3}
-                    />
-                    <CustomText
-                      color={COLORS.white3}
-                      fontFamily={fonts.medium}
-                      label={"photo"}
-                      marginTop={1}
-                    />
-                  </View>
-                ) : (
-                  <View style={styles.iconRow}>
-                    <Icons
-                      family={"Octicons"}
-                      name={"file"}
-                      color={COLORS.white3}
-                    />
-                    <CustomText
-                      color={COLORS.white3}
-                      fontFamily={fonts.medium}
-                      label={"file"}
-                      marginTop={1}
-                    />
-                  </View>
-                )}
+                  ) : item?.lastMessage?.type == "voice" ? (
+                    <View style={styles.iconRow}>
+                      <Icons
+                        family={"Ionicons"}
+                        name={"mic"}
+                        size={16}
+                        color={COLORS.white3}
+                      />
+                      <CustomText
+                        color={COLORS.white3}
+                        fontFamily={fonts.medium}
+                        label={formatTime(
+                          item?.lastMessage?.attachment?.duration
+                        )}
+                        marginTop={1}
+                      />
+                    </View>
+                  ) : item?.lastMessage?.type == "file" &&
+                    item?.lastMessage?.attachment?.mimetype === "video/mp4" ? (
+                    <View style={styles.iconRow}>
+                      <Icons
+                        family={"FontAwesome5"}
+                        name={"video"}
+                        color={COLORS.white3}
+                      />
+                      <CustomText
+                        color={COLORS.white3}
+                        fontFamily={fonts.medium}
+                        label={"video"}
+                        marginTop={1}
+                      />
+                    </View>
+                  ) : item?.lastMessage?.type == "image" ? (
+                    <View style={styles.iconRow}>
+                      <Icons
+                        family={"Ionicons"}
+                        name={"image"}
+                        color={COLORS.white3}
+                      />
+                      <CustomText
+                        color={COLORS.white3}
+                        fontFamily={fonts.medium}
+                        label={"photo"}
+                        marginTop={1}
+                      />
+                    </View>
+                  ) : (
+                    <View style={styles.iconRow}>
+                      <Icons
+                        family={"Octicons"}
+                        name={"file"}
+                        color={COLORS.white3}
+                      />
+                      <CustomText
+                        color={COLORS.white3}
+                        fontFamily={fonts.medium}
+                        label={"file"}
+                        marginTop={1}
+                      />
+                    </View>
+                  )}
 
-                {item?.isRequest && item?._id === 1 && (
-                  <>
-                    <View style={styles.separatDot} />
-                    <Icons
-                      name={"checkmark-done"}
-                      family={"Ionicons"}
-                      size={11}
-                      color={COLORS.white}
-                    />
-                  </>
-                )}
-              </View>
+                  {item?.isRequest && item?._id === 1 && (
+                    <>
+                      <View style={styles.separatDot} />
+                      <Icons
+                        name={"checkmark-done"}
+                        family={"Ionicons"}
+                        size={11}
+                        color={COLORS.white}
+                      />
+                    </>
+                  )}
+                </View>
+              )}
             </View>
             {item?.isRequest && item?._id === 1 && (
               <View>

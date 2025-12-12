@@ -4,9 +4,8 @@ import { COLORS } from "../../../../utils/COLORS";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 
-const Tabs = () => {
+const Tabs = ({ activeTab, setActiveTab }) => {
   const tabs = ["Overview", "Lineup", "Venue"];
-  const [activeTab, setActiveTab] = useState("Overview");
 
   return (
     <View style={styles.row}>

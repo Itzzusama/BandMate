@@ -4,16 +4,11 @@ import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import { Images } from "../../../../assets/images";
+import Icons from "../../../../components/Icons";
 
 const { width } = Dimensions.get("window");
-const BAR_MAX_WIDTH = width - 180; // tuned for left label + right star + paddings
+const BAR_MAX_WIDTH = width - 180;
 
-/**
- * props:
- *  - overallRating: number (e.g. 5)
- *  - basedOn: string (e.g. "95 ratings")
- *  - categories: [{ key: 'Location', value: 0.8, stars: 5 }, ...] value: 0..1
- */
 const RatingsSummary = ({
   overallRating = 5,
   basedOn = "95 ratings",
@@ -27,13 +22,27 @@ const RatingsSummary = ({
 }) => {
   return (
     <View style={styles.container}>
-      <CustomText
-        label="Ratings & Reviews"
-        fontSize={22}
-        fontFamily={fonts.semiBold}
-        color={COLORS.white}
-        style={styles.header}
-      />
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <CustomText
+          label="Ratings & Reviews"
+          fontSize={16}
+          fontFamily={fonts.semiBold}
+          color={COLORS.white}
+        />
+        <Icons
+          family={"Entypo"}
+          name={"chevron-down"}
+          color={COLORS.white2}
+          size={22}
+        />
+      </View>
+
       <View style={styles.bigRating}>
         <CustomText
           label={`${overallRating}`}
@@ -136,7 +145,6 @@ const styles = StyleSheet.create({
   barRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 3,
   },
   barLabel: {
     width: 78,

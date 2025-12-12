@@ -45,7 +45,7 @@ const SongsList = () => {
 
         setSongs(data);
       } catch (error) {
-        console.error("❌ Error fetching songs:", error);
+        // console.error("❌ Error fetching songs:", error);
       } finally {
         setLoading(false);
       }

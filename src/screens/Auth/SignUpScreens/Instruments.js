@@ -17,15 +17,22 @@ import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { instrumentCategories, COLORS_PALETTE } from "../../../utils/constants";
 import { useSelector } from "react-redux";
+import { useRoute } from "@react-navigation/native";
+import CustomButton from "../../../components/CustomButton";
+import Header from "../../../components/Header";
 
 const Instruments = ({ navigation }) => {
   const { width } = useWindowDimensions();
   const CARD_WIDTH = (width - 34) / 2;
   const CARD_HEIGHT = 100;
+  const route = useRoute();
+  const { isHome } = route?.params || {};
   const { userData } = useSelector((state) => state.users);
   const [step, setStep] = useState(userData?.role == "band" ? 10 : 11);
   const totalSteps = userData?.role == "band" ? 15 : 16;
-  const [selectedInstruments, setSelectedInstruments] = useState([]);
+  const [selectedInstruments, setSelectedInstruments] = useState(
+    isHome ? userData?.Instruments?.map((item) => item?.instrument) : []
+  );
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessColor, setShowSuccessColor] = useState(false);
@@ -59,6 +66,7 @@ const Instruments = ({ navigation }) => {
 
     navigation.navigate("Level", {
       selectedInstruments: selectedInstruments,
+      isHome,
     });
   };
 
@@ -77,7 +85,6 @@ const Instruments = ({ navigation }) => {
     return { ...category, instruments: instrumentsWithColors };
   });
 
-  /** ✅ Render instrument card */
   const renderInstrumentCard = (instrument) => {
     const isSelected = selectedInstruments.includes(instrument.name);
     return (
@@ -116,25 +123,39 @@ const Instruments = ({ navigation }) => {
     );
   };
 
-  /** ✅ Render Screen */
   return (
     <ScreenWrapper
       paddingBottom={12}
       scrollEnabled
-      footerUnScrollable={() => (
-        <AuthFooter
-          paddingHorizontal={12}
-          onPress={handleNext}
-          onBackPress={handleBack}
-          btnLoading={isLoading}
+      headerUnScrollable={() => isHome && <Header title={"Edit Instruments"} />}
+      footerUnScrollable={() =>
+        isHome ? (
+          <View style={{ padding: 12 }}>
+            <CustomButton
+              title={"Submit"}
+              marginBottom={24}
+              onPress={handleNext}
+              loading={isLoading}
+              disabled={isLoading}
+            />
+          </View>
+        ) : (
+          <AuthFooter
+            paddingHorizontal={12}
+            onPress={handleNext}
+            onBackPress={handleBack}
+            btnLoading={isLoading}
+          />
+        )
+      }
+    >
+      {!isHome && (
+        <AuthHeader
+          step={step}
+          totalSteps={totalSteps}
+          subtitle="Instruments you play"
         />
       )}
-    >
-      <AuthHeader
-        step={step}
-        totalSteps={totalSteps}
-        subtitle="Instruments you play"
-      />
 
       <View style={{ flex: 1 }}>
         <CustomText

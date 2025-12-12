@@ -13,7 +13,7 @@ import { COLORS } from "../../../../utils/COLORS";
 import { useSelector } from "react-redux";
 import { PNGIcons } from "../../../../assets/images/icons";
 
-const ChatHeader = ({ title, source, showIcons = true }) => {
+const ChatHeader = ({ title, source, showIcons = true, address }) => {
   const navigation = useNavigation();
   const [isViewModal, setIsViewModal] = useState(false);
   const { userData, savedLocations } = useSelector((state) => state.users);
@@ -46,7 +46,7 @@ const ChatHeader = ({ title, source, showIcons = true }) => {
             style={{ height: 15, width: 15, marginLeft: -3 }}
           />
           <CustomText
-            label={"Los Angeles"}
+            label={address}
             fontFamily={fonts.semiBold}
             color={"#828186"}
             fontSize={12}

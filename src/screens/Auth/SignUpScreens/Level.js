@@ -12,6 +12,9 @@ import ScreenWrapper from "../../../components/ScreenWrapper";
 import AuthHeader from "../../../components/Auth/AuthHeader";
 import AuthFooter from "../../../components/Auth/AuthFooter";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import CustomButton from "../../../components/CustomButton";
+import Header from "../../../components/Header";
+import { Images } from "../../../assets/images";
 
 const LEVELS = ["Beginner", "Intermediate", "Advanced", "Legend"];
 
@@ -20,6 +23,7 @@ const Level = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
+  const { isHome } = route?.params || {};
   const instruments = route?.params?.selectedInstruments || [];
 
   const [selectedLevels, setSelectedLevels] = useState({});
@@ -29,9 +33,19 @@ const Level = () => {
   const { userData } = useSelector((state) => state.users);
   const [step, setStep] = useState(userData?.role == "band" ? 11 : 12);
   const totalSteps = userData?.role == "band" ? 15 : 16;
-  const normalizeName = (name) => name?.replace(/\n/g, " ").trim();
 
-  /** ✅ Validate all selected */
+  // Load user default levels when editing profile
+  useEffect(() => {
+    if (isHome && userData?.Instruments?.length > 0) {
+      const preSelected = {};
+
+      userData.Instruments.forEach((item) => {
+        preSelected[item.instrument] = item.level;
+      });
+
+      setSelectedLevels(preSelected);
+    }
+  }, [isHome, userData]);
   const errorCheck = (levels) => {
     const allSelected = instruments.every((inst) => levels[inst]);
     if (allSelected) {
@@ -46,7 +60,6 @@ const Level = () => {
     }
   };
 
-  /** ✅ Select a level */
   const selectLevel = (instrument, level) => {
     setSelectedLevels((prev) => {
       const updated = { ...prev, [instrument]: level };
@@ -55,14 +68,13 @@ const Level = () => {
     });
   };
 
-  /** ✅ Save & navigate next */
   const handleNext = async () => {
     const err = errorCheck(selectedLevels);
     if (err) return;
 
     setIsLoading(true);
     const instrumentWithLevel = instruments.map((inst) => ({
-      instrument: normalizeName(inst),
+      instrument: inst,
       level: selectedLevels[inst],
     }));
 
@@ -77,7 +89,20 @@ const Level = () => {
           "Your instruments have been updated successfully!",
           "success"
         );
-        navigation.navigate("Genres");
+        if (isHome) {
+          navigation.navigate("MainStack", {
+            screen: "Detail",
+            params: {
+              images:
+                userData?.pictures?.length > 0
+                  ? userData?.pictures
+                  : [Images.user],
+              myPage: true,
+            },
+          });
+        } else {
+          navigation.navigate("Genres");
+        }
       }
     } catch (err) {
       console.log("Error saving instruments:", err);
@@ -92,83 +117,93 @@ const Level = () => {
     <ScreenWrapper
       paddingBottom={12}
       scrollEnabled
-      footerUnScrollable={() => (
-        <AuthFooter
-          paddingHorizontal={12}
-          onPress={handleNext}
-          onBackPress={handleBack}
-          btnLoading={isLoading}
+      headerUnScrollable={() => isHome && <Header title={"Edit Levels"} />}
+      footerUnScrollable={() =>
+        isHome ? (
+          <View style={{ padding: 12 }}>
+            <CustomButton
+              title={"Submit"}
+              marginBottom={24}
+              onPress={handleNext}
+              loading={isLoading}
+              disabled={isLoading}
+            />
+          </View>
+        ) : (
+          <AuthFooter
+            paddingHorizontal={12}
+            onPress={handleNext}
+            onBackPress={handleBack}
+            btnLoading={isLoading}
+          />
+        )
+      }
+    >
+      {!isHome && (
+        <AuthHeader
+          step={step}
+          totalSteps={totalSteps}
+          subtitle="Select your level for each instrument"
         />
       )}
-    >
-      <AuthHeader
-        step={step}
-        totalSteps={totalSteps}
-        subtitle="Select your level for each instrument"
-      />
 
       <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <CustomText
-            label="Let others know your level."
-            fontFamily={fonts.abril}
-            fontSize={32}
-            lineHeight={32 * 1.1}
-            marginTop={12}
-          />
+        <CustomText
+          label="Let others know your level."
+          fontFamily={fonts.abril}
+          fontSize={32}
+          lineHeight={32 * 1.1}
+          marginTop={12}
+        />
 
-          <CustomText
-            label="Tell us about your musical skills and level."
-            fontSize={12}
-            lineHeight={12 * 1.4}
-            marginBottom={18}
-            color={COLORS.white2}
-          />
+        <CustomText
+          label="Tell us about your musical skills and level."
+          fontSize={12}
+          lineHeight={12 * 1.4}
+          marginBottom={18}
+          color={COLORS.white2}
+        />
 
-          {instruments.map((instrument) => (
-            <View key={instrument} style={{ marginBottom: 12 }}>
-              <CustomText
-                label={normalizeName(instrument)}
-                fontFamily={fonts.medium}
-                fontSize={17}
-                color={COLORS.white}
-                marginBottom={10}
-              />
+        {instruments.map((instrument) => (
+          <View key={instrument} style={{ marginBottom: 12 }}>
+            <CustomText
+              label={instrument}
+              fontFamily={fonts.medium}
+              fontSize={17}
+              color={COLORS.white}
+              marginBottom={10}
+            />
 
-              <View style={styles.levelRow}>
-                {LEVELS.map((level) => {
-                  const isSelected = selectedLevels[instrument] === level;
-                  return (
-                    <TouchableOpacity
-                      key={level}
-                      style={[
-                        styles.levelButton,
-                        {
-                          backgroundColor: isSelected
-                            ? COLORS.white
-                            : "#313131",
-                          borderColor: isSelected
-                            ? COLORS.white
-                            : "transparent",
-                        },
-                      ]}
-                      onPress={() => selectLevel(instrument, level)}
-                      activeOpacity={0.8}
-                    >
-                      <CustomText
-                        label={level}
-                        color={isSelected ? COLORS.black : COLORS.white}
-                        fontFamily={fonts.medium}
-                        fontSize={12}
-                        textAlign="center"
-                      />
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+            <View style={styles.levelRow}>
+              {LEVELS.map((level) => {
+                const isSelected = selectedLevels[instrument] === level;
+                return (
+                  <TouchableOpacity
+                    key={level}
+                    style={[
+                      styles.levelButton,
+                      {
+                        backgroundColor: isSelected ? COLORS.white : "#313131",
+                        borderColor: isSelected ? COLORS.white : "transparent",
+                      },
+                    ]}
+                    onPress={() => selectLevel(instrument, level)}
+                    activeOpacity={0.8}
+                  >
+                    <CustomText
+                      label={level}
+                      color={isSelected ? COLORS.black : COLORS.white}
+                      fontFamily={fonts.medium}
+                      fontSize={12}
+                      textAlign="center"
+                    />
+                  </TouchableOpacity>
+                );
+              })}
             </View>
-          ))}
-
+          </View>
+        ))}
+        {!isHome && (
           <ErrorComponent
             errorTitle={
               showSuccess
@@ -180,7 +215,7 @@ const Level = () => {
             color={showSuccess ? "#64CD75" : error ? "#EE1045CC" : COLORS.gray2}
             marginBottom={12}
           />
-        </ScrollView>
+        )}
       </View>
     </ScreenWrapper>
   );

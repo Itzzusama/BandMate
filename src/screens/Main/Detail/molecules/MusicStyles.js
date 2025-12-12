@@ -8,7 +8,7 @@ import { COLORS } from "../../../../utils/COLORS";
 import EditButton from "./EditButton";
 import { useSelector } from "react-redux";
 
-const MusicStyles = ({ myPage, userData }) => {
+const MusicStyles = ({ myPage, userData, onPress }) => {
   return (
     <View style={{ paddingHorizontal: 12 }}>
       <View style={styles.flexRow}>
@@ -19,7 +19,7 @@ const MusicStyles = ({ myPage, userData }) => {
           fontSize={17}
           lineHeight={17 * 1.4}
         />
-        {myPage && <EditButton />}
+        {myPage && <EditButton onPress={onPress} />}
       </View>
 
       <ScrollView

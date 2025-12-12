@@ -27,9 +27,10 @@ const ArtistDetailCard = ({
   userData,
   myPage,
   getUserProfile,
+  isEvent,
 }) => {
   const navigation = useNavigation();
-  console.log(userData);
+
   const user = useSelector((state) => state?.users?.userData);
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
@@ -228,7 +229,7 @@ const ArtistDetailCard = ({
         {images && images?.length > 0 ? (
           <ImageFast
             source={{ uri: images[currentImageIndex] }}
-            style={styles.imgStyle}
+            style={[styles.imgStyle, { height: isEvent ? 370 : 390 }]}
           >
             <LinearGradient
               colors={["#14141499", "#14141440", "#60606000"]}
@@ -238,51 +239,58 @@ const ArtistDetailCard = ({
             />
 
             <View style={styles.innerContainer}>
-              <CustomText
-                label={
-                  userData?.role == "solo"
-                    ? userData?.display_name +
-                      ", " +
-                      getAgeFromDob(userData.dob)
-                    : userData?.bandName + ", " + getAgeFromDob(userData.dob)
-                }
-                fontSize={44}
-                lineHeight={44 * 1.4}
-                fontFamily={fonts.abril}
-              />
-              <View style={styles.locationRow}>
-                <Image source={PNGIcons.pin} style={styles.pinIcon} />
+              {!isEvent && (
                 <CustomText
-                  label={userData?.address?.address}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  fontFamily={fonts.medium}
-                  marginLeft={3}
+                  label={
+                    userData?.role == "solo"
+                      ? userData?.display_name +
+                        ", " +
+                        getAgeFromDob(userData.dob)
+                      : userData?.bandName + ", " + getAgeFromDob(userData.dob)
+                  }
+                  fontSize={44}
+                  lineHeight={44 * 1.4}
+                  fontFamily={fonts.abril}
                 />
-                <CustomText
-                  label={`${distanceKm.toFixed(1)} km`}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  color={COLORS.white2}
-                  fontFamily={fonts.medium}
-                  marginLeft={4}
-                />
-              </View>
-              <View style={styles.genrePill}>
-                <Icons
-                  family={"Ionicons"}
-                  name={"person-sharp"}
-                  color={COLORS.white}
-                  size={9}
-                />
-                <CustomText
-                  label={userData?.role == "solo" ? "Solo Artist" : "Band"}
-                  fontFamily={fonts.medium}
-                  fontSize={12}
-                  lineHeight={12 * 1.4}
-                  marginLeft={4}
-                />
-              </View>
+              )}
+
+              {!isEvent && (
+                <View style={styles.locationRow}>
+                  <Image source={PNGIcons.pin} style={styles.pinIcon} />
+                  <CustomText
+                    label={userData?.address?.address}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                    fontFamily={fonts.medium}
+                    marginLeft={3}
+                  />
+                  <CustomText
+                    label={`${distanceKm.toFixed(1)} km`}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                    color={COLORS.white2}
+                    fontFamily={fonts.medium}
+                    marginLeft={4}
+                  />
+                </View>
+              )}
+              {!isEvent && (
+                <View style={styles.genrePill}>
+                  <Icons
+                    family={"Ionicons"}
+                    name={"person-sharp"}
+                    color={COLORS.white}
+                    size={9}
+                  />
+                  <CustomText
+                    label={userData?.role == "solo" ? "Solo Artist" : "Band"}
+                    fontFamily={fonts.medium}
+                    fontSize={12}
+                    lineHeight={12 * 1.4}
+                    marginLeft={4}
+                  />
+                </View>
+              )}
 
               {images && images.length > 1 && (
                 <View style={styles.sliderContainer}>

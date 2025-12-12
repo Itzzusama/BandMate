@@ -19,7 +19,7 @@ const TicketCard = ({
   return (
     <View style={[styles.card, isSoldOut && styles.soldOutCard]}>
       <View style={styles.topRow}>
-        <View>
+        <View style={{ flex: 1 }}>
           <CustomText
             label={title}
             fontFamily={fonts.medium}
@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
   },
 
   counterRow: {
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 99,
-    paddingHorizontal: 9,
+    paddingHorizontal: 8,
     alignSelf: "flex-start",
     paddingVertical: 4,
     marginTop: 8,

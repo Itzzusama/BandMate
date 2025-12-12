@@ -20,7 +20,6 @@ import ErrorComponent from "../../../components/ErrorComponent";
 import CountryBottomSheet from "../../../components/CountryBottomSheet";
 import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
 import moment from "moment";
-import { clampRGBA } from "react-native-reanimated/lib/typescript/Colors";
 
 const CreateEvent = () => {
   const navigation = useNavigation();

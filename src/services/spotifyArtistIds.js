@@ -20,7 +20,20 @@ export const SPOTIFY_ARTIST_IDS = [
   "5K4W6rqBFWDnAN6FQUkS6x", // Kanye West
   "1dfeR4HaWDbWqFHLkxsg1d", // Queen
 ];
+const CLEAN_PATTERNS = [
+  /top/i,
+  /best/i,
+  /hits/i,
+  /playlist/i,
+  /mix/i,
+  /various/i,
+  /^\d+$/,
+  /^\d{4}/,
+];
 
+const isValidArtist = (name) => {
+  return !CLEAN_PATTERNS.some((pattern) => pattern.test(name));
+};
 export const fetchSpotifyArtistsWithFallback = async (
   dispatch,
   query = "top artists"
@@ -39,22 +52,18 @@ export const fetchSpotifyArtistsWithFallback = async (
     );
 
     const data = await res.json();
-    console.log("---->", data);
+
     if (!data?.artists?.items?.length) {
       console.warn("⚠️ No dynamic artists found. Using fallback list.");
       return SPOTIFY_ARTIST_IDS;
     }
+
     const cleaned = data.artists.items
-      .filter(
-        (artist) =>
-          artist.name && artist.images?.[0]?.url && isValidArtist(artist.name)
-      )
-      .map((artist) => ({
-        id: artist.id,
-      }));
+      .filter((artist) => isValidArtist(artist.name))
+      .map((artist) => artist.id);
+
     const dynamicIds = cleaned;
 
-    console.log(`✅ Fetched ${dynamicIds.length} Spotify artists dynamically.`);
     return dynamicIds;
   } catch (error) {
     console.error(

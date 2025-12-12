@@ -6,15 +6,18 @@ import {
   Animated,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  FlatList,
 } from "react-native";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { COLORS } from "../../../utils/COLORS";
-import ImageFast from "../../../components/ImageFast";
-import { EventImages } from "../../../assets/images/eventImages";
+
 import { Images } from "../../../assets/images";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomText from "../../../components/CustomText";
+import CustomButton from "../../../components/CustomButton";
 import fonts from "../../../assets/fonts";
 import Divider from "../../../components/Divider";
 import EventName from "./molecules/EventName";
@@ -29,6 +32,47 @@ import TicketsHeading from "./molecules/TicketsHeading";
 import AllTickets from "./molecules/AllTickets";
 import PaymentCard from "./molecules/PaymentCard";
 import CustomerReviewCard from "./molecules/CustomerReviewCard";
+import ArtistDetailCard from "../../../components/ArtistDetailCard";
+import { useRoute } from "@react-navigation/native";
+import { get, post } from "../../../services/ApiRequest";
+import ScreenWrapper from "../../../components/ScreenWrapper";
+import LineupCard from "./molecules/LineupCard";
+import EventCard from "./molecules/EventCard";
+import TicketBottomBar from "./molecules/TicketBottomBar";
+import Icons from "../../../components/Icons";
+import { ToastMessage } from "../../../utils/ToastMessage";
+const eventsData = [
+  {
+    image: Images.homeSheetImg,
+    discount: 20,
+    isSponsored: true,
+    isNew: true,
+    title: "Event Name",
+    startDate: "Aug 22, 2024",
+    endDate: "Aug 24, 2024",
+    price: 40,
+    availableTickets: 234,
+    friends: [
+      { name: "Viktor", avatar: Images.user },
+      { name: "John" },
+      { name: "Lisa" },
+    ],
+    matchPercent: 90,
+  },
+  {
+    image: Images.homeSheetImg2,
+    discount: 10,
+    isSponsored: false,
+    isNew: true,
+    title: "Music Festival",
+    startDate: "Sep 1, 2024",
+    endDate: "Sep 2, 2024",
+    price: 55,
+    availableTickets: 87,
+    friends: [{ name: "Mark", avatar: Images.user1 }, { name: "Sarah" }],
+    matchPercent: 84,
+  },
+];
 const HEADER_MAX_HEIGHT = 380;
 const HEADER_MIN_HEIGHT = 70;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
@@ -78,8 +122,15 @@ export const passCardsData = [
 ];
 
 const EventDetail = ({ navigation }) => {
+  const route = useRoute();
+  const { id } = route?.params;
+  const [submitting, setSubmitting] = useState(false);
+  const [detail, setDetail] = useState({});
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("Overview");
+  const [ticketPayload, setTicketPayload] = useState(null);
   const headerTranslateY = scrollY.interpolate({
     inputRange: [-HEADER_MAX_HEIGHT, 0, HEADER_SCROLL_DISTANCE],
     outputRange: [-HEADER_MAX_HEIGHT / 2, 0, -HEADER_SCROLL_DISTANCE * 0.7],
@@ -89,12 +140,6 @@ const EventDetail = ({ navigation }) => {
     inputRange: [-150, 0],
     outputRange: [1.2, 1],
     extrapolateRight: "clamp",
-  });
-
-  const layerSlowTranslateY = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE * 2],
-    outputRange: [0, -40],
-    extrapolate: "clamp",
   });
 
   const layerFastTranslateY = scrollY.interpolate({
@@ -108,6 +153,60 @@ const EventDetail = ({ navigation }) => {
     outputRange: [0, 0.4, 1],
     extrapolate: "clamp",
   });
+  const getEventDetail = async () => {
+    try {
+      const res = await get("events/" + id);
+      if (res?.data?.success) {
+        console.log(res?.data?.data);
+        setDetail(res?.data?.data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getEventDetail();
+  }, []);
+
+  const handlePayloadUpdate = (payload) => {
+    console.log("--uuu>", payload);
+    setTicketPayload(payload);
+  };
+
+  const submitTickets = async () => {
+    try {
+      setSubmitting(true);
+      const res = await post("bookings", ticketPayload);
+      if (res?.data?.success) {
+        console.log(res?.data);
+        await confirmBooking(res?.data?.data?._id);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const confirmBooking = async (id) => {
+    try {
+      const res = await post("bookings/" + id + "/confirm");
+      if (res?.data?.success) {
+        ToastMessage(res?.data?.message, "success");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  if (loading) {
+    return (
+      <ScreenWrapper>
+        <ActivityIndicator size={"large"} style={{ marginTop: 50 }} />
+      </ScreenWrapper>
+    );
+  }
   return (
     <View style={[styles.container, { backgroundColor: COLORS.black }]}>
       <StatusBar
@@ -126,11 +225,15 @@ const EventDetail = ({ navigation }) => {
           },
         ]}
       >
-        <ImageFast
-          source={EventImages.eventImg}
-          style={styles.detailImg}
-          resizeMode={"stretch"}
-        ></ImageFast>
+        <ArtistDetailCard
+          images={
+            detail?.media?.map((item) => item?.url) || [
+              "https://storage.googleapis.com/move-2223b.firebasestorage.app/uploads/1764860729398.jpg",
+            ]
+          }
+          isEvent
+        />
+
         <Divider
           thickness={4}
           color={COLORS.inputBg}
@@ -163,49 +266,89 @@ const EventDetail = ({ navigation }) => {
               transform: [{ translateY: layerFastTranslateY }],
             }}
           >
-            <EventName />
+            <EventName detail={detail} />
             <Divider
               thickness={4}
               color={COLORS.inputBg}
               marginTop={0}
               marginBottom={0}
             />
-            <Tabs />
+            <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
             <Divider
               thickness={4}
               color={COLORS.inputBg}
               marginTop={0}
               marginBottom={0}
             />
-            <RatingOverview />
-            <Divider
-              thickness={4}
-              color={COLORS.inputBg}
-              marginTop={0}
-              marginBottom={0}
-            />
-            <EventDates />
-            <Divider
-              thickness={4}
-              color={COLORS.inputBg}
-              marginTop={0}
-              marginBottom={0}
-            />
-            <AboutEvent />
-            <Divider
-              thickness={4}
-              color={COLORS.inputBg}
-              marginTop={0}
-              marginBottom={0}
-            />
-            <WhatToExpect />
-            <Divider
-              thickness={4}
-              color={COLORS.inputBg}
-              marginTop={0}
-              marginBottom={0}
-            />
-            <EventLocation />
+            {activeTab == "Overview" && (
+              <>
+                <RatingOverview
+                  detail={detail}
+                  tags={detail?.genres}
+                  name={detail?.eventName}
+                />
+                <Divider
+                  thickness={4}
+                  color={COLORS.inputBg}
+                  marginTop={0}
+                  marginBottom={0}
+                />
+                <EventDates detail={detail} />
+                <Divider
+                  thickness={4}
+                  color={COLORS.inputBg}
+                  marginTop={0}
+                  marginBottom={0}
+                />
+                <AboutEvent about={detail?.aboutThisEvent} />
+                <Divider
+                  thickness={4}
+                  color={COLORS.inputBg}
+                  marginTop={0}
+                  marginBottom={0}
+                />
+                <WhatToExpect />
+                <Divider
+                  thickness={4}
+                  color={COLORS.inputBg}
+                  marginTop={0}
+                  marginBottom={0}
+                />
+              </>
+            )}
+            {activeTab == "Lineup" && (
+              <>
+                <CustomText
+                  label={"Lineup"}
+                  fontFamily={fonts.semiBold}
+                  fontSize={22}
+                  marginLeft={12}
+                  marginTop={8}
+                />
+                <LineupCard data={detail?.featuredArtists} />
+                <Divider
+                  thickness={4}
+                  color={COLORS.inputBg}
+                  marginTop={4}
+                  marginBottom={4}
+                />
+                <CustomText
+                  label={"Sponsor"}
+                  fontFamily={fonts.semiBold}
+                  fontSize={22}
+                  marginLeft={12}
+                  marginTop={8}
+                />
+                <LineupCard data={detail?.sponsors} />
+                <Divider
+                  thickness={4}
+                  color={COLORS.inputBg}
+                  marginTop={4}
+                  marginBottom={4}
+                />
+              </>
+            )}
+            <EventLocation address={detail?.address} />
             <Divider
               thickness={4}
               color={COLORS.inputBg}
@@ -243,7 +386,11 @@ const EventDetail = ({ navigation }) => {
               marginTop={6}
               marginBottom={0}
             />
-            <AllTickets />
+            <AllTickets
+              ticketing={detail?.ticketing}
+              id={detail?._id}
+              onPayloadChange={handlePayloadUpdate}
+            />
             <Divider
               thickness={4}
               color={COLORS.inputBg}
@@ -267,9 +414,97 @@ const EventDetail = ({ navigation }) => {
               likes={12}
               date="12 June 2025"
             />
+            <Divider
+              thickness={4}
+              color={COLORS.inputBg}
+              marginTop={12}
+              marginBottom={0}
+            />
+
+            <View style={[styles.flexRow, { padding: 12 }]}>
+              <View style={[styles.flexRow, { flex: 1 }]}>
+                <CustomText
+                  label={"You Might Also Like"}
+                  fontSize={16}
+                  fontFamily={fonts.semiBold}
+                  marginRight={4}
+                />
+                <View style={styles.sponsoredWarpper}>
+                  <CustomText
+                    label={"Sponsored"}
+                    fontSize={12}
+                    fontFamily={fonts.medium}
+                    color={COLORS.white2}
+                  />
+                </View>
+              </View>
+              <Icons
+                family={"Entypo"}
+                name={"chevron-down"}
+                color={COLORS.white2}
+                size={22}
+              />
+            </View>
+            <FlatList
+              data={eventsData}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 12 }}
+              renderItem={({ item }) => <EventCard item={item} />}
+            />
+            <Divider
+              thickness={4}
+              color={COLORS.inputBg}
+              marginTop={12}
+              marginBottom={0}
+            />
+
+            <View style={[styles.flexRow, { padding: 12 }]}>
+              <View style={[styles.flexRow, { flex: 1 }]}>
+                <CustomText
+                  label={"Others Have Also Booked"}
+                  fontSize={16}
+                  fontFamily={fonts.semiBold}
+                  marginRight={4}
+                />
+                <View style={styles.sponsoredWarpper}>
+                  <CustomText
+                    label={"Sponsored"}
+                    fontSize={12}
+                    fontFamily={fonts.medium}
+                    color={COLORS.white2}
+                  />
+                </View>
+              </View>
+              <Icons
+                family={"Entypo"}
+                name={"chevron-down"}
+                color={COLORS.white2}
+                size={22}
+              />
+            </View>
+            <FlatList
+              data={eventsData}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 12 }}
+              renderItem={({ item }) => <EventCard item={item} />}
+            />
           </Animated.View>
         </View>
       </Animated.ScrollView>
+      <View>
+        <Divider thickness={4} color={COLORS.inputBg} marginBottom={0} />
+        <TicketBottomBar
+          totalTickets={ticketPayload?.totalQuantity ?? 0}
+          finalPrice={ticketPayload?.finalPrice ?? 0}
+          onPressBook={submitTickets}
+          loading={submitting}
+        />
+      </View>
+
       <Animated.View style={[styles.stickyHeader, { paddingTop: insets.top }]}>
         <Animated.View
           pointerEvents="none"
@@ -280,7 +515,7 @@ const EventDetail = ({ navigation }) => {
           }}
         />
         <View style={styles.flexRow}>
-          <View style={[styles.flexRow, { flex: 1 }]}>
+          <View style={[styles.flexRow, { flex: 1, marginRight: 50 }]}>
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               activeOpacity={0.6}
@@ -288,10 +523,11 @@ const EventDetail = ({ navigation }) => {
               <Image style={styles.icon} source={Images.event_back} />
             </TouchableOpacity>
             <CustomText
-              label={"Toscana"}
+              label={detail?.venueName || "Toscana"}
               fontFamily={fonts.semiBold}
               fontSize={20}
               marginLeft={16}
+              numberOfLines={2}
             />
           </View>
           <View style={[styles.flexRow, { gap: 8 }]}>
@@ -371,5 +607,13 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     resizeMode: "contain",
+  },
+  sponsoredWarpper: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    backgroundColor: COLORS.inputBg,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 6,
   },
 });

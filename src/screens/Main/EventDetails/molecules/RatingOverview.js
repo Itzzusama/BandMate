@@ -62,12 +62,23 @@ const RatingOverview = ({
       </View>
 
       <View style={styles.tagRow}>
-        {tags.map((tag, index) => (
+        {tags.slice(0, 3).map((tag, index) => (
           <View key={index} style={styles.tag}>
             <CustomText label={tag} fontSize={12} color={COLORS.white} />
           </View>
         ))}
+
+        {tags.length > 3 && (
+          <View style={styles.moreTag}>
+            <CustomText
+              label={`+${tags.length - 3} more`}
+              fontSize={12}
+              color={COLORS.white}
+            />
+          </View>
+        )}
       </View>
+
       <CustomText
         label={name}
         fontSize={24}
@@ -153,5 +164,11 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     paddingHorizontal: 10,
     paddingVertical: 4,
+  },
+  moreTag: {
+    backgroundColor: COLORS.cardColor,
+    borderRadius: 99,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
 });

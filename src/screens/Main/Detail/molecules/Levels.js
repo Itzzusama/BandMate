@@ -6,6 +6,7 @@ import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import EditButton from "./EditButton";
 import { useSelector } from "react-redux";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const data = [
   { name: "Bass", level: "Beginner" },
@@ -16,23 +17,34 @@ const data = [
 
 const Levels = ({ myPage }) => {
   const { userData } = useSelector((state) => state.users);
+  const navigation = useNavigation();
+
   return (
     <View style={{ paddingHorizontal: 12 }}>
-      {myPage && (
-        <View style={styles.editBtn}>
-          <EditButton />
-        </View>
-      )}
       {userData?.Instruments?.map((item, index) => (
         <>
-          <CustomText
-            label={item?.instrument}
-            fontFamily={fonts.medium}
-            color={COLORS.white}
-            fontSize={17}
-            lineHeight={17 * 1.4}
-            marginBottom={10}
-          />
+          <View style={styles.row}>
+            <CustomText
+              label={item?.instrument}
+              fontFamily={fonts.medium}
+              color={COLORS.white}
+              fontSize={17}
+              lineHeight={17 * 1.4}
+            />
+            {myPage && index == 0 && (
+              <EditButton
+                onPress={() =>
+                  navigation.navigate("AuthStack", {
+                    screen: "Instruments",
+                    params: {
+                      isHome: true,
+                    },
+                  })
+                }
+              />
+            )}
+          </View>
+
           <InfoCard key={index} name={item.level} marginBottom={16} />
         </>
       ))}
@@ -46,8 +58,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    flexWrap: "wrap",
-    gap: 4,
+    marginBottom: 10,
+    justifyContent: "space-between",
   },
   editBtn: {
     right: 12,

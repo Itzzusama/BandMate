@@ -5,6 +5,7 @@ import { Images } from "../../../../assets/images";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { PNGIcons } from "../../../../assets/images/icons";
+import Icons from "../../../../components/Icons";
 
 const EventName = ({ name }) => {
   return (
@@ -17,8 +18,14 @@ const EventName = ({ name }) => {
           fontSize={16}
           lineHeight={16 * 1.4}
           marginLeft={8}
+          marginRight={6}
         />
-        <Image source={Images.verified} style={{ height: 16, width: 16 }} />
+        <Icons
+          family="MaterialIcons"
+          name="verified"
+          size={16}
+          color="#007BFF"
+        />
       </View>
       <TouchableOpacity activeOpacity={0.8} style={styles.msgIocn}>
         <Image

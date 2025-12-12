@@ -209,5 +209,11 @@ export const Images = {
   event_circle: require("./event-circle.png"),
   event_box: require("./event-box.png"),
   star: require("./star.png"),
+  heart2: require("./heart2.png"),
   app_back: require("./app-back.png"),
+  camera_outline: require("./camera-outline.png"),
+  add_save: require("./add-save.png"),
+  cal_outline: require("./calendar-outline.png"),
+  tag: require("./tag.png"),
+  ticket_card: require("./ticket-card.png"),
 };

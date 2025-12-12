@@ -13,10 +13,9 @@ import { COLORS } from "../../../../utils/COLORS";
 import { Images } from "../../../../assets/images";
 import MapView, { Marker } from "react-native-maps";
 
-const LATITUDE = 46.2276;
-const LONGITUDE = 6.1318;
-
-const EventLocation = () => {
+const EventLocation = ({ address }) => {
+  const LATITUDE = address?.location?.coordinates[1];
+  const LONGITUDE = address?.location?.coordinates[0];
   const openDirections = () => {
     const url = Platform.select({
       ios: `http://maps.apple.com/?daddr=${LATITUDE},${LONGITUDE}`,
@@ -38,7 +37,7 @@ const EventLocation = () => {
       <View style={[styles.row, { marginVertical: 4 }]}>
         <Image source={Images.event} style={styles.icon} />
         <CustomText
-          label={"Copernik Stadium"}
+          label={address?.address}
           fontSize={16}
           fontFamily={fonts.medium}
           lineHeight={16 * 1.4}
@@ -74,7 +73,7 @@ const EventLocation = () => {
               style={[styles.icon, { tintColor: COLORS.white }]}
             />
             <CustomText
-              label={"Chemin du Centurion 11, 1209, Geneva"}
+              label={address?.address}
               fontFamily={fonts.medium}
               fontSize={16}
               lineHeight={16 * 1.4}

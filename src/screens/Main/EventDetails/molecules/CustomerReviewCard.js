@@ -6,6 +6,7 @@ import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import { Images } from "../../../../assets/images";
 import RatingsSummary from "./RatingsSummary";
+import ReviewsHeader from "./ReviewsHeader";
 
 const CustomerReviewCard = ({
   name,
@@ -19,6 +20,7 @@ const CustomerReviewCard = ({
   return (
     <>
       <RatingsSummary />
+      <ReviewsHeader />
       <View style={styles.card}>
         <View style={styles.headerRow}>
           <CustomText
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
   card: {
     borderColor: COLORS.inputBg,
     borderWidth: 1,
-    borderRadius: 18,
+    borderRadius: 12,
     padding: 12,
     marginVertical: 10,
     width: 240,

@@ -58,8 +58,7 @@ const AddDescription = () => {
       });
 
       if (res?.data?.success) {
-        const resp = await get("user/me");
-        dispatch(setUserData(resp?.data?.data));
+        dispatch(setUserData(res?.data?.user));
         ToastMessage("Profile updated successfully!", "success");
         if (fromScreen == "Home") {
           navigation.goBack();

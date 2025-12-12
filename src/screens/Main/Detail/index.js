@@ -60,9 +60,8 @@ const Detail = ({ navigation, route }) => {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    console.log(myPage);
     setUserData(myPage ? user : profile);
-  }, [myPage]);
+  }, [myPage, user, profile]);
   useEffect(() => {
     if (!img) return;
     getPalette(img)
@@ -105,7 +104,7 @@ const Detail = ({ navigation, route }) => {
     outputRange: [0, 0.4, 1],
     extrapolate: "clamp",
   });
-  console.log(userData);
+
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
       <StatusBar
@@ -179,7 +178,19 @@ const Detail = ({ navigation, route }) => {
             {myPage && <LatestRelease myPage={myPage} artistId={artistId} />}
 
             <Language myPage={myPage} userData={userData} />
-            <MusicStyles myPage={myPage} userData={userData} />
+            <MusicStyles
+              myPage={myPage}
+              userData={userData}
+              onPress={() =>
+                navigation.navigate("AuthStack", {
+                  screen: "Genres",
+                  params: {
+                    fromScreen: "Event",
+                    isHome: true,
+                  },
+                })
+              }
+            />
             <Levels myPage={myPage} />
             <LookingFor myPage={myPage} userData={userData} />
             <Availability myPage={myPage} />
@@ -211,7 +222,7 @@ const Detail = ({ navigation, route }) => {
                   ? userData?.display_name
                   : userData?.bandName
               } Knows`}
-              data={topTracks}
+              data={userData?.favoriteSongs}
               showDots
               myPage={myPage}
               name={"Spotify"}

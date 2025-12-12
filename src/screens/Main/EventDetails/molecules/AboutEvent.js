@@ -4,7 +4,7 @@ import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 
-const AboutEvent = () => {
+const AboutEvent = ({ about }) => {
   return (
     <View style={styles.container}>
       <CustomText
@@ -15,6 +15,7 @@ const AboutEvent = () => {
       />
       <CustomText
         label={
+          about ||
           "Experience the magic of live music at our Summer Music Festival 2026. This year's lineup features an incredible mix of established and emerging artists across multiple genres. From indie rock to electronic dance music, there's something for every music lover."
         }
         fontFamily={fonts.medium}
