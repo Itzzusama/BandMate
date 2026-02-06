@@ -32,7 +32,7 @@ const UsersInfo = () => {
       />
       <View style={styles.row}>
         <CustomText
-          label={`Hi ${
+          label={`${
             user?.role == "solo"
               ? user?.display_name
               : user?.bandName || "username"

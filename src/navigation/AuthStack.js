@@ -33,6 +33,7 @@ import Genres from "../screens/Auth/SignUpScreens/Genres";
 import Artists from "../screens/Auth/SignUpScreens/Artists";
 import AddPictures from "../screens/Auth/SignUpScreens/AddPictures";
 import AddDescription from "../screens/Auth/SignUpScreens/AddDescription";
+import GooglePlaces from "../components/CustomModalGooglePlaces";
 
 const Stack = createNativeStackNavigator();
 
@@ -95,6 +96,7 @@ const AuthStack = () => {
       <Stack.Screen name="Artists" component={Artists} />
       <Stack.Screen name="AddPictures" component={AddPictures} />
       <Stack.Screen name="AddDescription" component={AddDescription} />
+      <Stack.Screen name="GooglePlaces" component={GooglePlaces} />
     </Stack.Navigator>
   );
 };

@@ -48,7 +48,8 @@ const ConfirmPinCode = ({ route }) => {
           // } else {
           //   navigation.navigate("OnBoarding1");
           // }
-          setGoogleModalVisible(true);
+
+          navigation.navigate("GooglePlaces", { fromSignup: true });
         } else {
           setError(res?.data?.message);
         }
@@ -215,19 +216,6 @@ const ConfirmPinCode = ({ route }) => {
         loading={biometricLoading}
         onBtnTwo={onLaterModal}
       /> */}
-      <CustomModalGooglePlaces
-        isVisible={googleModalVisible}
-        onClose={() => {
-          setGoogleModalVisible(false);
-        }}
-        onLocationSelect={(location) => {
-          console.log("Selected location:", location);
-          setSelectedLocation(location);
-          setGoogleModalVisible(false);
-          navigation.navigate("Success");
-        }}
-        initialValue={selectedLocation?.address || ""}
-      />
     </ScreenWrapper>
   );
 };

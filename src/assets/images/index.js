@@ -215,5 +215,8 @@ export const Images = {
   add_save: require("./add-save.png"),
   cal_outline: require("./calendar-outline.png"),
   tag: require("./tag.png"),
+  share: require("./share.png"),
   ticket_card: require("./ticket-card.png"),
+  promo_code: require("./promo-code.png"),
+  pinCode1: require("./pinCode1.png"),
 };

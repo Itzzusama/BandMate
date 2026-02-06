@@ -28,6 +28,12 @@ import Branding from "../screens/Main/CreateEvent/Branding";
 import FoodBeverage from "../screens/Main/CreateEvent/FoodBeverage";
 import TicketDetail from "../screens/Main/CreateEvent/TicketDetail";
 import EventDetail from "../screens/Main/EventDetails";
+import GooglePlaces from "../components/CustomModalGooglePlaces";
+import Availability from "../screens/Main/Settings/Availability";
+import LookingFor from "../screens/Main/Settings/LookingFor";
+import AddItems from "../screens/Main/CreateEvent/AddItems";
+import SocialsAccount from "../screens/Main/SocialsAccount";
+import AddAccount from "../screens/Main/SocialsAccount/AddAccount";
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
@@ -69,6 +75,12 @@ const MainStack = () => {
       <Stack.Screen name="FoodBeverage" component={FoodBeverage} />
       <Stack.Screen name="TicketDetail" component={TicketDetail} />
       <Stack.Screen name="EventDetail" component={EventDetail} />
+      <Stack.Screen name="GooglePlaces" component={GooglePlaces} />
+      <Stack.Screen name="Availability" component={Availability} />
+      <Stack.Screen name="LookingFor" component={LookingFor} />
+      <Stack.Screen name="AddItems" component={AddItems} />
+      <Stack.Screen name="SocialsAccount" component={SocialsAccount} />
+      <Stack.Screen name="AddAccount" component={AddAccount} />
     </Stack.Navigator>
   );
 };

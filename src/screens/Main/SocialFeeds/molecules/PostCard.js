@@ -25,6 +25,7 @@ const PostCard = ({
   timeAgo = "9 hours ago",
   activeIndex = 0,
   totalIndicators = 4,
+  marginBottom,
 }) => {
   const [bgColor, setBgColor] = useState("");
 
@@ -39,7 +40,7 @@ const PostCard = ({
   }, [imageSource]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom }]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
@@ -127,7 +128,6 @@ const PostCard = ({
           </View>
         ))}
       </View>
-
 
       <View
         style={[
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.9,
     shadowRadius: 24,
     shadowOffset: { width: 0, height: 0 },
-    elevation:50,
+    elevation: 50,
   },
   image: {
     width: "100%",

@@ -27,6 +27,7 @@ const ImageFast = ({
   hitSlop,
   removeLoading,
   tintColor, // optional tint
+  onLoad,
 }) => {
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isViewModal, setIsViewModal] = useState(false);
@@ -111,7 +112,10 @@ const ImageFast = ({
       )}
       <FastImage
         onLoadStart={removeLoading ? undefined : () => setIsImageLoading(true)}
-        onLoadEnd={removeLoading ? undefined : () => setIsImageLoading(false)}
+        onLoadEnd={(e) => {
+          if (!removeLoading) setIsImageLoading(false);
+          onLoad?.(e); // ✅ FIRE CALLBACK
+        }}
         source={source}
         resizeMode={resizeMode}
         style={[

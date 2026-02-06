@@ -4,7 +4,7 @@ import CustomText from "../../../../components/CustomText";
 import { COLORS } from "../../../../utils/COLORS";
 
 const ListHeader = ({
-  title = "You matched with Catie on Jan 4, 2023",
+  title = "You matched with Alex on Dec 19, 2025",
   marginTop = 10,
   marginBottom,
 }) => {

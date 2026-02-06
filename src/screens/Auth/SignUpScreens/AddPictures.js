@@ -103,6 +103,7 @@ const AddPictures = () => {
   };
 
   const handleNext = async () => {
+    // navigation.navigate("AddDescription");
     if (images.length < MAX_IMAGES) {
       setError(`Please upload all ${MAX_IMAGES} pictures.`);
       return;

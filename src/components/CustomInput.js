@@ -9,6 +9,7 @@ import fonts from "../assets/fonts";
 import { Images } from "../assets/images";
 import { COLORS } from "../utils/COLORS";
 import ErrorComponent from "./ErrorComponent";
+import React from "react";
 
 const CustomInput = ({
   placeholder,
@@ -251,7 +252,7 @@ const CustomInput = ({
   );
 };
 
-export default CustomInput;
+export default React.memo(CustomInput);
 
 const styles = StyleSheet.create({
   mainContainer: {

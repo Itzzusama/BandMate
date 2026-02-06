@@ -109,9 +109,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     padding: 12,
-    marginVertical: 10,
+    marginVertical: 6,
     width: 240,
     marginHorizontal: 12,
+    marginTop: 6,
   },
 
   headerRow: {},
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   imagesRow: {
     flexDirection: "row",
     marginVertical: 12,
-    gap: 10,
+    gap: 4,
   },
 
   reviewImage: {

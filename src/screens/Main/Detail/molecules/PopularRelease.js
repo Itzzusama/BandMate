@@ -8,7 +8,14 @@ import ConnentAccount from "./ConnentAccount";
 import { useDispatch, useSelector } from "react-redux";
 import { loginWithSpotify } from "../../../../services/spotifyAuthService";
 
-const PopularRelease = ({ title, data, showDots, name, onSeeAllPress }) => {
+const PopularRelease = ({
+  title,
+  data,
+  showDots,
+  name,
+  onSeeAllPress,
+  myPage,
+}) => {
   const { accessToken } = useSelector((state) => state?.spotifyAuth);
   const dispatch = useDispatch();
   return (
@@ -39,7 +46,7 @@ const PopularRelease = ({ title, data, showDots, name, onSeeAllPress }) => {
             onPress={onSeeAllPress}
           />
         </View>
-        {!accessToken && name == "Spotify" && (
+        {!accessToken && name == "Spotify" && myPage && (
           <ConnentAccount
             bottom={16}
             accName={name}

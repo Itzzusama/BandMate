@@ -50,7 +50,9 @@ const PinCode = () => {
             title="Later"
             backgroundColor={COLORS.cardColor}
             color={COLORS.white}
-            onPress={() => setGoogleModalVisible(true)}
+            onPress={() =>
+              navigation.navigate("GooglePlaces", { fromSignup: true })
+            }
           />
         </View>
       )}
@@ -74,19 +76,6 @@ const PinCode = () => {
         setValue={setOtp}
         error={error}
         marginBottom={40}
-      />
-      <CustomModalGooglePlaces
-        isVisible={googleModalVisible}
-        onClose={() => {
-          setGoogleModalVisible(false);
-        }}
-        onLocationSelect={(location) => {
-          console.log("Selected location:", location);
-          setSelectedLocation(location);
-          setGoogleModalVisible(false);
-          navigation.navigate("Success");
-        }}
-        initialValue={selectedLocation?.address || ""}
       />
     </ScreenWrapper>
   );

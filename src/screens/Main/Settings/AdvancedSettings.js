@@ -53,9 +53,6 @@ const options = [
   },
 ];
 const AdvancedSettings = () => {
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [googleModalVisible, setGoogleModalVisible] = useState(false);
-  const navigation = useNavigation();
   return (
     <ScreenWrapper
       paddingBottom={0.1}
@@ -70,27 +67,9 @@ const AdvancedSettings = () => {
           des={item.des}
           index={index}
           lastIndex={options.length - 1}
-          onPress={() => {
-            if (item.id == "addressing") {
-              setGoogleModalVisible(true);
-            }
-          }}
+          onPress={() => {}}
         />
       ))}
-      <CustomModalGooglePlaces
-        isVisible={googleModalVisible}
-        onClose={() => {
-          setGoogleModalVisible(false);
-          navigation.navigate("AdvancedSettings");
-        }}
-        onLocationSelect={(location) => {
-          console.log("Selected location:", location);
-          setSelectedLocation(location);
-          setGoogleModalVisible(false);
-          navigation.navigate("AdvancedSettings");
-        }}
-        initialValue={selectedLocation?.address || ""}
-      />
     </ScreenWrapper>
   );
 };

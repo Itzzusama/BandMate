@@ -406,17 +406,17 @@ const ChatBubble = ({ isSender, item, onReply, onReact }) => {
                 name="clock"
                 family="Feather"
                 size={12}
-                color={COLORS.subtitle}
+                color={COLORS.white}
               />
             ) : isFailed ? (
               <Icons
                 name="alert-circle"
                 family="Feather"
                 size={12}
-                color="red"
+                color={COLORS.red}
               />
             ) : (
-              <Icons name={"checkmark-done-sharp"} color={"#A19375"} />
+              <Icons name={"checkmark-done-sharp"} color={COLORS.btnColor} />
             )}
 
             <CustomText

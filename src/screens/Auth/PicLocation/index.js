@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   ActivityIndicator,
   TouchableOpacity,
@@ -23,7 +23,9 @@ import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { put } from "../../../services/ApiRequest";
-const GOOGLE_API_KEY = "AIzaSyBfyE9UE7c7C36Lnbmj71I8Tl1c6Srw1cc";
+import { setUserData } from "../../../store/reducer/usersSlice";
+import { ToastMessage } from "../../../utils/ToastMessage";
+const GOOGLE_API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 const darkMapStyle = [
   { elementType: "geometry", stylers: [{ color: "#212121" }] },
   { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
@@ -76,6 +78,7 @@ const darkMapStyle = [
   },
 ];
 const PicLocation = () => {
+  const dispatch = useDispatch();
   const currentLocation = useSelector((state) => state.users.location);
   const navigation = useNavigation();
   const route = useRoute();
@@ -236,7 +239,7 @@ const PicLocation = () => {
     getCurrentLocation();
   }, []);
 
-  const handleConfirmAddress = () => {
+  const handleConfirmAddress = async () => {
     if (isCustom) {
       // Pass address data to UserAddress screen
       const addressData = {
@@ -247,7 +250,6 @@ const PicLocation = () => {
       };
       navigation.replace("UserAddress", { addressData, item });
     } else {
-      // navigation.navigate("Success");
       const {
         setValue,
         setLatLong,
@@ -255,19 +257,61 @@ const PicLocation = () => {
         setCity,
         setZipCode,
         setCountry,
+        setInitValue,
+        onLocationSelect,
+        fromSignup,
       } = route.params || {};
+      console.log("----", fromSignup);
+      const location = {
+        address: currentAddress,
+        city: addressComponents?.city || null,
+        state: addressComponents?.state || null,
+        zipCode: addressComponents?.zipCode || null,
+        latitude: currentRegion.latitude,
+        longitude: currentRegion.longitude,
+        country: addressComponents.country,
+      };
+      if (onLocationSelect) {
+        onLocationSelect(location);
+      }
       if (setValue) setValue(currentAddress);
       if (setLatLong)
         setLatLong({
           latitude: currentRegion.latitude,
           longitude: currentRegion.longitude,
         });
-
+      if (setInitValue) setInitValue(currentAddress);
       if (setState) setState(addressComponents.state);
       if (setCity) setCity(addressComponents.city);
       if (setZipCode) setZipCode(addressComponents.zipCode);
       if (setCountry) setCountry(addressComponents.country);
-      navigation.goBack();
+      const payLoad = {
+        address: {
+          address: currentAddress,
+          location: {
+            type: "Point",
+            coordinates: [currentRegion.longitude, currentRegion.latitude],
+          },
+        },
+      };
+      if (fromSignup) {
+        try {
+          const res = await put("user/profile", payLoad);
+          if (res?.data?.success) {
+            dispatch(setUserData(res?.data?.user));
+            ToastMessage(
+              res?.data?.message || "Profile updated successfully",
+              "success"
+            );
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "WelcomeScreen" }],
+            });
+          }
+        } catch (err) {}
+      } else {
+        navigation.goBack();
+      }
     }
   };
 
@@ -368,7 +412,7 @@ const PicLocation = () => {
             marginTop={-12}
             onPress={handleConfirmAddress}
             textColor={COLORS.white2}
-            onBackPress={() => setgooglPlacesModal(true)}
+            onBackPress={() => navigation.goBack()}
           />
         </View>
       )}
@@ -393,7 +437,7 @@ const PicLocation = () => {
         </View>
       </View>
 
-      <CustomModalGooglePlaces
+      {/* <CustomModalGooglePlaces
         isVisible={googlPlacesModal}
         onClose={() => setgooglPlacesModal(false)}
         onLocationSelect={(location) => {
@@ -424,7 +468,7 @@ const PicLocation = () => {
           // Close the modal
           setgooglPlacesModal(false);
         }}
-      />
+      /> */}
     </ScreenWrapper>
   );
 };

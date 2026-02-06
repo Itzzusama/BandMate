@@ -1,14 +1,25 @@
-import { Image, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
 import InfoCard from "./InfoCard";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import EditButton from "./EditButton";
+import { useNavigation } from "@react-navigation/native";
 
-const data = ["Weekdays", "Weekends"];
+const Availability = ({ myPage, userData }) => {
+  const navigation = useNavigation();
 
-const Availability = ({ myPage }) => {
+  const availabilityMap = {
+    weekdays: "Weekdays",
+    weekends: "Weekends",
+  };
+
+  // ✅ Get only enabled availability
+  const activeAvailability = Object.entries(userData?.Availability || {})
+    .filter(([_, value]) => value === true)
+    .map(([key]) => availabilityMap[key]);
+
   return (
     <View style={{ paddingHorizontal: 12 }}>
       <View style={styles.rowContainer}>
@@ -19,13 +30,26 @@ const Availability = ({ myPage }) => {
           fontSize={17}
           lineHeight={17 * 1.4}
         />
-        {myPage && <EditButton />}
+
+        {myPage && (
+          <EditButton onPress={() => navigation.navigate("Availability")} />
+        )}
       </View>
 
       <View style={styles.row}>
-        {data.map((item, index) => (
-          <InfoCard key={index} name={item} />
-        ))}
+        {activeAvailability.length > 0 ? (
+          activeAvailability.map((item, index) => (
+            <InfoCard key={index} name={item} />
+          ))
+        ) : (
+          <CustomText
+            label="Not specified"
+            fontSize={13}
+            color={COLORS.white2}
+            marginBottom={20}
+            marginTop={2}
+          />
+        )}
       </View>
     </View>
   );

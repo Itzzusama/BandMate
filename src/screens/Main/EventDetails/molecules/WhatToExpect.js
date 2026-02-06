@@ -10,7 +10,7 @@ const bulletPoints = [
   "Food trucks and vendors",
 ];
 
-const WhatToExpect = () => {
+const WhatToExpect = ({ content }) => {
   return (
     <View style={styles.container}>
       <CustomText
@@ -20,18 +20,13 @@ const WhatToExpect = () => {
         lineHeight={22 * 1.4}
       />
 
-      {bulletPoints.map((item, index) => (
-        <View key={index} style={styles.row}>
-          <View style={styles.bullet} />
-          <CustomText
-            label={item}
-            fontFamily={fonts.medium}
-            fontSize={14}
-            lineHeight={14 * 1.4}
-            color={COLORS.white2}
-          />
-        </View>
-      ))}
+      <CustomText
+        label={content}
+        fontFamily={fonts.medium}
+        fontSize={14}
+        lineHeight={14 * 1.4}
+        color={COLORS.white2}
+      />
     </View>
   );
 };

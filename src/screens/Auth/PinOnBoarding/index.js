@@ -42,7 +42,9 @@ const PinOnBoarding = ({ route }) => {
             title="Later"
             backgroundColor={COLORS.cardColor}
             color={COLORS.white}
-            onPress={() => setGoogleModalVisible(true)}
+            onPress={() =>
+              navigation.navigate("GooglePlaces", { fromSignup: true })
+            }
           />
         </View>
       )}
@@ -75,20 +77,6 @@ const PinOnBoarding = ({ route }) => {
           lineHeight={14 * 1.4}
         />
       </View>
-
-      <CustomModalGooglePlaces
-        isVisible={googleModalVisible}
-        onClose={() => {
-          setGoogleModalVisible(false);
-        }}
-        onLocationSelect={(location) => {
-          console.log("Selected location:", location);
-          setSelectedLocation(location);
-          setGoogleModalVisible(false);
-          navigation.navigate("Success");
-        }}
-        initialValue={selectedLocation?.address || ""}
-      />
     </ScreenWrapper>
   );
 };

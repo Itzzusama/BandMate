@@ -33,6 +33,7 @@ const Header = ({
   secondText,
   btnTitle,
   secondFont,
+  fontSize,
   btn,
 }) => {
   const navigation = useNavigation();
@@ -100,11 +101,11 @@ const Header = ({
         <CustomText
           label={title}
           color={textColor ? textColor : COLORS.white}
-          fontFamily={fontFamily || fonts.medium}
+          fontFamily={fontFamily || fonts.semiBold}
           textTransform="capitalize"
           textAlign={textAlign}
-          fontSize={24}
-          lineHeight={24 * 1.4}
+          fontSize={fontSize || 20}
+          lineHeight={20 * 1.4}
         />
 
         {secondText && (
@@ -144,7 +145,12 @@ const Header = ({
               marginRight={6}
               marginTop={-3}
             />
-            <Icons name="help-circle" family="Feather" size={18} />
+            <Icons
+              name="help-circle"
+              family="Feather"
+              size={18}
+              color={COLORS.white}
+            />
           </TouchableOpacity>
         ) : onCartPress ? (
           <TouchableOpacity
@@ -220,7 +226,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 12,
-    backgroundColor: COLORS.inputBg,
+    backgroundColor: COLORS.cardColor,
     borderRadius: 100,
   },
   cart: {

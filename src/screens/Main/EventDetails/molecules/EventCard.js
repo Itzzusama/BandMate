@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 8,
     right: 8,
-    borderRadius: 6,
+    borderRadius: 12,
     overflow: "hidden",
     backgroundColor: "rgba(255,255,255,0.16)",
   },

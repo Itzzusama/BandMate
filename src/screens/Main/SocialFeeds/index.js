@@ -120,6 +120,7 @@ const SocialFeeds = () => {
         commentText="With the most liked comment"
         commentsCount={919}
         timeAgo="9 hours ago"
+        marginBottom={140}
       />
     </ScreenWrapper>
   );

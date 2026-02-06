@@ -2,6 +2,8 @@ import { authorize } from "react-native-app-auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { endPoints } from "./ENV";
 import { setSpotifyTokens } from "../store/reducer/spotifyAuthSlice";
+import { put } from "./ApiRequest";
+import { setUserData } from "../store/reducer/usersSlice";
 
 const config = {
   clientId: endPoints.clientId,
@@ -35,9 +37,6 @@ const CLEAN_PATTERNS = [
   /^\d{4}/,
 ];
 
-const isValidArtist = (name) => {
-  return !CLEAN_PATTERNS.some((pattern) => pattern.test(name));
-};
 export const loginWithSpotify = () => async (dispatch) => {
   try {
     const authState = await authorize(config);
@@ -46,7 +45,15 @@ export const loginWithSpotify = () => async (dispatch) => {
     const expirationDate = new Date(
       authState.accessTokenExpirationDate
     ).getTime();
+    const res = await put("user/profile", {
+      profile: {
+        socialLinks: {
+          Spotify: authState.accessToken,
+        },
+      },
+    });
 
+    dispatch(setUserData(res?.data?.user));
     await AsyncStorage.multiSet([
       ["spToken", authState.accessToken],
       ["spRefreshToken", authState.refreshToken],
@@ -235,6 +242,7 @@ export const getLatestReleases = async (dispatch, artistId) => {
         },
       }
     );
+
     const data = await res.json();
 
     if (!data.items || data.items.length === 0) {
@@ -307,9 +315,9 @@ export const getAllArtistsTopTracks = async (dispatch, artistIds) => {
         `https://api.spotify.com/v1/artists/${artistId}`,
         { headers }
       );
-      console.log(artistRes);
+
       const artistData = await artistRes.json();
-      console.log(artistData);
+
       if (!artistData?.name) continue;
 
       const artistName = artistData.name;

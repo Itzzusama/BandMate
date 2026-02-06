@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     height: 135,
     borderRadius: 12,
     borderColor: "#FFFFFF0A",
-    marginTop: 10,
+    marginTop: 2,
   },
   contentContainer: {
     flex: 1,

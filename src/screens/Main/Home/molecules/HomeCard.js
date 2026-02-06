@@ -22,37 +22,49 @@ import { PNGIcons } from "../../../../assets/images/icons";
 import CustomText from "../../../../components/CustomText";
 import ImageFast from "../../../../components/ImageFast";
 import { COLORS } from "../../../../utils/COLORS";
-import { post } from "../../../../services/ApiRequest";
+import { get, post } from "../../../../services/ApiRequest";
 import { ToastMessage } from "../../../../utils/ToastMessage";
 import { getAgeFromDob } from "../../../../utils/constants";
 import { useSelector } from "react-redux";
 import { getDistance } from "geolib";
+import { getPalette } from "@somesoap/react-native-image-palette/src";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const HomeCard = ({ data, getUserProfile, tab }) => {
+const HomeCard = ({
+  data,
+  getUserProfile,
+  tab,
+  primaryColor,
+  setPrimaryColor,
+  setProfileData,
+}) => {
+  const paletteCache = useRef({});
   const navigation = useNavigation();
   const { userData } = useSelector((state) => state.users);
-
+  const [matching, setMatching] = useState(0);
+  const [views, setViews] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [cards, setCards] = useState([...data]);
   const sliderAnimation = useRef(new Animated.Value(0)).current;
 
-  // Current card animations
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const rotateCard = useRef(new Animated.Value(0)).current;
   const gradientOpacity = useRef(new Animated.Value(0)).current;
   const gradientTranslateY = useRef(new Animated.Value(200)).current;
 
-  // Next card animations
   const nextCardScale = useRef(new Animated.Value(0.9)).current;
   const nextCardTranslateY = useRef(new Animated.Value(10)).current;
 
-  // Gesture animations
   const pan = useRef(new Animated.ValueXY()).current;
   const rotate = useRef(new Animated.Value(0)).current;
-
+  useEffect(() => {
+    if (data?.length) {
+      setCards([...data]);
+      setCurrentImageIndex(0);
+    }
+  }, [data]);
   const [currentGradientColors, setCurrentGradientColors] = useState([
     "transparent",
     "transparent",
@@ -85,8 +97,31 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
       rotation: 15,
     },
   ];
+  const updatePrimaryColorFromImage = async (imageUri) => {
+    if (!imageUri || !setPrimaryColor) return;
 
-  // Auto-advance slider every 3 seconds
+    if (paletteCache.current[imageUri]) {
+      setPrimaryColor(paletteCache.current[imageUri]);
+      return;
+    }
+
+    try {
+      const palette = await getPalette(imageUri);
+
+      const color =
+        palette?.darkVibrant ||
+        palette?.vibrant ||
+        palette?.dominant ||
+        "#131E1F";
+
+      paletteCache.current[imageUri] = color;
+      setPrimaryColor(color);
+    } catch (error) {
+      console.log("Palette error:", error);
+      setPrimaryColor("#131E1F");
+    }
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       goToNextImage();
@@ -95,10 +130,37 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
     return () => clearInterval(interval);
   }, [currentImageIndex, currentIndex]);
 
-  // Start slider animation when image changes
   useEffect(() => {
     startSliderAnimation();
   }, [currentImageIndex, currentIndex]);
+
+  useEffect(() => {
+    const profileId = cards?.[0]?._id;
+    const firstImage = cards?.[0]?.pictures?.[0];
+
+    if (profileId && firstImage) {
+      updatePrimaryColorFromImage(firstImage);
+    }
+  }, [cards?.[0]]);
+  const fetchProfileViews = async (profileId) => {
+    try {
+      const res = await get("matching/" + profileId);
+      if (res?.data?.success) {
+        setMatching(res?.data?.data?.compatibilityScore);
+        setViews(res?.data?.data?.analytics?.views);
+      }
+    } catch (error) {
+      console.log("Profile views error:", error);
+    }
+  };
+  useEffect(() => {
+    if (!cards?.length) return;
+
+    const currentProfileId = cards[0]?._id;
+    if (!currentProfileId) return;
+
+    fetchProfileViews(currentProfileId);
+  }, [cards[0]]);
 
   const startSliderAnimation = () => {
     // Reset animation
@@ -228,6 +290,7 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
           })
         );
       } else if (action.direction === "up") {
+        await handleReaction("superlike");
         animations.push(
           Animated.timing(translateY, {
             toValue: -screenHeight * 1.5,
@@ -253,10 +316,19 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
 
     try {
       const res = await post("matching/interactions", payLoad);
-      getUserProfile?.();
-      if (res?.data?.success) {
-        ToastMessage(res?.data?.message);
-      }
+      setProfileData((prev = []) =>
+        prev.filter((p) => p?._id !== currentProfile?._id)
+      );
+      ToastMessage(
+        reaction == "dislike"
+          ? "Profile Removed from recommendations"
+          : "Profile liked successfully"
+      );
+      // await getUserProfile?.();
+      // if (res?.data?.success) {
+      //   getUserProfile?.();
+      //   ToastMessage(res?.data?.message);
+      // }
     } catch (err) {
       console.log(err);
     }
@@ -265,12 +337,13 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
   const goToNextCard = () => {
     setCards((prevCards) => {
       const newCards = [...prevCards];
-      // Remove the swiped card and add it to the end of the array
+
       const removedCard = newCards.shift();
       newCards.push(removedCard);
       return newCards;
     });
-    setCurrentImageIndex(0); // Reset to first image when changing cards
+    setCurrentImageIndex(0);
+
     resetCardPosition();
   };
 
@@ -290,7 +363,6 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
     nextCardTranslateY.setValue(10);
   };
 
-  // PanResponder for gesture handling
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -300,51 +372,39 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
       onPanResponderMove: (_, gestureState) => {
         const { dx, dy } = gestureState;
 
-        // Update position
         pan.setValue({ x: dx, y: dy });
 
-        // Add rotation based on horizontal movement for better visual feedback
         const rotation = dx * 0.1;
         rotate.setValue(rotation);
 
-        // Show gradient during swipe
         const swipeThreshold = 30;
         if (Math.abs(dx) > swipeThreshold) {
-          // Set gradient colors based on swipe direction
           if (dx < 0) {
-            // Swiping left - red gradient
-            console.log("red----");
-
             setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
           } else {
             console.log("green----");
 
-            // Swiping right - green gradient
             setCurrentGradientColors(["#1ED760", "#1ED76000"]);
           }
 
-          // Calculate opacity based on swipe distance
           const opacity = Math.min(Math.abs(dx) / 150, 1);
           gradientOpacity.setValue(opacity);
           gradientTranslateY.setValue(0);
         } else {
-          // Reset gradient when not swiping far enough
           gradientOpacity.setValue(0);
           gradientTranslateY.setValue(200);
         }
       },
+
       onPanResponderRelease: (_, gestureState) => {
         const { dx, dy, vx, vy } = gestureState;
         const swipeThreshold = 50;
         const velocityThreshold = 0.5;
 
-        // Check if it's a left swipe
         if (dx < -swipeThreshold || vx < -velocityThreshold) {
-          // Set gradient for left swipe
           setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
           gradientTranslateY.setValue(200);
 
-          // Animate gradient appearance
           Animated.sequence([
             Animated.parallel([
               Animated.timing(gradientOpacity, {
@@ -379,14 +439,10 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
           ]).start(() => {
             handleSwipe("left");
           });
-        }
-        // Check if it's a right swipe
-        else if (dx > swipeThreshold || vx > velocityThreshold) {
-          // Set gradient for right swipe
+        } else if (dx > swipeThreshold || vx > velocityThreshold) {
           setCurrentGradientColors(["#1ED760", "#1ED76000"]);
           gradientTranslateY.setValue(200);
 
-          // Animate gradient appearance
           Animated.sequence([
             Animated.parallel([
               Animated.timing(gradientOpacity, {
@@ -422,8 +478,10 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
             handleSwipe("right");
           });
         }
-        // Check if it's an upward swipe
+        // Check if it's an upward swipe - FIXED
         else if (dy < -swipeThreshold || vy < -velocityThreshold) {
+          setCurrentGradientColors(["#007AFE", "#007AFE00"]);
+          gradientTranslateY.setValue(200);
           Animated.timing(pan, {
             toValue: { x: dx, y: -screenHeight * 2 },
             duration: 300,
@@ -432,6 +490,7 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
             handleSwipe("up");
           });
         }
+
         // If not a swipe, return to original position
         else {
           // Reset gradient
@@ -455,6 +514,38 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
           ]).start();
         }
       },
+
+      onPanResponderMove: (_, gestureState) => {
+        const { dx, dy } = gestureState;
+
+        pan.setValue({ x: dx, y: dy });
+
+        const rotation = dx * 0.1;
+        rotate.setValue(rotation);
+
+        const swipeThreshold = 30;
+
+        if (Math.abs(dx) > swipeThreshold) {
+          if (dx < 0) {
+            setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
+          } else {
+            setCurrentGradientColors(["#1ED760", "#1ED76000"]);
+          }
+
+          const opacity = Math.min(Math.abs(dx) / 150, 1);
+          gradientOpacity.setValue(opacity);
+          gradientTranslateY.setValue(0);
+        } else if (Math.abs(dy) > swipeThreshold && dy < 0) {
+          setCurrentGradientColors(["#007AFE", "#007AFE00"]);
+
+          const opacity = Math.min(Math.abs(dy) / 150, 1);
+          gradientOpacity.setValue(opacity);
+          gradientTranslateY.setValue(0);
+        } else {
+          gradientOpacity.setValue(0);
+          gradientTranslateY.setValue(200);
+        }
+      },
     })
   ).current;
 
@@ -463,7 +554,6 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
     outputRange: ["-15deg", "0deg", "15deg"],
   });
 
-  // Combine gesture rotation with button press rotation
   const combinedRotate = Animated.add(rotate, rotateCard).interpolate({
     inputRange: [-30, 0, 30],
     outputRange: ["-30deg", "0deg", "30deg"],
@@ -516,6 +606,7 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
     const distanceMeters = getDistance(pointA, pointB);
 
     const distanceKm = distanceMeters / 1000;
+
     return (
       <TouchableOpacity
         activeOpacity={0.6}
@@ -528,7 +619,6 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
         }
         style={styles.imageContainer}
       >
-        {/* Simple Image Display - No Carousel Animation */}
         <ImageFast
           source={{ uri: profile?.pictures[isCurrent ? currentImageIndex : 0] }}
           style={styles.image}
@@ -557,7 +647,7 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
             </View>
             <View style={styles.bg}>
               <CustomText
-                label={"64%"}
+                label={matching + "%"}
                 fontFamily={fonts.semiBold}
                 lineHeight={14 * 1.4}
               />
@@ -597,7 +687,7 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
             </View>
 
             <CustomText
-              label={"528 monthly profile views"}
+              label={views + " monthly profile views"}
               fontSize={11}
               fontFamily={fonts.medium}
               marginTop={8}
@@ -692,7 +782,6 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
               <Image source={PNGIcons.forward} style={styles.forwardIcon} />
             </View>
 
-            {/* Dynamic Slider */}
             <View style={styles.sliderContainer}>
               <View style={styles.sliderTrack}>
                 {Array.from({ length: profile?.pictures?.length }).map(
@@ -766,7 +855,6 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
 
   return (
     <View style={styles.container}>
-      {/* Next Card (Preview) - This will become the current card after swipe */}
       {nextProfile && (
         <Animated.View
           style={[
@@ -843,7 +931,6 @@ const HomeCard = ({ data, getUserProfile, tab }) => {
           ))}
         </View>
       )}
-      {/* Bottom Buttons */}
     </View>
   );
 };
@@ -943,7 +1030,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: Platform.OS == "android" ? "100%" : "90%",
+    width: Platform.OS == "android" ? "100%" : "95%",
   },
   forwardIcon: {
     height: 28,

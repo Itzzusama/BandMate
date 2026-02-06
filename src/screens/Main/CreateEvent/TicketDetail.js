@@ -50,15 +50,13 @@ const TicketDetail = () => {
       nominal: false,
       refund: false,
       refundAmountPercentage: 0,
-      refundPolicy: "No refund policy",
+      refundPolicy: "Within one day",
     },
   ]);
   const addTicket = () => {
     setTickets((prev) => [
       ...prev,
       {
-        currency: "USD",
-
         onlineTicketing: false,
         startDate: null,
         endDate: null,
@@ -72,12 +70,12 @@ const TicketDetail = () => {
         ticketPrice: "",
         stock: "",
         setLimitOnPurchase: false,
-        amountOneCanBuy: "",
+        amountOneCanBuy: 0,
 
         nominal: false,
         refund: false,
-        refundAmountPercentage: "",
-        refundPolicy: "",
+        refundAmountPercentage: 0,
+        refundPolicy: "Within one day",
       },
     ]);
   };

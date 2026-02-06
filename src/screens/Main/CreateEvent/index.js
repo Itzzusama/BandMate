@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import AuthSlider from "../../../components/Auth/AuthSlider";
 import CustomButton from "../../../components/CustomButton";
@@ -18,8 +18,9 @@ import SelectionModal from "./molecules/SelectionModal";
 import { useNavigation } from "@react-navigation/native";
 import ErrorComponent from "../../../components/ErrorComponent";
 import CountryBottomSheet from "../../../components/CountryBottomSheet";
-import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
+import { COUNTRIES as COUNTRIES_DATA } from "../../../utils/COUNTRIES";
 import moment from "moment";
+import { useMemo } from "react";
 
 const CreateEvent = () => {
   const navigation = useNavigation();
@@ -128,51 +129,54 @@ const CreateEvent = () => {
       endTime
     );
   };
+  const handleContinue = () => {
+    const formattedForm = {
+      ...form,
+      ageRating: formatAgeRating(form.ageRating),
+      visibleTo: formatVisibility(form.visibleTo),
+      featuredArtists: formatFeaturedArtists(form.featuredArtists),
+    };
+
+    navigation.navigate("Branding", {
+      eventData: formattedForm,
+    });
+  };
+
+  const header = useMemo(
+    () => (
+      <>
+        <Header title="New event" />
+        <View style={{ marginHorizontal: 12 }}>
+          <AuthSlider min={1} max={3} gap={4} marginTop={8} marginBottom={7} />
+        </View>
+      </>
+    ),
+    []
+  );
+
+  const footer = useMemo(
+    () => (
+      <View style={{ padding: 12, marginBottom: 24 }}>
+        <CustomButton
+          title="Continue"
+          marginBottom={8}
+          disabled={!isFormValid()}
+          onPress={handleContinue}
+        />
+        <CustomButton
+          title="Save As Draft"
+          backgroundColor={COLORS.cardColor}
+          color={COLORS.white}
+        />
+      </View>
+    ),
+    [form]
+  );
 
   return (
     <ScreenWrapper
-      headerUnScrollable={() => (
-        <>
-          <Header title={"New event"} />
-          <View style={{ marginHorizontal: 12 }}>
-            <AuthSlider
-              min={1}
-              max={3}
-              gap={4}
-              marginTop={8}
-              marginBottom={7}
-            />
-          </View>
-        </>
-      )}
-      footerUnScrollable={() => (
-        <View style={{ padding: 12, marginBottom: 24 }}>
-          <CustomButton
-            title="Continue"
-            marginBottom={8}
-            disabled={!isFormValid()}
-            onPress={() => {
-              const formattedForm = {
-                ...form,
-
-                ageRating: formatAgeRating(form.ageRating),
-
-                visibleTo: formatVisibility(form.visibleTo),
-                featuredArtists: formatFeaturedArtists(form.featuredArtists),
-              };
-              console.log(formattedForm);
-              navigation.navigate("Branding", {
-                eventData: formattedForm,
-              });
-            }}
-          />
-          <CustomButton
-            title="Save As Draft"
-            backgroundColor={COLORS.cardColor}
-            color={COLORS.white}
-          />
-        </View>
-      )}
+      headerUnScrollable={() => header}
+      footerUnScrollable={() => footer}
       scrollEnabled
     >
       <CustomText
@@ -189,6 +193,50 @@ const CreateEvent = () => {
         onChangeText={(t) => updateField("venueName", t)}
         placeholder={"Toscana Wine Tasting"}
       />
+
+      <SelectLocation
+        type="loc"
+        value={form.address.address}
+        onPress={() =>
+          navigation.navigate("GooglePlaces", {
+            initialValue: form.address.address,
+            isEvent: true,
+            onLocationSelect: (location) => {
+              console.log(location);
+              updateAddress("address", location?.address);
+              updateAddress("city", location?.city);
+              updateAddress("state", location?.state);
+
+              updateAddress("location", {
+                type: "Point",
+                coordinates: [location?.longitude, location?.latitude],
+              });
+              const matchedCountry = COUNTRIES_DATA.find(
+                (c) => c.name?.toLowerCase() === location.country?.toLowerCase()
+              );
+
+              if (matchedCountry) {
+                const formattedCountry = {
+                  label: matchedCountry.name,
+                  code: matchedCountry.code,
+                  dialCode: matchedCountry.dialCode,
+                };
+
+                setSelectedCountry(formattedCountry);
+                updateAddress("country", formattedCountry.label);
+              }
+              updateAddress("country", location.country);
+            },
+          })
+        }
+        placeholder={"Central Park, New York City"}
+      />
+      <SelectLocation
+        type="country"
+        value={selectedCountry?.label}
+        onPress={() => setBottomSheetVisible(true)}
+        placeholder={"United States of America"}
+      />
       <CustomInput
         withLabel={"STATE"}
         value={form.address.state}
@@ -200,18 +248,6 @@ const CreateEvent = () => {
         value={form.address.city}
         onChangeText={(t) => updateAddress("city", t)}
         placeholder={"New York"}
-      />
-      <SelectLocation
-        type="loc"
-        value={form.address.address}
-        onPress={() => setGoogleModalVisible(true)}
-        placeholder={"Central Park, New York City"}
-      />
-      <SelectLocation
-        type="country"
-        value={selectedCountry?.label}
-        onPress={() => setBottomSheetVisible(true)}
-        placeholder={"United States of America"}
       />
       <Divider thickness={1} color={COLORS.inputBg} marginBottom={0} />
       <Heading lable={"General Details"} />
@@ -261,7 +297,7 @@ const CreateEvent = () => {
         withLabel={"What guests can expect"}
         value={form.whatGuestCanExpect}
         onChangeText={(t) => updateField("whatGuestCanExpect", t)}
-        placeholder={"Guests can expect..."}
+        placeholder={`• 8+ hours of non-stop music daily `}
         multiline
         height={160}
         maxLength={200}
@@ -348,28 +384,12 @@ const CreateEvent = () => {
         onClose={() => setBottomSheetVisible(false)}
         selectedCountry={selectedCountry}
         onCountrySelect={(country) => {
+          console.log(country);
           setSelectedCountry(country);
           updateAddress("country", country.label);
           setBottomSheetVisible(false);
         }}
         hideCode={false}
-      />
-      <CustomModalGooglePlaces
-        isVisible={googleModalVisible}
-        onClose={() => setGoogleModalVisible(false)}
-        onLocationSelect={(location) => {
-          console.log(location);
-          updateAddress("address", location?.address);
-          updateAddress("city", location?.city);
-          updateAddress("state", location?.state);
-          updateAddress("location", {
-            type: "Point",
-            coordinates: [location?.longitude, location?.latitude],
-          });
-          setGoogleModalVisible(false);
-        }}
-        initialValue={form.address.address}
-        isEvent={true}
       />
     </ScreenWrapper>
   );

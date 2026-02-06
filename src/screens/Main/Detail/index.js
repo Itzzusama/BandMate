@@ -34,6 +34,8 @@ import Icons from "../../../components/Icons";
 import { PNGIcons } from "../../../assets/images/icons";
 import { Images } from "../../../assets/images";
 import { COLORS } from "../../../utils/COLORS";
+import { get } from "../../../services/ApiRequest";
+import AddedSocialAccounts from "./molecules/AddedSocialAccounts";
 
 const Detail = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -42,6 +44,7 @@ const Detail = ({ navigation, route }) => {
   const profile = route?.params?.profile;
   const img = images ? images : null;
   const myPage = route?.params?.myPage;
+  const [data, setdata] = useState([]);
   const getUserProfile = route?.params?.getUserProfile || {};
   const { accessToken } = useSelector((state) => state?.spotifyAuth);
   const user = useSelector((state) => state?.users?.userData);
@@ -49,12 +52,13 @@ const Detail = ({ navigation, route }) => {
   const HEADER_MAX_HEIGHT = myPage ? 395 : 395;
   const HEADER_MIN_HEIGHT = 70;
   const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
-  const [bgColor, setBgColor] = useState("#000");
+  const [bgColor, setBgColor] = useState(COLORS.black);
   const [userData, setUserData] = useState(myPage ? user : profile);
   const [latestReleases, setLatestReleases] = useState([]);
   const [topTracks, setTopTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [matching, setMatching] = useState(0);
+  const [views, setViews] = useState(0);
   const releaseData = [];
   const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -62,19 +66,87 @@ const Detail = ({ navigation, route }) => {
   useEffect(() => {
     setUserData(myPage ? user : profile);
   }, [myPage, user, profile]);
+
+  const fetchProfileViews = async () => {
+    try {
+      const res = await get("matching/" + userData?._id);
+      if (res?.data?.success) {
+        console.log("-->", res?.data);
+        setdata(res?.data?.data?.favoriteSongs);
+        setMatching(res?.data?.data?.compatibilityScore);
+        setViews(res?.data?.data?.analytics?.views);
+      }
+    } catch (error) {
+      console.log("Profile views error:", error);
+    }
+  };
+  useEffect(() => {
+    fetchProfileViews();
+  }, [userData]);
   useEffect(() => {
     if (!img) return;
-    getPalette(img)
+
+    getPalette(img[0])
       .then((palette) => {
-        if (palette?.darkVibrant) setBgColor(palette.darkVibrant);
+        if (palette?.darkVibrant) setBgColor(palette?.darkVibrant);
       })
       .catch(() => {});
-  }, [isFocus, img]);
+  }, []);
 
   useEffect(() => {
-    getLatestReleases(dispatch, artistId).then(setLatestReleases);
-    getTopTracks(dispatch, artistId).then(setTopTracks);
-  }, [accessToken, artistId]);
+    const fetchArtistData = async () => {
+      if (!userData?.Artists?.length || !accessToken) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const latestResults = [];
+        const topTrackResults = [];
+
+        for (const artist of userData.Artists) {
+          if (!artist?.spotifyId) continue;
+
+          const [latest, top] = await Promise.all([
+            getLatestReleases(dispatch, artist.spotifyId),
+            getTopTracks(dispatch, artist.spotifyId),
+          ]);
+
+          if (latest?.length) {
+            latestResults.push(
+              ...latest.map((item) => ({
+                ...item,
+                artistName: artist.artist,
+                artistImage: artist.image,
+              }))
+            );
+          }
+
+          if (top?.length) {
+            topTrackResults.push(
+              ...top.map((item) => ({
+                ...item,
+                artistName: artist.artist,
+                artistImage: artist.image,
+              }))
+            );
+          }
+        }
+
+        setLatestReleases(latestResults);
+        setTopTracks(topTrackResults);
+      } catch (err) {
+        console.log("Spotify fetch error", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArtistData();
+  }, [accessToken, userData?.Artists]);
+
   const headerTranslateY = scrollY.interpolate({
     inputRange: [-HEADER_MAX_HEIGHT, 0, HEADER_SCROLL_DISTANCE],
     outputRange: [-HEADER_MAX_HEIGHT / 2, 0, -HEADER_SCROLL_DISTANCE * 0.7],
@@ -130,6 +202,7 @@ const Detail = ({ navigation, route }) => {
           userData={userData}
           myPage={myPage}
           getUserProfile={getUserProfile}
+          role={userData?.role}
         />
       </Animated.View>
 
@@ -158,7 +231,10 @@ const Detail = ({ navigation, route }) => {
               transform: [{ translateY: layerSlowTranslateY }],
             }}
           >
-            <SummaryCard match={64} inCommon={4} monthlyViews={528} />
+            {!myPage && (
+              <SummaryCard match={matching} inCommon={4} monthlyViews={views} />
+            )}
+
             <AboutArtist
               name={
                 userData?.role === "solo"
@@ -167,6 +243,7 @@ const Detail = ({ navigation, route }) => {
               }
               bio={userData?.profile?.bio}
               myPage={myPage}
+              ageRange={userData?.ageRange}
             />
           </Animated.View>
 
@@ -175,8 +252,8 @@ const Detail = ({ navigation, route }) => {
               transform: [{ translateY: layerFastTranslateY }],
             }}
           >
-            {myPage && <LatestRelease myPage={myPage} artistId={artistId} />}
-
+            <LatestRelease myPage={myPage} artistId={artistId} />
+            <AddedSocialAccounts myPage={myPage} userData={userData} />
             <Language myPage={myPage} userData={userData} />
             <MusicStyles
               myPage={myPage}
@@ -191,9 +268,9 @@ const Detail = ({ navigation, route }) => {
                 })
               }
             />
-            <Levels myPage={myPage} />
+            <Levels myPage={myPage} userData={userData} />
             <LookingFor myPage={myPage} userData={userData} />
-            <Availability myPage={myPage} />
+            <Availability myPage={myPage} userData={userData} />
 
             {myPage && (
               <>
@@ -222,7 +299,7 @@ const Detail = ({ navigation, route }) => {
                   ? userData?.display_name
                   : userData?.bandName
               } Knows`}
-              data={userData?.favoriteSongs}
+              data={myPage ? userData?.favoriteSongs : data}
               showDots
               myPage={myPage}
               name={"Spotify"}
@@ -312,8 +389,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     flexDirection: "row",
+    paddingBottom: 8,
     alignItems: "center",
   },
   backButtonWrapper: {

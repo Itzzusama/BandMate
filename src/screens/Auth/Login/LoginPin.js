@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import ReactNativeBiometrics from "react-native-biometrics";
 import { useNavigation } from "@react-navigation/native";
 import * as Keychain from "react-native-keychain";
@@ -18,10 +18,11 @@ import BiometricModal from "./BiometricModal";
 
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { setToken } from "../../../store/reducer/AuthConfig";
-import { post } from "../../../services/ApiRequest";
+import { get, post } from "../../../services/ApiRequest";
 import { Images } from "../../../assets/images";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { PNGIcons } from "../../../assets/images/icons";
 
 const LoginPin = () => {
   const navigation = useNavigation();
@@ -37,10 +38,12 @@ const LoginPin = () => {
   const [biometricAvailable, setBiometricAvailable] = useState(false);
 
   const navigateToWelcomeScreen = async (res) => {
-    dispatch(setUserData(res?.user));
     dispatch(setToken(res?.tokens?.accessToken));
     await AsyncStorage.setItem("token", res?.tokens?.accessToken);
     await AsyncStorage.setItem("refreshToken", res?.tokens?.refreshToken);
+
+    const resp = await get("user/me");
+    dispatch(setUserData(resp?.data?.data));
     navigation.reset({
       index: 0,
       routes: [{ name: "WelcomeScreen" }],
@@ -63,7 +66,7 @@ const LoginPin = () => {
 
             console.log("=========res", res?.data);
             if (res?.data?.success) {
-              navigateToWelcomeScreen(res?.data);
+              await navigateToWelcomeScreen(res?.data);
             } else {
               console.log("Biometric verification failed");
             }
@@ -220,9 +223,14 @@ const LoginPin = () => {
         onPress={() => navigation.navigate("OTPScreen")}
         style={styles.row}
       >
-        <ImageFast
-          source={Images.otp}
-          style={{ height: 20, width: 20, marginRight: 12 }}
+        <Image
+          source={PNGIcons.insurance}
+          style={{
+            height: 20,
+            width: 20,
+            marginRight: 12,
+            tintColor: COLORS.white,
+          }}
         />
 
         <CustomText label="Use OTP" fontFamily={fonts.medium} fontSize={16} />

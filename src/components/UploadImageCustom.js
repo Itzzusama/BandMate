@@ -246,6 +246,7 @@ const styles = StyleSheet.create({
     width: 80,
     borderRadius: 16,
     overflow: "hidden",
+    backgroundColor: COLORS.cardColor,
   },
   loader: {
     height: 80,

@@ -41,6 +41,9 @@ import EventCard from "./molecules/EventCard";
 import TicketBottomBar from "./molecules/TicketBottomBar";
 import Icons from "../../../components/Icons";
 import { ToastMessage } from "../../../utils/ToastMessage";
+import { BlurView } from "@react-native-community/blur";
+import { PNGIcons } from "../../../assets/images/icons";
+import PromoCode from "./molecules/PromoCode";
 const eventsData = [
   {
     image: Images.homeSheetImg,
@@ -171,7 +174,6 @@ const EventDetail = ({ navigation }) => {
   }, []);
 
   const handlePayloadUpdate = (payload) => {
-    console.log("--uuu>", payload);
     setTicketPayload(payload);
   };
 
@@ -195,6 +197,8 @@ const EventDetail = ({ navigation }) => {
       const res = await post("bookings/" + id + "/confirm");
       if (res?.data?.success) {
         ToastMessage(res?.data?.message, "success");
+        setLoading(true);
+        await getEventDetail();
       }
     } catch (err) {
       console.log(err);
@@ -307,7 +311,7 @@ const EventDetail = ({ navigation }) => {
                   marginTop={0}
                   marginBottom={0}
                 />
-                <WhatToExpect />
+                <WhatToExpect content={detail?.whatGuestCanExpect} />
                 <Divider
                   thickness={4}
                   color={COLORS.inputBg}
@@ -390,6 +394,7 @@ const EventDetail = ({ navigation }) => {
               ticketing={detail?.ticketing}
               id={detail?._id}
               onPayloadChange={handlePayloadUpdate}
+              address={detail?.address?.address}
             />
             <Divider
               thickness={4}
@@ -404,7 +409,13 @@ const EventDetail = ({ navigation }) => {
               marginTop={12}
               marginBottom={0}
             />
-
+            <PromoCode />
+            <Divider
+              thickness={4}
+              color={COLORS.inputBg}
+              marginTop={12}
+              marginBottom={0}
+            />
             <CustomerReviewCard
               name="Viktor"
               rating={4.7}
@@ -519,8 +530,22 @@ const EventDetail = ({ navigation }) => {
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               activeOpacity={0.6}
+              style={styles.iconButtonWrapper}
             >
-              <Image style={styles.icon} source={Images.event_back} />
+              <BlurView
+                style={styles.iconButtonBlur}
+                blurType="materialDark"
+                blurAmount={16}
+                reducedTransparencyFallbackColor={"#12121252"}
+              >
+                <Image
+                  style={[
+                    styles.icon,
+                    { height: 24, width: 24, resizeMode: "contain" },
+                  ]}
+                  source={Images.app_back}
+                />
+              </BlurView>
             </TouchableOpacity>
             <CustomText
               label={detail?.venueName || "Toscana"}
@@ -532,13 +557,33 @@ const EventDetail = ({ navigation }) => {
           </View>
           <View style={[styles.flexRow, { gap: 8 }]}>
             <TouchableOpacity
-              onPress={() => navigation.goBack()}
+              style={styles.iconButtonWrapper}
               activeOpacity={0.6}
             >
-              <Image style={styles.icon} source={Images.event_search} />
+              <BlurView
+                style={styles.iconButtonBlur}
+                blurType="materialDark"
+                blurAmount={16}
+                reducedTransparencyFallbackColor={"#12121252"}
+              >
+                <Image
+                  style={[styles.icon, { tintColor: COLORS.white }]}
+                  source={PNGIcons.search}
+                />
+              </BlurView>
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Image style={styles.icon} source={Images.event_share} />
+            <TouchableOpacity
+              style={styles.iconButtonWrapper}
+              activeOpacity={0.6}
+            >
+              <BlurView
+                style={styles.iconButtonBlur}
+                blurType="materialDark"
+                blurAmount={16}
+                reducedTransparencyFallbackColor={"#12121252"}
+              >
+                <Image style={styles.icon} source={PNGIcons.share} />
+              </BlurView>
             </TouchableOpacity>
           </View>
         </View>
@@ -604,8 +649,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   icon: {
-    height: 40,
-    width: 40,
+    height: 20,
+    width: 20,
     resizeMode: "contain",
   },
   sponsoredWarpper: {
@@ -615,5 +660,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 6,
+  },
+  iconButtonWrapper: {
+    height: 40,
+    width: 40,
+    borderRadius: 99,
+    overflow: "hidden",
+  },
+  iconButtonBlur: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

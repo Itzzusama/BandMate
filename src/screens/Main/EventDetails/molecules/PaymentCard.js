@@ -56,7 +56,6 @@ const PaymentCard = () => {
       </View>
 
       <View style={{ paddingHorizontal: 12 }}>
-        {/* ✅ PAYMENT PROTECTION */}
         <CustomText
           label="Payment Protection"
           fontFamily={fonts.semiBold}
@@ -72,7 +71,6 @@ const PaymentCard = () => {
           marginTop={8}
         />
 
-        {/* ✅ LEARN MORE */}
         <TouchableOpacity style={styles.learnRow}>
           <CustomText
             label="Learn More"
@@ -87,7 +85,6 @@ const PaymentCard = () => {
           />
         </TouchableOpacity>
 
-        {/* ✅ PAYMENT METHODS */}
         <CustomText
           label="Multiple Payment Methods"
           fontFamily={fonts.medium}
@@ -101,7 +98,6 @@ const PaymentCard = () => {
           ))}
         </View>
 
-        {/* ✅ LEARN MORE */}
         <TouchableOpacity style={styles.learnRow}>
           <CustomText label="Learn More" fontFamily={fonts.medium} />
           <Icons

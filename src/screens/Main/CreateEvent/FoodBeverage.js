@@ -1,6 +1,13 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { RefreshControl, StyleSheet, View, Alert } from "react-native";
+import {
+  RefreshControl,
+  StyleSheet,
+  View,
+  Alert,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import fonts from "../../../assets/fonts";
 import { PNGIcons } from "../../../assets/images/icons";
 import Border from "../../../components/Border";
@@ -15,6 +22,7 @@ import { get, post, put } from "../../../services/ApiRequest";
 import { COLORS } from "../../../utils/COLORS";
 import { ToastMessage } from "../../../utils/ToastMessage";
 import FoodCard from "./molecules/FoodCard";
+import { Images } from "../../../assets/images";
 
 const FoodBeverage = ({ route }) => {
   const {
@@ -110,6 +118,8 @@ const FoodBeverage = ({ route }) => {
   useEffect(() => {
     getProducts();
   }, [isFocus]);
+
+  console.log(products);
   return (
     <ScreenWrapper
       scrollEnabled
@@ -118,7 +128,25 @@ const FoodBeverage = ({ route }) => {
       }
       headerUnScrollable={() => (
         <View>
-          <Header title={"Food & Beverage"} />
+          <Header
+            title={"Food & Beverage"}
+            rightIcon={
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={{
+                  height: 40,
+                  width: 40,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: COLORS.cardColor,
+                  borderRadius: 999,
+                }}
+                onPress={() => navigation.navigate("AddItems")}
+              >
+                <Image source={Images.plus} style={{ height: 24, width: 24 }} />
+              </TouchableOpacity>
+            }
+          />
           <View style={{ paddingHorizontal: 12 }}>
             <TopTab
               rounded

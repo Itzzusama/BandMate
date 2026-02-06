@@ -16,11 +16,12 @@ import { get } from "../../../services/ApiRequest";
 import HomeCard from "./molecules/HomeCard";
 import HomeHeader from "./molecules/HomeHeader";
 import { useSelector } from "react-redux";
+import { getPalette } from "@somesoap/react-native-image-palette";
 
 const Home = ({ navigation }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-  const isFocus = useIsFocused();
+  const [primaryColor, setPrimaryColor] = useState("#131E1F");
   const [tab, setTab] = useState("For You");
   const [profileData, setProfileData] = useState([]);
   const [refreshing, setRefreshing] = useState(true);
@@ -28,13 +29,10 @@ const Home = ({ navigation }) => {
   const getUserProfile = async (selectedTab = tab) => {
     try {
       let url = "matching/recommendations";
-
       if (selectedTab === "Nearby") {
         url += "?distance=2";
       }
-
       const response = await get(url);
-
       setProfileData(response.data?.recommendations || []);
       setRefreshing(false);
     } catch (error) {
@@ -46,7 +44,31 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     getUserProfile();
   }, [tab]);
+  useEffect(() => {
+    const extractColor = async () => {
+      try {
+        const image =
+          profileData?.[0]?.pictures?.[0] || profileData?.[0]?.image || null;
 
+        if (!image) return;
+
+        const palette = await getPalette(image);
+
+        const color =
+          palette?.darkVibrant ||
+          palette?.vibrant ||
+          palette?.dominant ||
+          "#131E1F";
+
+        setPrimaryColor(color);
+      } catch (err) {
+        console.log("Palette error", err);
+        setPrimaryColor("#131E1F");
+      }
+    };
+
+    extractColor();
+  }, [profileData]);
   return (
     <ScreenWrapper
       translucent
@@ -60,7 +82,7 @@ const Home = ({ navigation }) => {
       )}
     >
       <LinearGradient
-        colors={["#131E1F", "#121212"]}
+        colors={[primaryColor, "#121212"]}
         locations={[1, 0]}
         style={styles.gradientContainer}
       >
@@ -96,6 +118,9 @@ const Home = ({ navigation }) => {
             data={profileData}
             getUserProfile={getUserProfile}
             tab={tab}
+            primaryColor={primaryColor}
+            setPrimaryColor={setPrimaryColor}
+            setProfileData={setProfileData}
           />
         )}
       </LinearGradient>

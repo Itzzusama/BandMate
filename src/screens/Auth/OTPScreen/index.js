@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import ReactNativeBiometrics from "react-native-biometrics";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
@@ -20,10 +20,11 @@ import BiometricModal from "../Login/BiometricModal";
 
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { setToken } from "../../../store/reducer/AuthConfig";
-import { post } from "../../../services/ApiRequest";
+import { get, post } from "../../../services/ApiRequest";
 import { Images } from "../../../assets/images";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
+import { PNGIcons } from "../../../assets/images/icons";
 
 const OTPScreen = () => {
   const timerRef = useRef(null);
@@ -185,8 +186,8 @@ const OTPScreen = () => {
       };
       const res = await post(`auth/verify-otp-login`, body);
       console.log("=========res", res?.data);
-      if (res?.data) {
-        navigateToWelcomeScreen(res?.data);
+      if (res?.data?.success) {
+        await navigateToWelcomeScreen(res?.data);
       }
       setLoading(false);
     } catch (error) {
@@ -194,10 +195,11 @@ const OTPScreen = () => {
     }
   };
   const navigateToWelcomeScreen = async (res) => {
-    dispatch(setUserData(res?.user));
     dispatch(setToken(res?.tokens?.accessToken));
     await AsyncStorage.setItem("token", res?.tokens?.accessToken);
     await AsyncStorage.setItem("refreshToken", res?.tokens?.refreshToken);
+    const resp = await get("user/me");
+    dispatch(setUserData(resp?.data?.data));
     navigation.reset({
       index: 0,
       routes: [{ name: "WelcomeScreen" }],
@@ -225,7 +227,6 @@ const OTPScreen = () => {
           fontFamily={fonts.bold}
           fontSize={24}
           lineHeight={24 * 1.4}
-          color={COLORS.black}
           marginTop={32}
         />
         <CustomInput
@@ -240,9 +241,7 @@ const OTPScreen = () => {
           errorTitle="Valid verification code."
           isValid={showSuccessColor}
           error={error}
-          color={
-            error ? "#EE1045" : showSuccessColor ? "#64CD75" : COLORS.subtitle
-          }
+          color={error ? "#EE1045" : showSuccessColor ? "#64CD75" : ""}
         />
         <ErrorComponent
           hideInfo
@@ -279,11 +278,11 @@ const OTPScreen = () => {
           height={32}
           rightIconWidth={14}
           rightIconHeight={14}
-          backgroundColor={COLORS.lightGray}
-          color={COLORS.black}
+          backgroundColor={COLORS.cardColor}
+          color={COLORS.white}
           rightIcon={isTimerActive ? false : Images.refresh}
           onPress={isTimerActive ? () => {} : onSendAgain}
-          indicatorColor={COLORS.black}
+          indicatorColor={COLORS.white}
           disabled={resendLoad}
         />
 
@@ -304,7 +303,7 @@ const OTPScreen = () => {
         style={[styles.row, { marginTop: 40 }]}
       >
         <ImageFast
-          source={Images.pinCode}
+          source={Images.pinCode1}
           resizeMode="contain"
           style={{ height: 20, width: 20, marginRight: 12 }}
         />
@@ -364,9 +363,14 @@ const OTPScreen = () => {
         onPress={() => navigation.navigate("Password")}
         style={styles.row}
       >
-        <ImageFast
-          source={Images.pass}
-          style={{ height: 20, width: 20, marginRight: 12 }}
+        <Image
+          source={PNGIcons.insurance}
+          style={{
+            height: 20,
+            width: 20,
+            marginRight: 12,
+            tintColor: COLORS.white,
+          }}
         />
         <CustomText
           label={"Use Password"}

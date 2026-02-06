@@ -14,7 +14,7 @@ import { PNGIcons } from "../../../assets/images/icons";
 import CustomText from "../../../components/CustomText";
 import fonts from "../../../assets/fonts";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getAllArtistsTopTracks } from "../../../services/spotifyAuthService";
 import { fetchSpotifyArtistsWithFallback } from "../../../services/spotifyArtistIds";
 import SongsCard from "./molecules/SongsCard";
@@ -22,6 +22,7 @@ import OrderList from "./molecules/OrderList";
 
 const SongsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const user = useSelector((state) => state.users.userData);
   const [tab, setTab] = useState("All");
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,6 @@ const SongsList = () => {
 
         setSongs(data);
       } catch (error) {
-        // console.error("❌ Error fetching songs:", error);
       } finally {
         setLoading(false);
       }
@@ -53,21 +53,43 @@ const SongsList = () => {
 
     fetchSongs();
   }, []);
+  const favoriteSongIds = React.useMemo(() => {
+    if (!user?.favoriteSongs?.length) return new Set();
 
+    return new Set(
+      user.favoriteSongs.map((item) => item?.song?.spotifyId).filter(Boolean)
+    );
+  }, [user?.favoriteSongs]);
+
+  console.log(user?.favoriteSongs, "fav", favoriteSongIds);
   const filteredSongs = songs
-    .map((artist) => ({
-      ...artist,
-      songs: artist.songs
-        .filter(
-          (track) =>
+    .map((artist) => {
+      const filteredTracks = artist.songs
+        .map((track) => ({
+          ...track,
+          isAdded: favoriteSongIds.has(track.id), // ✅ FIXED
+        }))
+        .filter((track) => {
+          const matchesSearch =
             track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            artist.artistName.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .sort((a, b) => {
-          if (sortOrder === "asc") return a.title.localeCompare(b.title);
-          return b.title.localeCompare(a.title);
-        }),
-    }))
+            artist.artistName.toLowerCase().includes(searchQuery.toLowerCase());
+
+          const matchesTab =
+            tab === "All" || (tab === "Added" && track.isAdded);
+
+          return matchesSearch && matchesTab;
+        })
+        .sort((a, b) =>
+          sortOrder === "asc"
+            ? a.title.localeCompare(b.title)
+            : b.title.localeCompare(a.title)
+        );
+
+      return {
+        ...artist,
+        songs: filteredTracks,
+      };
+    })
     .filter((artist) => artist.songs.length > 0);
 
   return (

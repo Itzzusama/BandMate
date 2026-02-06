@@ -78,6 +78,8 @@ const ScreenWrapper = ({
           <KeyboardAwareScrollView
             nestedScrollEnabled={nestedScrollEnabled}
             refreshControl={refreshControl}
+            contentInsetAdjustmentBehavior="automatic"
+            enableOnAndroid={true}
             style={{
               flex: 1,
               backgroundColor,
@@ -87,6 +89,7 @@ const ScreenWrapper = ({
             }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
+            // extraScrollHeight={150}
           >
             {children}
           </KeyboardAwareScrollView>

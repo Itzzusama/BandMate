@@ -16,7 +16,7 @@ const HomeHeader = ({ onFilterPress, onNotificationPress }) => {
   const insets = useSafeAreaInsets();
 
   const user = useSelector((state) => state.users.userData);
-  console.log(user);
+
   return (
     <View style={[styles.header, { marginTop: insets.top }]}>
       <Pressable onPress={() => navigation.navigate("Settings")}>

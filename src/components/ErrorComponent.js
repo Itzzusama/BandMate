@@ -21,10 +21,13 @@ const ErrorComponent = ({
   TextWidth,
   infoTop,
   highlight,
-  font
+  marginLeft,
+  font,
 }) => {
   return (
-    <View style={[styles.row, { marginBottom, alignSelf, marginTop }]}>
+    <View
+      style={[styles.row, { marginBottom, alignSelf, marginTop, marginLeft }]}
+    >
       {hideInfo ? null : (
         <Icons
           family={isValid ? "Ionicons" : error ? "Entypo" : "Feather"}
@@ -51,7 +54,7 @@ const ErrorComponent = ({
         <Text
           style={{
             fontSize: 12,
-            fontFamily:font|| fonts.medium,
+            fontFamily: font || fonts.medium,
             color: "white",
             width: TextWidth,
             textTransform: "none",

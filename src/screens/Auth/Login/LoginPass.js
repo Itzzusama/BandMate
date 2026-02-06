@@ -17,7 +17,7 @@ import BiometricModal from "./BiometricModal";
 
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { setToken } from "../../../store/reducer/AuthConfig";
-import { post } from "../../../services/ApiRequest";
+import { get, post } from "../../../services/ApiRequest";
 import { Images } from "../../../assets/images";
 import fonts from "../../../assets/fonts";
 import { COLORS } from "../../../utils/COLORS";
@@ -123,10 +123,13 @@ const LoginPass = () => {
   };
 
   const navigateToWelcomeScreen = async (res) => {
-    dispatch(setUserData(res?.user));
     dispatch(setToken(res?.tokens?.accessToken));
     await AsyncStorage.setItem("token", res?.tokens?.accessToken);
     await AsyncStorage.setItem("refreshToken", res?.tokens?.refreshToken);
+
+    const resp = await get("user/me");
+    console.log(".....", resp?.data?.data);
+    dispatch(setUserData(resp?.data?.data));
     navigation.reset({
       index: 0,
       routes: [{ name: "WelcomeScreen" }],
@@ -167,9 +170,13 @@ const LoginPass = () => {
         style={[styles.row, { marginTop: 40 }]}
       >
         <ImageFast
-          source={Images.pinCode}
+          source={Images.pinCode1}
           resizeMode="contain"
-          style={{ height: 20, width: 20, marginRight: 12 }}
+          style={{
+            height: 20,
+            width: 20,
+            marginRight: 12,
+          }}
         />
 
         <CustomText
@@ -194,14 +201,14 @@ const LoginPass = () => {
           >
             <Image
               source={
-                biometricType === "FaceID" ? Images.faceId : Images.finger
+                biometricType === "FaceID" ? Images.faceId : Images.pinCode
               }
               resizeMode="contain"
               style={{
                 height: 20,
                 width: 20,
                 marginRight: 8,
-                tintColor: COLORS.gray1,
+                tintColor: COLORS.white,
               }}
             />
 
@@ -237,7 +244,7 @@ const LoginPass = () => {
             height: 20,
             width: 20,
             marginRight: 8,
-            tintColor: COLORS.gray1,
+            tintColor: COLORS.white,
           }}
         />
 

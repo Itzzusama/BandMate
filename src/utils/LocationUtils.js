@@ -7,7 +7,7 @@ import {
 } from "react-native";
 
 const { GetCurrentLocation } = NativeModules;
-const API_KEY = "AIzaSyBfyE9UE7c7C36Lnbmj71I8Tl1c6Srw1cc";
+const API_KEY = "AIzaSyB3Tj9fWzywtOncQ7vNjcErxRM5E--WlDA";
 
 // Global variables to manage location requests
 let isLocationRequestInProgress = false;

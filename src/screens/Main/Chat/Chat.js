@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import fonts from "../../../assets/fonts";
 import { Images } from "../../../assets/images";
 import CustomText from "../../../components/CustomText";
@@ -14,6 +21,12 @@ import ConversationBox from "./molecules/ConversationBox";
 import { useEffect } from "react";
 import { get } from "../../../services/ApiRequest";
 import { useSelector } from "react-redux";
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from "@react-navigation/native";
+import React from "react";
 
 const tabs = ["", "1 on 1", "Groups", "Matches"];
 const PindedData = [
@@ -69,29 +82,47 @@ const requestData = [
 ];
 const Chat = () => {
   const [tab, setTab] = useState(0);
+  const isFocus = useIsFocused();
   const { userData } = useSelector((state) => state.users);
   const userId = userData?._id;
   const [chatData, setChatData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
+
   const getChats = async () => {
+    setLoading(true);
     try {
       const res = await get(
         `conversations/${userId}?page=1&limit=20&minimal=false`
       );
       if (res?.data?.success) {
         setChatData(res?.data?.data);
-        console.log("no resggg", res?.data?.data);
       }
     } catch (err) {
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
-
   useEffect(() => {
-    getChats();
+    console.log("Chat mounted");
   }, []);
 
+  useEffect(() => {
+    console.log("UserId:", userId);
+  }, [userId]);
+  useEffect(() => {
+    if (!userId) return;
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      console.log("🔥 Chat screen focused");
+      getChats();
+    });
+
+    return unsubscribe;
+  }, [navigation, userId]);
   return (
     <ScreenWrapper
       paddingHorizontal={0.1}
@@ -216,7 +247,8 @@ const Chat = () => {
           />
         </TouchableOpacity>
       </View>
-      <View style={{ paddingBottom: 90 }}>
+      {loading && <ActivityIndicator size={"large"} />}
+      <View style={{ paddingBottom: 90, flex: 1 }}>
         <FlatList
           data={chatData}
           renderItem={({ item }) => (

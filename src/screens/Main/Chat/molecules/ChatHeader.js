@@ -13,11 +13,11 @@ import { COLORS } from "../../../../utils/COLORS";
 import { useSelector } from "react-redux";
 import { PNGIcons } from "../../../../assets/images/icons";
 
-const ChatHeader = ({ title, source, showIcons = true, address }) => {
+const ChatHeader = ({ title, source, showIcons = true, address, role }) => {
   const navigation = useNavigation();
   const [isViewModal, setIsViewModal] = useState(false);
   const { userData, savedLocations } = useSelector((state) => state.users);
-  console.log(savedLocations);
+
   return (
     <View style={[styles.mainContainer]}>
       <TouchableOpacity
@@ -45,16 +45,20 @@ const ChatHeader = ({ title, source, showIcons = true, address }) => {
             tintColor={"#828186"}
             style={{ height: 15, width: 15, marginLeft: -3 }}
           />
-          <CustomText
-            label={address}
-            fontFamily={fonts.semiBold}
-            color={"#828186"}
-            fontSize={12}
-          />
+          <View style={{ width: "50%" }}>
+            <CustomText
+              label={address}
+              fontFamily={fonts.semiBold}
+              color={"#828186"}
+              fontSize={12}
+              numberOfLines={1}
+            />
+          </View>
+
           <View style={styles.sparator} />
 
           <CustomText
-            label={userData?.role == "solo" ? "Solo Artist" : "Band"}
+            label={role == "solo" ? " Solo Artist" : "Band"}
             fontFamily={fonts.semiBold}
             color={"#828186"}
             fontSize={12}

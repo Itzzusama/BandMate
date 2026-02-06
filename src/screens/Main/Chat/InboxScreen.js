@@ -11,12 +11,13 @@ import ChatFooter from "./molecules/ChatFooter";
 import ChatHeader from "./molecules/ChatHeader";
 import ListHeader from "./molecules/ListHeader";
 import { get } from "../../../services/ApiRequest";
+import { useIsFocused } from "@react-navigation/native";
 
 const InboxScreen = ({ route }) => {
   const { socket } = useSocket();
   const flatListRef = useRef(null);
   const { userData } = useSelector((state) => state.users);
-
+  const isFocus = useIsFocused();
   const userId = userData?._id;
 
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ const InboxScreen = ({ route }) => {
   const conversationId = route?.params?.conversationId;
   const recipientName = route?.params?.recipientName || "Chat";
   const address = route?.params?.address || "";
-
+  const role = route?.params?.role;
   const fetchMessages = async () => {
     try {
       setLoading(true);
@@ -51,7 +52,7 @@ const InboxScreen = ({ route }) => {
 
     socket.on("new:message", (data) => {
       if (data?.message) {
-        setMessages((prev = []) => [data.message, ...prev]);
+        // setMessages((prev = []) => [data.message, ...prev]);
       }
     });
 
@@ -107,6 +108,9 @@ const InboxScreen = ({ route }) => {
         type,
         attachment,
         duration,
+        metadata: {
+          tempId: tempId,
+        },
       };
       setInputText("");
       setMessages((prev = []) => [tempMessage, ...prev]);
@@ -121,20 +125,22 @@ const InboxScreen = ({ route }) => {
       content: tempMessage.content || "",
       type: type, //"text", "image", "voice", "file"
       attachment: attachment ? attachment : null,
+
       duration: duration ? duration : null,
       dimensions: type == "image" ? { height: 240, width: 280 } : null,
       conversationType: "private",
       ...(replyMessage?.id ? { replyTo: replyMessage?.id } : {}),
     };
-    console.log(payload);
+
     socket.emit(
       replyMessage?.id ? "reply:message" : "send:message",
       payload,
       (res) => {
-        if (res) {
+        console.log(res);
+        if (res?.success) {
           setMessages((prev) =>
             prev.map((m) =>
-              m.clientId === tempMessage.clientId
+              m.senderId?._id === tempMessage.senderId?._id
                 ? { ...m, isPending: false }
                 : m
             )
@@ -213,8 +219,8 @@ const InboxScreen = ({ route }) => {
 
   useEffect(() => {
     fetchMessages();
-  }, []);
-
+  }, [isFocus]);
+  console.log(messages);
   return (
     <ScreenWrapper
       statusBarColor="rgba(38, 38, 38, 0.64)"
@@ -224,6 +230,7 @@ const InboxScreen = ({ route }) => {
           source={Images.user}
           title={recipientName || "Chat"}
           address={address}
+          role={role}
         />
       )}
       footerUnScrollable={() => (

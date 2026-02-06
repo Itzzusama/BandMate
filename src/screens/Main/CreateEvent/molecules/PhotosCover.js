@@ -47,8 +47,6 @@ const PhotosCover = ({ media, setMedia }) => {
       setUploading(true);
 
       const uploadedUrl = await uploadAndGetUrl(result);
-
-      // ✅ Only set image AFTER URL is received
       setImages((prev) => {
         const newArr = [...prev, uploadedUrl];
         if (newArr.length === 1) setSelectedIndex(0);
@@ -88,7 +86,6 @@ const PhotosCover = ({ media, setMedia }) => {
 
         const uploadedUrl = await uploadAndGetUrl(fileObj);
 
-        // ✅ Only set after URL is received
         setImages((prev) => [...prev, uploadedUrl]);
 
         setMedia((prev) => [

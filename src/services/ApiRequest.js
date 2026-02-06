@@ -40,7 +40,7 @@ const handleApiError = (error, operation, url) => {
     );
     console.log(`${operation} Error:`, error.response.data || error.response);
     const errorMessage = error.response.data?.message || "Something went wrong";
-    ToastMessage(errorMessage, "error");
+    // ToastMessage(errorMessage, "error");
 
     return {
       status: error.response.status,
@@ -72,6 +72,7 @@ instance.interceptors.request.use(
     try {
       await checkInternetConnection();
       const token = store.getState()?.authConfig?.token;
+
       const socketId = await AsyncStorage.getItem("socketId");
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;

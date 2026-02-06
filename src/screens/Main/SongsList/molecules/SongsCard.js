@@ -1,31 +1,49 @@
-import { Image, Pressable, StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import Icons from "../../../../components/Icons";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
 import { COLORS } from "../../../../utils/COLORS";
 import { SongsImgs } from "../../../../assets/images/songs";
-import { useDispatch } from "react-redux";
-import { post } from "../../../../services/ApiRequest";
-import { clampRGBA } from "react-native-reanimated/lib/typescript/Colors";
+import { useDispatch, useSelector } from "react-redux";
+import { get, post } from "../../../../services/ApiRequest";
+import { setUserData } from "../../../../store/reducer/usersSlice";
 
 const SongsCard = ({ songGroup }) => {
   const dispatch = useDispatch();
-  const [addedSongs, setAddedSongs] = useState({});
+  const user = useSelector((state) => state.users.userData);
+
+  // 🔹 Per-song loader
+  const [loadingMap, setLoadingMap] = useState({});
 
   if (!songGroup?.songs?.length) return null;
 
+  // 🔹 Build favorite song id set (SOURCE OF TRUTH)
+  const favoriteSongIds = useMemo(() => {
+    return new Set(
+      (user?.favoriteSongs || []).map((item) => item?.song?.spotifyId)
+    );
+  }, [user?.favoriteSongs]);
+
   const handleAddSong = async (track) => {
+    const spotifyId = track.spotifyId || track.id;
+
     try {
-      setAddedSongs((prev) => ({ ...prev, [track.id]: true }));
+      setLoadingMap((prev) => ({ ...prev, [spotifyId]: true }));
 
       const payload = {
         song: {
           title: track.title,
           artist: songGroup.artistName,
           album: track.album || "",
-          spotifyId: track.id,
-          duration: track.duration || 0,
+          spotifyId,
+          duration: track.duration || "",
           image: track.img || "",
           releaseDate: track.releaseDate || "",
           genre: track.genre || "",
@@ -35,17 +53,19 @@ const SongsCard = ({ songGroup }) => {
       const res = await post("user/add-favorite-song", payload);
 
       if (res?.data?.success) {
-        console.log(res?.data?.message);
+        const resp = await get("user/me");
+        dispatch(setUserData(resp?.data?.data));
       }
     } catch (err) {
-      console.error("Add favorite song error:", err);
-      // rollback UI change on failure
-      setAddedSongs((prev) => ({ ...prev, [track.spotifyId]: false }));
+      console.log("Add song error:", err);
+    } finally {
+      setLoadingMap((prev) => ({ ...prev, [spotifyId]: false }));
     }
   };
 
   return (
     <View style={styles.container}>
+      {/* Artist Header */}
       <View style={styles.nameContainer}>
         <View style={[styles.row, { flex: 1 }]}>
           <CustomText
@@ -63,9 +83,12 @@ const SongsCard = ({ songGroup }) => {
         </View>
       </View>
 
+      {/* Songs */}
       {songGroup.songs.map((track, index) => {
-        console.log(track);
-        const isAdded = addedSongs[track.id] || false;
+        const spotifyId = track.spotifyId || track.id;
+        const isAdded = favoriteSongIds.has(spotifyId);
+        const isLoading = loadingMap[spotifyId];
+
         return (
           <View key={index} style={[styles.songsCard, styles.row]}>
             <View style={[styles.row, { gap: 12, flex: 1 }]}>
@@ -89,14 +112,21 @@ const SongsCard = ({ songGroup }) => {
               </View>
             </View>
 
-            <Pressable onPress={() => handleAddSong(track)}>
-              <Icons
-                family={isAdded ? "MaterialCommunityIcons" : "Feather"}
-                name={isAdded ? "check-circle" : "plus-circle"}
-                size={24}
-                color={isAdded ? COLORS.btnColor : COLORS.white2}
-              />
-            </Pressable>
+            {isLoading ? (
+              <ActivityIndicator size="small" />
+            ) : (
+              <Pressable
+                disabled={isLoading || isAdded}
+                onPress={() => handleAddSong(track)}
+              >
+                <Icons
+                  family={isAdded ? "MaterialCommunityIcons" : "Feather"}
+                  name={isAdded ? "check-circle" : "plus-circle"}
+                  size={24}
+                  color={isAdded ? COLORS.btnColor : COLORS.white2}
+                />
+              </Pressable>
+            )}
           </View>
         );
       })}

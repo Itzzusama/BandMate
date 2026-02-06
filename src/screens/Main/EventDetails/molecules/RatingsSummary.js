@@ -49,7 +49,7 @@ const RatingsSummary = ({
           fontSize={64}
           fontFamily={fonts.medium}
           color={COLORS.white}
-          lineHeight={64 * 1.4}
+          lineHeight={64 * 1.3}
         />
 
         <View style={styles.smallRatingRow}>
@@ -68,7 +68,7 @@ const RatingsSummary = ({
           />
         </View>
       </View>
-      <View style={styles.row}>
+      <View style={[styles.row, { marginTop: -10 }]}>
         <View style={styles.barsColumn}>
           {categories.map((cat) => (
             <View key={cat.key} style={styles.barRow}>
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   barFill: {
     height: "100%",
-    backgroundColor: "#A19375", // goldish from screenshot
+    backgroundColor: COLORS.btnColor, // goldish from screenshot
   },
   starWrap: {
     width: 46,

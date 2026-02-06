@@ -117,7 +117,9 @@ const Artists = () => {
   const [spotifyArtists, setSpotifyArtists] = useState([]);
   const [loadingSpotify, setLoadingSpotify] = useState(false);
   const [selectedArtists, setSelectedArtists] = useState(
-    route?.params?.fromScreen == "Home" ? userData?.Artists : []
+    route?.params?.fromScreen == "Home" && !route?.params?.isEvent
+      ? userData?.Artists
+      : []
   );
   const [error, setError] = useState("");
   const [prevError, setPrevError] = useState("");

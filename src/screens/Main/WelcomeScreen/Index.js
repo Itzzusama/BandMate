@@ -41,7 +41,7 @@ const WelcomeScreen = () => {
           resizeMode="contain"
         />
         <ImageFast
-          source={Images.user}
+          source={{ uri: userData?.pictures[0] }}
           style={styles.image}
           resizeMode="contain"
         />

@@ -12,7 +12,7 @@ import Event from "../screens/Main/Event";
 import Icons from "../components/Icons";
 import SocialFeeds from "../screens/Main/SocialFeeds";
 import Chat from "../screens/Main/Chat/Chat";
-import SampleScreen from "../screens/Main/Home/molecules/SampleScreen";
+import Blur from "../components/Blur";
 
 const Tab = createBottomTabNavigator();
 
@@ -77,7 +77,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 case "Events":
                   return Images.event;
                 case "Settings":
-                  return Images.setting; // ✅ use your settings icon here
+                  return Images.setting;
                 default:
                   return null;
               }
@@ -118,6 +118,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         activeOpacity={0.7}
         onPress={() => navigation.navigate("CreateEvent")}
       >
+        <Blur borderRadius={24} reducedTransparency="#FFFFFF14" />
         <Icons family="Feather" name="plus" size={20} color={COLORS.white} />
       </TouchableOpacity>
     </View>
@@ -190,8 +191,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF35",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.16)",
   },
   tabBG: {
     width: "100%",

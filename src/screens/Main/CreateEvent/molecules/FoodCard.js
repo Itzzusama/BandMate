@@ -125,7 +125,8 @@ const FoodCard = ({
                     label={cat.toUpperCase()}
                     fontSize={8}
                     lineHeight={8 * 1.4}
-                    color="#fff"
+                    fontFamily={fonts.semiBold}
+                    color={COLORS.black}
                     textAlign="center"
                   />
                 </View>

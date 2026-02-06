@@ -3,6 +3,7 @@ import React from "react";
 import { Images } from "../../../../assets/images";
 import CustomText from "../../../../components/CustomText";
 import fonts from "../../../../assets/fonts";
+import { COLORS } from "../../../../utils/COLORS";
 
 const Heading = ({ lable, showIcon = false }) => {
   return (
@@ -32,5 +33,6 @@ const styles = StyleSheet.create({
     height: 16,
     width: 16,
     resizeMode: "contain",
+    tintColor: COLORS.white,
   },
 });

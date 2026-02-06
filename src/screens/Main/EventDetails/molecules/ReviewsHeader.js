@@ -13,9 +13,15 @@ const ReviewsHeader = ({
   selectedFilter = "5",
   onFilterChange = () => {},
 }) => {
-  const Chip = ({ children, active, onPress, icon }) => (
+  const Chip = ({
+    children,
+    active,
+    onPress,
+    icon,
+    paddingHorizontal = 12,
+  }) => (
     <TouchableOpacity
-      style={[styles.chip, active && styles.chipActive]}
+      style={[styles.chip, active && styles.chipActive, { paddingHorizontal }]}
       onPress={onPress}
       activeOpacity={0.85}
     >
@@ -68,6 +74,7 @@ const ReviewsHeader = ({
         <Chip
           active={selectedFilter === "all"}
           onPress={() => onFilterChange("all")}
+          paddingHorizontal={18}
         >
           All
         </Chip>
@@ -75,11 +82,12 @@ const ReviewsHeader = ({
         <Chip
           active={selectedFilter === "5"}
           onPress={() => onFilterChange("5")}
+          paddingHorizontal={16}
           icon={
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Image
                 source={Images.star}
-                style={{ height: 16, width: 16, resizeMode: "contain" }}
+                style={{ height: 16, width: 16, marginLeft: 2 }}
               />
               <Icons
                 family={"Entypo"}
@@ -102,6 +110,7 @@ const ReviewsHeader = ({
               name={"chevron-down"}
               color={COLORS.white2}
               size={14}
+              style={{ marginLeft: 4 }}
             />
           }
         >
@@ -114,7 +123,7 @@ const ReviewsHeader = ({
           icon={
             <Image
               source={Images.camera_outline}
-              style={{ height: 16, width: 16, tintColor: COLORS.white2 }}
+              style={{ height: 16, width: 16, marginLeft: 6 }}
             />
           }
         >
@@ -129,8 +138,8 @@ export default ReviewsHeader;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingHorizontal: 10,
+    paddingTop: 6,
     paddingBottom: 8,
     backgroundColor: COLORS.black,
   },
@@ -146,7 +155,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   chip: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 999,
     flexDirection: "row",
@@ -154,7 +163,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.inputBg,
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
+
     marginBottom: 6,
   },
   chipActive: {

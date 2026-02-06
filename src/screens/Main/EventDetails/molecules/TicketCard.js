@@ -15,6 +15,7 @@ const TicketCard = ({
   onIncrement,
   onDecrement,
   isSoldOut = false,
+  totalQuantity,
 }) => {
   return (
     <View style={[styles.card, isSoldOut && styles.soldOutCard]}>

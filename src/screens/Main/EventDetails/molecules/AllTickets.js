@@ -1,4 +1,10 @@
-import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import React, { useState, useMemo, useEffect } from "react";
 import TicketsHeading from "./TicketsHeading";
 import TicketCard from "./TicketCard";
@@ -6,8 +12,9 @@ import CustomText from "../../../../components/CustomText";
 import moment from "moment";
 import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
+import { Images } from "../../../../assets/images";
 
-const AllTickets = ({ ticketing, id, onPayloadChange }) => {
+const AllTickets = ({ ticketing, id, onPayloadChange, address }) => {
   const ticketsDetail = ticketing?.ticketsDetails ?? [];
 
   const eventId = id;
@@ -40,15 +47,19 @@ const AllTickets = ({ ticketing, id, onPayloadChange }) => {
     return ticketsDetail.filter((t) => t.startDate === selectedDate);
   }, [selectedDateId, ticketsDetail, dateOptions]);
 
-  const onIncrement = (id) =>
-    setQuantities((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+  const onIncrement = (id, max) => {
+    setQuantities((prev) => {
+      const current = prev[id] || 0;
+      if (current >= max) return prev;
+      return { ...prev, [id]: current + 1 };
+    });
+  };
   const onDecrement = (id) =>
     setQuantities((prev) => ({
       ...prev,
       [id]: Math.max((prev[id] || 0) - 1, 0),
     }));
 
-  // Update parent payload with all tickets for selected date
   const updateParentPayload = (updatedQty = quantities) => {
     const selectedDate = dateOptions.find((d) => d.id === selectedDateId)?.date;
     const ticketsPayload = ticketsDetail
@@ -82,7 +93,11 @@ const AllTickets = ({ ticketing, id, onPayloadChange }) => {
 
     onPayloadChange?.(payload);
   };
+  const selectedDateObj = useMemo(() => {
+    return dateOptions.find((d) => d.id === selectedDateId);
+  }, [selectedDateId, dateOptions]);
 
+  const dayIndex = dateOptions.findIndex((d) => d.id === selectedDateId) + 1;
   useEffect(() => {
     updateParentPayload();
   }, [selectedDateId, quantities]);
@@ -99,7 +114,6 @@ const AllTickets = ({ ticketing, id, onPayloadChange }) => {
         subTitle="Choose specific dates and ticket combinations"
       />
 
-      {/* Date Selector */}
       <View style={styles.datesContainer}>
         <FlatList
           data={dateOptions}
@@ -137,9 +151,56 @@ const AllTickets = ({ ticketing, id, onPayloadChange }) => {
           }}
         />
       </View>
+      {selectedDateObj && (
+        <View style={styles.dayCard}>
+          {/* LEFT DATE BADGE */}
+          <View style={styles.dateBadge}>
+            <CustomText
+              label={moment(selectedDateObj.date).format("MMM").toUpperCase()}
+              fontSize={16}
+              color={COLORS.white3}
+            />
+            <CustomText
+              label={moment(selectedDateObj.date).format("DD")}
+              fontSize={30}
+              fontFamily={fonts.semiBold}
+              color={COLORS.white}
+            />
+          </View>
 
-      {/* Tickets List */}
-      <View style={{ marginHorizontal: 12, marginTop: 12, marginBottom: 12 }}>
+          {/* RIGHT DETAILS */}
+          <View style={{ marginLeft: 14, flex: 1 }}>
+            <CustomText
+              label={`DAY - ${dayIndex}`}
+              fontSize={22}
+              fontFamily={fonts.abril}
+              color={COLORS.white}
+              marginBottom={2}
+            />
+
+            <View style={styles.infoRow}>
+              <Image source={Images.timer} style={{ height: 12, width: 12 }} />
+              <CustomText
+                label={`${formatTo12Hour(
+                  selectedDateObj.startTime
+                )} - ${formatTo12Hour(selectedDateObj.endTime)}`}
+                fontSize={12}
+                color={COLORS.white3}
+              />
+            </View>
+
+            <View style={styles.infoRow}>
+              <Image
+                source={Images.LocationPin}
+                style={{ height: 12, width: 12, tintColor: COLORS.white3 }}
+              />
+              <CustomText label={address} fontSize={12} color={COLORS.white3} />
+            </View>
+          </View>
+        </View>
+      )}
+
+      <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
         {filteredTickets.map((t) => (
           <TicketCard
             key={t._id}
@@ -147,13 +208,14 @@ const AllTickets = ({ ticketing, id, onPayloadChange }) => {
             pricePerPerson={t.ticketPrice}
             subtitle={t.ticketDescription}
             note={t.includeExtra?.join(", ")}
-            isSoldOut={t.stock <= 0}
+            isSoldOut={t.availableTickets <= 0}
             quantity={quantities[t._id] || 0}
-            onIncrement={() => onIncrement(t._id)}
+            onIncrement={() => onIncrement(t._id, t.availableTickets)}
             onDecrement={() => onDecrement(t._id)}
             date={t.startDate}
             startTime={t.startTime}
             endTime={t.endTime}
+            totalQuantity={t.availableTickets}
           />
         ))}
       </View>
@@ -176,5 +238,32 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginHorizontal: 12,
     justifyContent: "center",
+  },
+  dayCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 12,
+    marginTop: 10,
+    marginBottom: 4,
+    paddingVertical: 14,
+  },
+
+  dateBadge: {
+    width: 64,
+    height: 74,
+    borderRadius: 12,
+    backgroundColor: COLORS.cardColor,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.cardColor,
+    padding: 8,
+  },
+
+  infoRow: {
+    marginTop: 4,
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 4,
   },
 });

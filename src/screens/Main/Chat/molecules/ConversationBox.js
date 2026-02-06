@@ -9,9 +9,8 @@ import { COLORS } from "../../../../utils/COLORS";
 
 const ConversationBox = ({ item, isChat }) => {
   const navigation = useNavigation();
-  console.log("******", item);
   const otherUser = item?.otherUser;
-  console.log("========", otherUser);
+
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return "00:00";
     const mins = Math.floor(seconds / 60);
@@ -26,9 +25,13 @@ const ConversationBox = ({ item, isChat }) => {
       activeOpacity={0.7}
       onPress={() =>
         navigation.navigate("InboxScreen", {
+          role: otherUser?.role,
           recipientId: otherUser?._id,
           conversationId: item?.lastMessage?.conversationId || otherUser?._id,
-          recipientName: otherUser?.first_name,
+          recipientName:
+            otherUser?.role == "band"
+              ? otherUser?.bandName
+              : otherUser?.display_name,
           address: otherUser?.address?.address,
         })
       }
@@ -78,7 +81,11 @@ const ConversationBox = ({ item, isChat }) => {
               >
                 <CustomText
                   fontSize={16}
-                  label={otherUser?.first_name || otherUser?.name}
+                  label={
+                    otherUser?.role == "band"
+                      ? otherUser?.bandName
+                      : otherUser?.display_name || otherUser?.name
+                  }
                   fontFamily={fonts.medium}
                 />
                 {item?.isRequest && item?._id === 1 && (

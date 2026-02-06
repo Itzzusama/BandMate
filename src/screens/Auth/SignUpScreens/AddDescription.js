@@ -59,6 +59,7 @@ const AddDescription = () => {
 
       if (res?.data?.success) {
         dispatch(setUserData(res?.data?.user));
+        console.log(res?.data?.user);
         ToastMessage("Profile updated successfully!", "success");
         if (fromScreen == "Home") {
           navigation.goBack();

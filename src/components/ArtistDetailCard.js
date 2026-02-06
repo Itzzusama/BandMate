@@ -19,6 +19,7 @@ import { BlurView } from "@react-native-community/blur";
 import { useSelector } from "react-redux";
 import { getAgeFromDob } from "../utils/constants";
 import { getDistance } from "geolib";
+import Blur from "./Blur";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const ArtistDetailCard = ({
@@ -28,6 +29,7 @@ const ArtistDetailCard = ({
   myPage,
   getUserProfile,
   isEvent,
+  role,
 }) => {
   const navigation = useNavigation();
 
@@ -239,20 +241,30 @@ const ArtistDetailCard = ({
             />
 
             <View style={styles.innerContainer}>
-              {!isEvent && (
-                <CustomText
-                  label={
-                    userData?.role == "solo"
-                      ? userData?.display_name +
-                        ", " +
-                        getAgeFromDob(userData.dob)
-                      : userData?.bandName + ", " + getAgeFromDob(userData.dob)
-                  }
-                  fontSize={44}
-                  lineHeight={44 * 1.4}
-                  fontFamily={fonts.abril}
-                />
-              )}
+              {!isEvent &&
+                (role == "band" ? (
+                  <CustomText
+                    label={userData?.bandName}
+                    fontSize={44}
+                    lineHeight={44 * 1.4}
+                    fontFamily={fonts.abril}
+                  />
+                ) : (
+                  <CustomText
+                    label={
+                      userData?.role == "solo"
+                        ? userData?.display_name +
+                          ", " +
+                          getAgeFromDob(userData.dob)
+                        : userData?.bandName +
+                          ", " +
+                          getAgeFromDob(userData.dob)
+                    }
+                    fontSize={44}
+                    lineHeight={44 * 1.4}
+                    fontFamily={fonts.abril}
+                  />
+                ))}
 
               {!isEvent && (
                 <View style={styles.locationRow}>
@@ -276,11 +288,12 @@ const ArtistDetailCard = ({
               )}
               {!isEvent && (
                 <View style={styles.genrePill}>
+                  <Blur blurAmount={0} />
                   <Icons
-                    family={"Ionicons"}
-                    name={"person-sharp"}
+                    family={role == "band" ? "MaterialIcons" : "Ionicons"}
+                    name={role == "band" ? "groups" : "person-sharp"}
                     color={COLORS.white}
-                    size={9}
+                    size={role == "band" ? 14 : 9}
                   />
                   <CustomText
                     label={userData?.role == "solo" ? "Solo Artist" : "Band"}
@@ -363,22 +376,6 @@ const ArtistDetailCard = ({
           </View>
         )}
       </Animated.View>
-      {/* {!myPage && (
-        <View style={styles.bottomContainer}>
-          {[PNGIcons.btn2, PNGIcons.btn3, PNGIcons.btn4]?.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleButtonPress(index)}
-            >
-              <ImageFast
-                source={item}
-                removeLoading
-                style={[styles.btnStyle, styles.largeBtn]}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      )} */}
     </View>
   );
 };
@@ -408,7 +405,7 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     backgroundColor: "rgba(255,255,255,0.08)",
     padding: 4,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
@@ -459,7 +456,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     marginTop: 12,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   sliderTrack: {
     width: "100%",

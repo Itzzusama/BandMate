@@ -86,8 +86,12 @@ const Settings = () => {
         fontSize={16}
         onPress={async () => {
           dispatch(logout());
-          await AsyncStorage.clear();
           dispatch(clearSpotifyTokens());
+          await AsyncStorage.multiRemove([
+            "spToken",
+            "spRefreshToken",
+            "expirationDate",
+          ]);
           navigation.reset({
             index: 0,
             routes: [{ name: "AuthStack" }],
