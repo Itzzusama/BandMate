@@ -1,7 +1,7 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { PersistGate } from "redux-persist/integration/react";
-import { StripeProvider } from "@stripe/stripe-react-native";
+// import { StripeProvider } from "@stripe/stripe-react-native";
 import NetInfo from "@react-native-community/netinfo";
 import BootSplash from "react-native-bootsplash";
 import { useEffect, useState } from "react";
@@ -67,7 +67,7 @@ const NetworkErrorScreen = ({ onRetry }) => {
                 text: "Continue Anyway",
                 onPress: () => store.dispatch({ type: "FORCE_OFFLINE_MODE" }),
               },
-            ]
+            ],
           );
         }}
       >
@@ -197,7 +197,7 @@ const App = () => {
       if (Platform.OS === "android") {
         await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
         await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.CALL_PHONE
+          PermissionsAndroid.PERMISSIONS.CALL_PHONE,
         );
       }
     } catch (error) {
@@ -232,7 +232,7 @@ const App = () => {
                 onPress: () => setShowNetworkError(false),
               },
               { text: "Try Again", onPress: retryConnection },
-            ]
+            ],
           );
         }, 1000);
       }
@@ -244,7 +244,7 @@ const App = () => {
         [
           { text: "Yes", onPress: () => setShowNetworkError(false) },
           { text: "Retry", onPress: retryConnection },
-        ]
+        ],
       );
     } finally {
       setIsCheckingConnection(false);
@@ -266,22 +266,22 @@ const App = () => {
   }
 
   return (
-    <StripeProvider publishableKey={stripeKey} urlScheme="your-url-scheme">
+    // <StripeProvider publishableKey={stripeKey} urlScheme="your-url-scheme">
+    <Provider store={store}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <NavigationContainer linking={linking}>
-              <HomeSheetProvider>
-                <BrainBox>
-                  <Navigation />
-                </BrainBox>
-              </HomeSheetProvider>
-            </NavigationContainer>
-          </GestureHandlerRootView>
-        </PersistGate>
-      </Provider>
-    </StripeProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer linking={linking}>
+            <HomeSheetProvider>
+              <BrainBox>
+                <Navigation />
+              </BrainBox>
+            </HomeSheetProvider>
+          </NavigationContainer>
+        </GestureHandlerRootView>
+      </PersistGate>
+    </Provider>
+    // </StripeProvider>
   );
 };
 
