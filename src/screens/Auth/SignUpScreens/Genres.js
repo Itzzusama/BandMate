@@ -37,12 +37,17 @@ const Genres = () => {
   const [step, setStep] = useState(userData?.role == "band" ? 12 : 13);
   const totalSteps = userData?.role == "band" ? 15 : 16;
   const [selectedGenres, setSelectedGenres] = useState(
-    route?.params?.isHome ? userData?.Genres : []
+    route?.params?.isHome ? userData?.Genres : [],
   );
   const [error, setError] = useState("");
   const [prevError, setPrevError] = useState("");
   const [showSuccessColor, setShowSuccessColor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredGenres = genres.filter((genre) =>
+    genre.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     if (prevError && !error) {
@@ -203,22 +208,26 @@ const Genres = () => {
           fontSize={32}
           lineHeight={32 * 1.1}
           marginTop={12}
-          marginBottom={6}
         />
         <CustomText
           label="Tell us about your musical influences and interests"
           fontSize={12}
-          lineHeight={12 * 1.4}
           marginBottom={18}
+          marginTop={-4}
           color={COLORS.white2}
         />
 
-        <SearchInput placeholder="E.g. Blues, Techno, Pop..." />
+        <SearchInput
+          placeholder="E.g. Blues, Techno, Pop..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          isCross
+          isClear={() => setSearchQuery("")}
+        />
 
         <CustomText
           label="Just enter a name."
           fontSize={12}
-          lineHeight={12 * 1.4}
           marginBottom={12}
           color={COLORS.white2}
           marginTop={4}
@@ -240,7 +249,18 @@ const Genres = () => {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <View style={styles.row}>
-            {genres.map((genre) => renderGenreCard(genre))}
+            {filteredGenres.length > 0 ? (
+              filteredGenres.map((genre) => renderGenreCard(genre))
+            ) : (
+              <View style={styles.noResultsContainer}>
+                <CustomText
+                  label="No genres found matching your search."
+                  color={COLORS.white2}
+                  fontSize={14}
+                  fontFamily={fonts.regular}
+                />
+              </View>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -278,5 +298,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 8,
+  },
+  noResultsContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+    width: "100%",
   },
 });

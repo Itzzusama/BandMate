@@ -79,7 +79,7 @@ const StepTwo = forwardRef(
         </View>
       </View>
     );
-  }
+  },
 );
 
 export default StepTwo;

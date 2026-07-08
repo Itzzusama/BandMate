@@ -226,8 +226,8 @@ const Email = forwardRef(
           <CustomText
             label={
               isType == "Phone Number"
-                ? "What is your phone number?"
-                : "What is your email?"
+                ? "What's your phone number?"
+                : "What's your email?"
             }
             fontFamily={fonts.abril}
             fontSize={24}
@@ -270,7 +270,7 @@ const Email = forwardRef(
                     ? "#64CD75"
                     : phoneError
                     ? "#EE1045CC"
-                    : COLORS.gray2
+                    : COLORS.white3
                 }
                 marginBottom={2}
               />
@@ -287,7 +287,7 @@ const Email = forwardRef(
                     ? "#64CD75"
                     : phoneError
                     ? "#EE1045CC"
-                    : COLORS.gray2
+                    : COLORS.white3
                 }
                 marginBottom={2}
               />
@@ -295,14 +295,15 @@ const Email = forwardRef(
                 errorTitle={
                   "If you don’t have an account already this phone will be used to create your new account on "
                 }
-                secondTitle={"BandMate."}
+                highlight={"BandMate."}
+                color={COLORS.white3}
               />
               <View
                 style={{
                   borderTopWidth: 1,
                   borderColor: COLORS.inputBg,
-                  marginBottom: 16,
-                  marginTop: 18,
+                  marginBottom: 24,
+                  marginTop: 26,
                 }}
               />
               <TouchableOpacity
@@ -452,7 +453,7 @@ const Email = forwardRef(
                 errorTitle={
                   "If you don’t have an account already this email will be used to create your new account on "
                 }
-                secondTitle={"BandMate."}
+                highlight={"BandMate."}
               />
               <View
                 style={{
@@ -483,7 +484,7 @@ const Email = forwardRef(
                       receive the latest news about{" "}
                       <CustomText
                         color={COLORS.white}
-                        marginBottom={Platform.OS == "iod" ? -5.2 : -7.2}
+                        marginBottom={Platform.OS == "ios" ? -5 : -7.2}
                       >
                         BandMate
                       </CustomText>
@@ -506,10 +507,9 @@ const Email = forwardRef(
                 <View style={styles.row}>
                   <View style={{ flex: 1 }}>
                     <CustomText
-                      label="I am Okay To"
+                      label="I Am Okay To"
                       fontFamily={fonts.medium}
                       fontSize={16}
-                      lineHeight={16 * 1.4}
                     />
                     <CustomText
                       label="have a more tailor-made experience while keeping my data anonymous to content providers."
@@ -531,7 +531,7 @@ const Email = forwardRef(
         </View>
       </View>
     );
-  }
+  },
 );
 
 export default Email;
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: COLORS.inputBg,
+    borderColor: COLORS.cardColor,
     paddingHorizontal: 14,
     paddingVertical: 10,
     flexDirection: "row",

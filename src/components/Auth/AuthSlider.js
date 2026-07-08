@@ -24,7 +24,7 @@ const AuthSlider = ({
             style={[
               styles.block,
               {
-                backgroundColor: index < min ? COLORS.btnColor : "#FFFFFF17",
+                backgroundColor: index < min ? COLORS.white : "#FFFFFF17",
                 height,
                 borderRadius: gap && 99,
               },

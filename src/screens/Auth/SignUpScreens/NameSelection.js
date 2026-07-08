@@ -13,7 +13,7 @@ const NameSelection = forwardRef(
   ({ currentIndex, setCurrentIndex, state, setState }, ref) => {
     const onboardingCount = useSelector(count);
     const [selected, setSelected] = useState(
-      state?.nameDisplayPreference || "first"
+      state?.nameDisplayPreference || "first",
     );
 
     const submit = () => {
@@ -55,13 +55,12 @@ const NameSelection = forwardRef(
                     label={`Using Your Firstname\nFriendly`}
                     fontFamily={fonts.medium}
                     fontSize={16}
-                    lineHeight={16 * 1.4}
                   />
                   <CustomText
                     label="E.g. Hi Ana, how was your day?"
                     fontFamily={fonts.regular}
                     fontSize={12}
-                    color={COLORS.gray2}
+                    color={COLORS.white3}
                     marginTop={8}
                   />
                 </View>
@@ -87,13 +86,12 @@ const NameSelection = forwardRef(
                     label={`Using Your Lastname\nCorporate`}
                     fontFamily={fonts.medium}
                     fontSize={16}
-                    lineHeight={16 * 1.4}
                   />
                   <CustomText
                     label="E.g. Hello Mr. Johnson, how was your day?"
                     fontFamily={fonts.regular}
                     fontSize={12}
-                    color={COLORS.gray2}
+                    color={COLORS.white3}
                     marginTop={8}
                   />
                 </View>
@@ -112,7 +110,7 @@ const NameSelection = forwardRef(
         </View>
       </View>
     );
-  }
+  },
 );
 
 export default NameSelection;

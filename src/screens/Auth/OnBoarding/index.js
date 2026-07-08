@@ -57,7 +57,7 @@ const OnBoarding = () => {
           easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, [fadeAnim]);
 
@@ -206,10 +206,11 @@ const OnBoarding = () => {
               <CustomButton
                 title="Create an Account"
                 isBoarder
-                borderColor={"#FFFFFF29"}
+                borderColor={COLORS.white4}
                 color={COLORS.white}
                 backgroundColor={"#FFFFFF14"}
                 onPress={() => navigation.navigate("SignUpScreens")}
+                borderWidth={1}
               />
             </View>
           </View>

@@ -76,7 +76,7 @@ const Password = forwardRef(
       let newPassword = "A1";
       for (let i = 0; i < 6; i++) {
         newPassword += charset.charAt(
-          Math.floor(Math.random() * charset.length)
+          Math.floor(Math.random() * charset.length),
         );
       }
       newPassword = newPassword
@@ -109,7 +109,7 @@ const Password = forwardRef(
             value={pass}
             onChangeText={(text) => errorCheck(text)}
             marginTop={8}
-            marginBottom={16}
+            marginBottom={12}
             placeholder="********"
             secureTextEntry
           />
@@ -147,6 +147,7 @@ const Password = forwardRef(
             color={
               minSuccess ? "#64CD75" : minLength ? "#EE1045" : COLORS.gray1
             }
+            marginBottom={2}
           />
           <ErrorComponent
             errorTitle="Minimum 1 uppercase"
@@ -155,6 +156,7 @@ const Password = forwardRef(
             color={
               upperSuccess ? "#64CD75" : hasUppercase ? "#EE1045" : COLORS.gray1
             }
+            marginBottom={2}
           />
           <ErrorComponent
             errorTitle="Minimum 1 digit"
@@ -191,7 +193,7 @@ const Password = forwardRef(
         </View>
       </View>
     );
-  }
+  },
 );
 
 export default Password;

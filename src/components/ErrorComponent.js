@@ -48,6 +48,7 @@ const ErrorComponent = ({
           color: color || "rgba(255, 255, 255, 0.64)",
           width: TextWidth,
           textTransform: "none",
+          flexShrink: 1,
         }}
       >
         {errorTitle}
@@ -64,13 +65,15 @@ const ErrorComponent = ({
         </Text>
       </Text>
 
-      <CustomText
-        label={secondTitle}
-        fontSize={12}
-        color={color1 || COLORS.white}
-        fontFamily={fonts.medium}
-        lineHeight={12 * 1.4}
-      />
+      {secondTitle ? (
+        <CustomText
+          label={secondTitle}
+          fontSize={12}
+          color={color1 || COLORS.white}
+          fontFamily={fonts.medium}
+          lineHeight={12 * 1.4}
+        />
+      ) : null}
     </View>
   );
 };

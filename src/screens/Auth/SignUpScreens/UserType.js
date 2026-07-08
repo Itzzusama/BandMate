@@ -17,6 +17,7 @@ const UserType = forwardRef(
     const onboardingCount = useSelector(count);
     const [showSuccessColor, setShowSuccessColor] = useState(false);
     const dispatch = useDispatch();
+
     const handleRoleSelection = (role) => {
       setSelectedRole(role);
 
@@ -65,8 +66,8 @@ const UserType = forwardRef(
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => {
-              dispatch(setOnboardingCount(16));
               handleRoleSelection("solo");
+              dispatch(setOnboardingCount(16));
             }}
             style={[
               styles.box,
@@ -90,8 +91,8 @@ const UserType = forwardRef(
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => {
-              dispatch(setOnboardingCount(15));
               handleRoleSelection("band");
+              dispatch(setOnboardingCount(15));
             }}
             style={[
               styles.box,
@@ -113,11 +114,14 @@ const UserType = forwardRef(
           </TouchableOpacity>
         </View>
         {error ? (
-          <ErrorComponent errorTitle="Please select a role to continue." />
+          <ErrorComponent
+            errorTitle="Please select a role to continue."
+            color={COLORS.red1}
+          />
         ) : null}
       </View>
     );
-  }
+  },
 );
 
 export default UserType;

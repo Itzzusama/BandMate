@@ -31,11 +31,29 @@ const Instruments = ({ navigation }) => {
   const [step, setStep] = useState(userData?.role == "band" ? 10 : 11);
   const totalSteps = userData?.role == "band" ? 15 : 16;
   const [selectedInstruments, setSelectedInstruments] = useState(
-    isHome ? userData?.Instruments?.map((item) => item?.instrument) : []
+    isHome ? userData?.Instruments?.map((item) => item?.instrument) : [],
   );
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccessColor, setShowSuccessColor] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const coloredInstrumentCategories = instrumentCategories.map((category) => {
+    const sortedInstruments = [...category.instruments].sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+    const instrumentsWithColors = sortedInstruments.map((instrument, index) => {
+      const colorIndex = index % COLORS_PALETTE.length;
+      return { ...instrument, color: COLORS_PALETTE[colorIndex] };
+    });
+    return { ...category, instruments: instrumentsWithColors };
+  });
+
+  const filteredInstrumentCategories = coloredInstrumentCategories.map((category) => {
+    const filteredInstruments = category.instruments.filter((instrument) =>
+      instrument.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    return { ...category, instruments: filteredInstruments };
+  }).filter((category) => category.instruments.length > 0);
 
   const errorCheck = (instruments) => {
     if (!instruments || instruments.length === 0) {
@@ -73,17 +91,6 @@ const Instruments = ({ navigation }) => {
   const handleBack = () => {
     if (navigation.canGoBack()) navigation.goBack();
   };
-
-  const coloredInstrumentCategories = instrumentCategories.map((category) => {
-    const sortedInstruments = [...category.instruments].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    const instrumentsWithColors = sortedInstruments.map((instrument, index) => {
-      const colorIndex = index % COLORS_PALETTE.length;
-      return { ...instrument, color: COLORS_PALETTE[colorIndex] };
-    });
-    return { ...category, instruments: instrumentsWithColors };
-  });
 
   const renderInstrumentCard = (instrument) => {
     const isSelected = selectedInstruments.includes(instrument.name);
@@ -159,7 +166,7 @@ const Instruments = ({ navigation }) => {
 
       <View style={{ flex: 1 }}>
         <CustomText
-          label="Choose your instruments"
+          label="Instruments you play"
           fontFamily={fonts.abril}
           fontSize={28}
           lineHeight={28 * 1.4}
@@ -167,12 +174,17 @@ const Instruments = ({ navigation }) => {
           marginBottom={6}
         />
 
-        <SearchInput placeholder="Enter an instrument" />
+        <SearchInput
+          placeholder="Enter an instrument"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          isCross
+          isClear={() => setSearchQuery("")}
+        />
 
         <CustomText
           label="Just enter a name."
           fontSize={12}
-          lineHeight={12 * 1.4}
           marginBottom={12}
           color={COLORS.white2}
           marginTop={4}
@@ -183,28 +195,38 @@ const Instruments = ({ navigation }) => {
           error={error}
           isValid={showSuccessColor}
           color={
-            showSuccessColor ? "#64CD75" : error ? "#EE1045CC" : COLORS.gray2
+            showSuccessColor ? "#64CD75" : error ? "#EE1045CC" : COLORS.white2
           }
           marginBottom={12}
         />
 
-        {coloredInstrumentCategories.map((category) => (
-          <View key={category.name} style={{ marginBottom: 12, marginTop: 12 }}>
-            <CustomText
-              label={category.name}
-              fontSize={17}
-              lineHeight={17 * 1.4}
-              marginBottom={8}
-              color={COLORS.white}
-              fontFamily={fonts.medium}
-            />
-            <View style={styles.row}>
-              {category.instruments.map((instrument) =>
-                renderInstrumentCard(instrument)
-              )}
+        {filteredInstrumentCategories.length > 0 ? (
+          filteredInstrumentCategories.map((category) => (
+            <View key={category.name} style={{ marginBottom: 12, marginTop: 8 }}>
+              <CustomText
+                label={category.name}
+                fontSize={17}
+                marginBottom={8}
+                color={COLORS.white}
+                fontFamily={fonts.medium}
+              />
+              <View style={styles.row}>
+                {category.instruments.map((instrument) =>
+                  renderInstrumentCard(instrument),
+                )}
+              </View>
             </View>
+          ))
+        ) : (
+          <View style={styles.noResultsContainer}>
+            <CustomText
+              label="No instruments found matching your search."
+              color={COLORS.white2}
+              fontSize={14}
+              fontFamily={fonts.regular}
+            />
           </View>
-        ))}
+        )}
       </View>
     </ScreenWrapper>
   );
@@ -233,5 +255,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 8,
+  },
+  noResultsContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+    width: "100%",
   },
 });

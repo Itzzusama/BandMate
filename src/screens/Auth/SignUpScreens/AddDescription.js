@@ -128,8 +128,7 @@ const AddDescription = () => {
           <CustomText
             label="Tell us more about you"
             fontFamily={fonts.abril}
-            fontSize={24}
-            lineHeight={24 * 1.4}
+            fontSize={22}
             marginTop={12}
             marginBottom={2}
           />
@@ -161,7 +160,13 @@ const AddDescription = () => {
 
           <ErrorComponent
             errorTitle={`Maximum ${description.length}/${MAX_LENGTH} characters.`}
-            color={error ? "#EE1045" : showSuccessColor ? COLORS.success : ""}
+            color={
+              error
+                ? "#EE1045"
+                : showSuccessColor
+                ? COLORS.success
+                : COLORS.white2
+            }
             error={error}
           />
         </View>

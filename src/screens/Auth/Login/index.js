@@ -157,8 +157,8 @@ const Login = ({ navigation }) => {
       <CustomText
         label={
           isType == "Phone Number"
-            ? "What is your phone number?"
-            : "What is your email?"
+            ? "What's your phone number?"
+            : "What's your email?"
         }
         fontFamily={fonts.semiBold}
         fontSize={24}

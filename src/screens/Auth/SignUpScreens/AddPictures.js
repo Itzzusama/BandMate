@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import CustomText from "../../../components/CustomText";
 import ErrorComponent from "../../../components/ErrorComponent";
+import Blur from "../../../components/Blur";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { PNGIcons } from "../../../assets/images/icons";
@@ -196,6 +197,7 @@ const AddPictures = () => {
                       onPress={() => onDelete(index)}
                       disabled={isUploading}
                     >
+                      <Blur blurAmount={4} />
                       <Image
                         source={PNGIcons.trash}
                         style={{ height: 40, width: 40 }}
@@ -273,6 +275,8 @@ const styles = StyleSheet.create({
   },
   removeOverlay: {
     position: "absolute",
+    borderRadius: 99,
+    overflow: "hidden",
     top: 6,
     right: 6,
   },

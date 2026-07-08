@@ -24,14 +24,14 @@ const PinOnBoarding = ({ route }) => {
           <CustomButton
             title="Create a PIN Code"
             marginBottom={8}
-            rightIcon={
+            leftView={
               <Image
                 source={Images.lock2}
                 style={{
                   width: 18,
                   height: 18,
                   resizeMode: "contain",
-                  marginLeft: 5,
+                  marginRight: 5,
                 }}
               />
             }
@@ -42,6 +42,7 @@ const PinOnBoarding = ({ route }) => {
             title="Later"
             backgroundColor={COLORS.cardColor}
             color={COLORS.white}
+            fontFamily={fonts.medium}
             onPress={() =>
               navigation.navigate("GooglePlaces", { fromSignup: true })
             }
@@ -65,16 +66,14 @@ const PinOnBoarding = ({ route }) => {
         <CustomText
           label="PIN Code"
           fontSize={32}
-          lineHeight={32 * 1.4}
           marginTop={26}
           fontFamily={fonts.semiBold}
         />
         <CustomText
           label="Would you like to make your next login fast and highly secured?"
-          color={COLORS.gray1}
+          color={COLORS.white2}
           textAlign="center"
           marginTop={12}
-          lineHeight={14 * 1.4}
         />
       </View>
     </ScreenWrapper>

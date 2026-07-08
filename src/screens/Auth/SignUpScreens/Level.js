@@ -87,7 +87,7 @@ const Level = () => {
         dispatch(setUserData(res?.data?.user));
         ToastMessage(
           "Your instruments have been updated successfully!",
-          "success"
+          "success",
         );
         if (isHome) {
           navigation.navigate("MainStack", {
@@ -159,7 +159,6 @@ const Level = () => {
         <CustomText
           label="Tell us about your musical skills and level."
           fontSize={12}
-          lineHeight={12 * 1.4}
           marginBottom={18}
           color={COLORS.white2}
         />

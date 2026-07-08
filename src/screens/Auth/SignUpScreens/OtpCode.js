@@ -232,7 +232,7 @@ const OtpCode = forwardRef(
         </View>
       </View>
     );
-  }
+  },
 );
 
 export default OtpCode;

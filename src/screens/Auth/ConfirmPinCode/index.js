@@ -195,13 +195,12 @@ const ConfirmPinCode = ({ route }) => {
         fontFamily={fonts.semiBold}
         fontSize={24}
         marginTop={12}
-        lineHeight={24 * 1.4}
       />
       <CustomText
         label={"Please enter your PIN code again to confirm it"}
         color={COLORS.gray1}
         marginBottom={40}
-        marginTop={6}
+        marginTop={2}
       />
 
       <OTPComponent value={otp} setValue={setOtp} error={error} />

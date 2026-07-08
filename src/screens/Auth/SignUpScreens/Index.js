@@ -167,7 +167,7 @@ const SignUpScreens = () => {
   //   setIsDisabled(Boolean(disabled));
   // }, [currentIndex, steps, state]);
 
-  const StepView = ({ stepName }) => {
+  const renderStep = (stepName) => {
     const commonProps = {
       ref: stepRef,
       currentIndex,
@@ -229,7 +229,7 @@ const SignUpScreens = () => {
         totalSteps={onboardingCount}
         subtitle={steps[currentIndex - 1]}
       />
-      <StepView stepName={steps[currentIndex - 1]} />
+      {renderStep(steps[currentIndex - 1])}
     </ScreenWrapper>
   );
 };

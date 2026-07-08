@@ -104,8 +104,8 @@ const SearchInput = ({
           <Icons
             family="Fontisto"
             name="search"
-            color={isChange ? "#fff" : COLORS.white3}
-            size={18}
+            color={isChange ? "#fff" : COLORS.white2}
+            size={20}
           />
         </TouchableOpacity>
 

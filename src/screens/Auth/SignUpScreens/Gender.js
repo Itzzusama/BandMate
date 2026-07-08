@@ -58,7 +58,7 @@ const StepFive = forwardRef(
       <View style={styles.container}>
         <View>
           <CustomText
-            label="What is your gender?"
+            label="What's your gender?"
             fontFamily={fonts.abril}
             fontSize={24}
             lineHeight={24 * 1.4}
@@ -77,7 +77,7 @@ const StepFive = forwardRef(
         </View>
       </View>
     );
-  }
+  },
 );
 
 export default StepFive;

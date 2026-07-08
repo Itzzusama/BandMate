@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { BlurView } from "@react-native-community/blur";
 
 const Blur = ({
@@ -7,18 +7,24 @@ const Blur = ({
   blurAmount = 16,
   style,
   borderRadius,
-  reducedTransparency,
+  zIndex,
+  borderWidth = 0,
+  borderColor = borderColor,
+  pointerEvents = "auto",
 }) => {
   return (
     <BlurView
       blurType={blurType}
       blurAmount={blurAmount}
-      reducedTransparencyFallbackColor={reducedTransparency}
+      pointerEvents={pointerEvents}
       style={[
         styles.default,
         style,
         {
           borderRadius: borderRadius || 12,
+          zIndex,
+          borderWidth,
+          borderColor,
         },
       ]}
     />

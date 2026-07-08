@@ -61,14 +61,13 @@ const PinCode = () => {
         label="Define a PIN Code"
         fontFamily={fonts.semiBold}
         fontSize={24}
-        lineHeight={24 * 1.4}
         marginTop={12}
       />
       <CustomText
         label="Please enter a PIN code that you will be able to remember and do not share it with someone else."
-        color={COLORS.gray1}
+        color={COLORS.white2}
         marginBottom={40}
-        marginTop={6}
+        marginTop={2}
       />
 
       <OTPComponent

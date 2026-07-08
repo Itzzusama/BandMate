@@ -40,7 +40,7 @@ const ResetPassword = forwardRef(
         setShowSuccessColor(false);
         return;
       } else {
-        setError("Password match");
+        setError("Password matched");
         setIsLoading(true);
         const { verifyVia, ...cleanState } = state;
         let finalState = cleanState;
@@ -115,7 +115,7 @@ const ResetPassword = forwardRef(
         setShowSuccessColor(false);
         setIsError(true);
       } else {
-        setError("Password match");
+        setError("Password matched");
         setIsError(false);
         setShowSuccessColor(true);
         setTimeout(() => {
@@ -153,7 +153,7 @@ const ResetPassword = forwardRef(
         </View>
       </View>
     );
-  }
+  },
 );
 
 export default ResetPassword;

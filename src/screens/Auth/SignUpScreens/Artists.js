@@ -119,7 +119,7 @@ const Artists = () => {
   const [selectedArtists, setSelectedArtists] = useState(
     route?.params?.fromScreen == "Home" && !route?.params?.isEvent
       ? userData?.Artists
-      : []
+      : [],
   );
   const [error, setError] = useState("");
   const [prevError, setPrevError] = useState("");
@@ -127,6 +127,16 @@ const Artists = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSpotify, setHasSpotify] = useState(false);
   const { accessToken } = useSelector((state) => state?.spotifyAuth);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const displayedArtists =
+    spotifyArtists.length > 0
+      ? spotifyArtists
+      : sortAlphabetically(DEFAULT_ARTISTS);
+  const filteredArtists = displayedArtists.filter((artist) =>
+    artist.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   useEffect(() => {
     AsyncStorage.getItem("spToken").then((t) => {
       setHasSpotify(!!t);
@@ -140,10 +150,26 @@ const Artists = () => {
 
     checkTokenAndFetch();
   }, [accessToken]);
+
   const checkTokenAndFetch = async () => {
     const token = await AsyncStorage.getItem("spToken");
     if (token) getSpotifyArtists();
   };
+
+  useEffect(() => {
+    if (searchQuery) {
+      const delayDebounce = setTimeout(() => {
+        AsyncStorage.getItem("spToken").then((token) => {
+          if (token) {
+            getSpotifyArtists(searchQuery);
+          }
+        });
+      }, 500);
+      return () => clearTimeout(delayDebounce);
+    } else {
+      checkTokenAndFetch();
+    }
+  }, [searchQuery]);
   useEffect(() => {
     if (prevError && !error) {
       setShowSuccessColor(true);
@@ -175,11 +201,11 @@ const Artists = () => {
       const idsQuery = SPOTIFY_ARTIST_IDS.join(",");
       const res = await fetch(
         `https://api.spotify.com/v1/search?type=artist&q=${encodeURIComponent(
-          query
+          query,
         )}&limit=${limit}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       const data = await res.json();
       if (data?.artists?.items?.length > 0) {
@@ -188,7 +214,7 @@ const Artists = () => {
             (artist) =>
               artist.name &&
               artist.images?.[0]?.url &&
-              isValidArtist(artist.name)
+              isValidArtist(artist.name),
           )
           .map((artist) => ({
             id: artist.id,
@@ -320,10 +346,15 @@ const Artists = () => {
           fontSize={12}
           color={COLORS.white2}
           marginBottom={12}
-          marginTop={8}
         />
 
-        <SearchInput placeholder="E.g. Coldplay, Bowie, Blur..." />
+        <SearchInput
+          placeholder="E.g. Coldplay, Bowie, Blur..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          isCross
+          isClear={() => setSearchQuery("")}
+        />
 
         <CustomText
           label="Just enter names or connect Spotify to auto-fill"
@@ -363,60 +394,68 @@ const Artists = () => {
           contentContainerStyle={{ paddingBottom: 40 }}
         >
           <View style={styles.grid}>
-            {(spotifyArtists.length > 0
-              ? spotifyArtists
-              : sortAlphabetically(DEFAULT_ARTISTS)
-            ).map((artist) => {
-              const isSelected = selectedArtists.some(
-                (a) => a.spotifyId === artist.id
-              );
-              return (
-                <TouchableOpacity
-                  key={artist.name}
-                  style={styles.card}
-                  onPress={() => toggleArtist(artist)}
-                  activeOpacity={0.8}
-                >
-                  <View
-                    style={[
-                      styles.imageWrapper,
-                      {
-                        borderColor: isSelected
-                          ? COLORS.btnColor
-                          : COLORS.black,
-                        borderWidth: isSelected ? 3 : 0,
-                      },
-                    ]}
+            {filteredArtists.length > 0 ? (
+              filteredArtists.map((artist) => {
+                const isSelected = selectedArtists.some(
+                  (a) => a.spotifyId === artist.id,
+                );
+                return (
+                  <TouchableOpacity
+                    key={artist.name}
+                    style={styles.card}
+                    onPress={() => toggleArtist(artist)}
+                    activeOpacity={0.8}
                   >
-                    <Image
-                      source={artist.img}
-                      style={styles.artistImage}
-                      resizeMode="cover"
-                    />
-                    {isSelected && (
-                      <View style={styles.overlay}>
-                        <Icons
-                          family="MaterialCommunityIcons"
-                          name={"check-circle"}
-                          size={36}
-                          color={COLORS.btnColor}
-                        />
-                      </View>
-                    )}
-                  </View>
+                    <View
+                      style={[
+                        styles.imageWrapper,
+                        {
+                          borderColor: isSelected
+                            ? COLORS.btnColor
+                            : COLORS.black,
+                          borderWidth: isSelected ? 3 : 0,
+                        },
+                      ]}
+                    >
+                      <Image
+                        source={artist.img}
+                        style={styles.artistImage}
+                        resizeMode="cover"
+                      />
+                      {isSelected && (
+                        <View style={styles.overlay}>
+                          <Icons
+                            family="MaterialCommunityIcons"
+                            name={"check-circle"}
+                            size={36}
+                            color={COLORS.btnColor}
+                          />
+                        </View>
+                      )}
+                    </View>
 
-                  <CustomText
-                    label={artist.name}
-                    fontSize={12}
-                    color={COLORS.white}
-                    fontFamily={fonts.medium}
-                    textAlign="center"
-                    marginTop={4}
-                    numberOfLines={2}
-                  />
-                </TouchableOpacity>
-              );
-            })}
+                    <CustomText
+                      label={artist.name}
+                      fontSize={12}
+                      color={COLORS.white}
+                      fontFamily={fonts.medium}
+                      textAlign="center"
+                      marginTop={4}
+                      numberOfLines={2}
+                    />
+                  </TouchableOpacity>
+                );
+              })
+            ) : (
+              <View style={styles.noResultsContainer}>
+                <CustomText
+                  label="No artists found matching your search."
+                  color={COLORS.white2}
+                  fontSize={14}
+                  fontFamily={fonts.regular}
+                />
+              </View>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -463,5 +502,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
+  },
+  noResultsContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+    width: "100%",
   },
 });
