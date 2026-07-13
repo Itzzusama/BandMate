@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   Dimensions,
   Platform,
   StyleSheet,
@@ -13,6 +12,7 @@ import fonts from "../../../assets/fonts";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import TopTabWithBG from "../../../components/TopTabWithBG";
 import { get } from "../../../services/ApiRequest";
+import HomeSkeleton from "../../../components/HomeSkeleton";
 import HomeCard from "./molecules/HomeCard";
 import HomeHeader from "./molecules/HomeHeader";
 import { useSelector } from "react-redux";
@@ -101,18 +101,7 @@ const Home = ({ navigation }) => {
         )}
 
         {refreshing ? (
-          <View
-            style={{
-              height:
-                Platform.OS == "ios"
-                  ? screenHeight * 0.56 + 30
-                  : screenHeight * 0.55 + 30,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <ActivityIndicator size={"large"} />
-          </View>
+          <HomeSkeleton />
         ) : (
           <HomeCard
             data={profileData}
