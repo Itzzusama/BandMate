@@ -1,4 +1,5 @@
-import { StyleSheet, View, ActivityIndicator, FlatList } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
+import EventSkeleton from "../../../components/EventSkeleton";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import Header from "./molecules/Header";
 import ToggleButtons from "./molecules/ToggleButtons";
@@ -41,7 +42,7 @@ const Event = () => {
       const queryString = Object.entries(params)
         .map(
           ([key, val]) =>
-            `${encodeURIComponent(key)}=${encodeURIComponent(val)}`
+            `${encodeURIComponent(key)}=${encodeURIComponent(val)}`,
         )
         .join("&");
 
@@ -79,9 +80,7 @@ const Event = () => {
       <EventOrganizer />
 
       {loading ? (
-        <View style={{ flex: 1, alignItems: "center", marginTop: 50 }}>
-          <ActivityIndicator size="large" />
-        </View>
+        <EventSkeleton />
       ) : (
         <FlatList
           data={events}

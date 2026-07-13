@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -15,6 +14,7 @@ import Header from "../../../components/Header";
 import Icons from "../../../components/Icons";
 import ImageFast from "../../../components/ImageFast";
 import ScreenWrapper from "../../../components/ScreenWrapper";
+import ChatSkeleton from "../../../components/ChatSkeleton";
 import TopTab from "../../../components/TopTab";
 import { COLORS } from "../../../utils/COLORS";
 import ConversationBox from "./molecules/ConversationBox";
@@ -247,7 +247,7 @@ const Chat = () => {
           />
         </TouchableOpacity>
       </View>
-      {loading && <ActivityIndicator size={"large"} />}
+      {loading && <ChatSkeleton />}
       <View style={{ paddingBottom: 90, flex: 1 }}>
         <FlatList
           data={chatData}

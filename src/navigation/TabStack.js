@@ -118,7 +118,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         activeOpacity={0.7}
         onPress={() => navigation.navigate("CreateEvent")}
       >
-        <Blur borderRadius={24} reducedTransparency="#FFFFFF14" />
+        <Blur reducedTransparency="#FFFFFF14" />
         <Icons family="Feather" name="plus" size={20} color={COLORS.white} />
       </TouchableOpacity>
     </View>
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF35",
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
   },
   tabBG: {
     width: "100%",
