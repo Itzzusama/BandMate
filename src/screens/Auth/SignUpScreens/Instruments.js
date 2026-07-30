@@ -36,6 +36,7 @@ const Instruments = ({ navigation }) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSuccessColor, setShowSuccessColor] = useState(false);
 
   const coloredInstrumentCategories = instrumentCategories.map((category) => {
     const sortedInstruments = [...category.instruments].sort((a, b) =>
@@ -48,12 +49,14 @@ const Instruments = ({ navigation }) => {
     return { ...category, instruments: instrumentsWithColors };
   });
 
-  const filteredInstrumentCategories = coloredInstrumentCategories.map((category) => {
-    const filteredInstruments = category.instruments.filter((instrument) =>
-      instrument.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    return { ...category, instruments: filteredInstruments };
-  }).filter((category) => category.instruments.length > 0);
+  const filteredInstrumentCategories = coloredInstrumentCategories
+    .map((category) => {
+      const filteredInstruments = category.instruments.filter((instrument) =>
+        instrument.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      return { ...category, instruments: filteredInstruments };
+    })
+    .filter((category) => category.instruments.length > 0);
 
   const errorCheck = (instruments) => {
     if (!instruments || instruments.length === 0) {
@@ -202,7 +205,10 @@ const Instruments = ({ navigation }) => {
 
         {filteredInstrumentCategories.length > 0 ? (
           filteredInstrumentCategories.map((category) => (
-            <View key={category.name} style={{ marginBottom: 12, marginTop: 8 }}>
+            <View
+              key={category.name}
+              style={{ marginBottom: 12, marginTop: 8 }}
+            >
               <CustomText
                 label={category.name}
                 fontSize={17}

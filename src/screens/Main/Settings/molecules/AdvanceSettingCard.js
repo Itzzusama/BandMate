@@ -20,14 +20,12 @@ const AdvanceSettingCard = ({ title, des, index, lastIndex, onPress }) => {
           fontSize={16}
           fontFamily={fonts.medium}
           color={COLORS.white}
-          lineHeight={16 * 1.4}
         />
         <CustomText
           label={des}
           fontSize={14}
           fontFamily={fonts.medium}
           color={COLORS.white3}
-          lineHeight={14 * 1.4}
           marginTop={-1}
         />
       </View>

@@ -15,7 +15,6 @@ const Header = () => {
         <CustomText
           label={"My Profile"}
           fontSize={32}
-          lineHeight={32 * 1.4}
           fontFamily={fonts.abril}
         />
         <View style={styles.row}>
@@ -23,7 +22,6 @@ const Header = () => {
           <CustomText
             label={"Manage your preferences"}
             fontSize={14}
-            lineHeight={14 * 1.4}
             fontFamily={fonts.medium}
             marginLeft={4}
             color={COLORS.white3}

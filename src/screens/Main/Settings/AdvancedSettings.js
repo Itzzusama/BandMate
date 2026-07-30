@@ -1,11 +1,10 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import ScreenWrapper from "../../../components/ScreenWrapper";
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
 import Header from "../../../components/Header";
+import ScreenWrapper from "../../../components/ScreenWrapper";
 import AdvanceSettingCard from "./molecules/AdvanceSettingCard";
-import { useState } from "react";
-import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
-import { useNavigation } from "@react-navigation/native";
-const options = [
+
+const defaultOptions = [
   {
     id: "currency",
     title: "Set Preferred Currency",
@@ -34,7 +33,7 @@ const options = [
   {
     id: "unit",
     title: "Units",
-    des: "Metric",
+    des: "Metric (km, m2, kg)",
   },
   {
     id: "temprature",
@@ -44,7 +43,7 @@ const options = [
   {
     id: "first_DOW",
     title: "First Day of The Week",
-    des: "Metric",
+    des: "Monday",
   },
   {
     id: "date_format",
@@ -52,7 +51,58 @@ const options = [
     des: "DD/MM//YYYY",
   },
 ];
-const AdvancedSettings = () => {
+
+const AdvancedSettings = ({ navigation }) => {
+  const [selectedValues, setSelectedValues] = useState({
+    addressing: "Friendly",
+    unit: "Metric (km, m2, kg)",
+    temprature: "Celsius (°C)",
+    first_DOW: "Monday",
+    date_format: "DD/MM//YYYY",
+  });
+
+  const handleCardPress = (item) => {
+    switch (item.id) {
+      case "addressing":
+        navigation.navigate("PreferredAddressing", {
+          selected: selectedValues.addressing,
+          onSelect: (val) =>
+            setSelectedValues((prev) => ({ ...prev, addressing: val })),
+        });
+        break;
+      case "unit":
+        navigation.navigate("PreferredUnits", {
+          selected: selectedValues.unit,
+          onSelect: (val) =>
+            setSelectedValues((prev) => ({ ...prev, unit: val })),
+        });
+        break;
+      case "temprature":
+        navigation.navigate("TemperatureScale", {
+          selected: selectedValues.temprature,
+          onSelect: (val) =>
+            setSelectedValues((prev) => ({ ...prev, temprature: val })),
+        });
+        break;
+      case "first_DOW":
+        navigation.navigate("FirstDayOfWeek", {
+          selected: selectedValues.first_DOW,
+          onSelect: (val) =>
+            setSelectedValues((prev) => ({ ...prev, first_DOW: val })),
+        });
+        break;
+      case "date_format":
+        navigation.navigate("DateFormat", {
+          selected: selectedValues.date_format,
+          onSelect: (val) =>
+            setSelectedValues((prev) => ({ ...prev, date_format: val })),
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <ScreenWrapper
       paddingBottom={0.1}
@@ -60,16 +110,19 @@ const AdvancedSettings = () => {
       scrollEnabled
       headerUnScrollable={() => <Header title={"Advanced Settings"} />}
     >
-      {options.map((item, index) => (
-        <AdvanceSettingCard
-          key={index}
-          title={item.title}
-          des={item.des}
-          index={index}
-          lastIndex={options.length - 1}
-          onPress={() => {}}
-        />
-      ))}
+      {defaultOptions.map((item, index) => {
+        const description = selectedValues[item.id] || item.des;
+        return (
+          <AdvanceSettingCard
+            key={index}
+            title={item.title}
+            des={description}
+            index={index}
+            lastIndex={defaultOptions.length - 1}
+            onPress={() => handleCardPress(item)}
+          />
+        );
+      })}
     </ScreenWrapper>
   );
 };

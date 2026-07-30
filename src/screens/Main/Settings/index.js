@@ -53,9 +53,8 @@ const Settings = () => {
       <CustomText
         label={"Settings"}
         fontSize={24}
-        lineHeight={24 * 1.4}
         fontFamily={fonts.abril}
-        marginTop={20}
+        marginTop={22}
         marginBottom={18}
       />
       <SettingOptions />
@@ -104,7 +103,9 @@ const Settings = () => {
             name={"logout"}
             color={COLORS.white}
             size={20}
-            style={{ marginRight: 8 }}
+            style={{
+              marginRight: 4,
+            }}
           />
         }
       />
@@ -120,7 +121,9 @@ const Settings = () => {
             name={"delete-forever-outline"}
             color={COLORS.white}
             size={20}
-            style={{ marginRight: 8 }}
+            style={{
+              marginRight: 4,
+            }}
           />
         }
       />

@@ -24,7 +24,7 @@ const CustomSwitch = ({
         onColor="#000"
         offColor="#000"
         thumbOnStyle={{
-          backgroundColor: "#fff",
+          backgroundColor: "#000",
           height: 27,
           width: 27,
           borderRadius: 100,

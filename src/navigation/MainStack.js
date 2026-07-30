@@ -15,6 +15,11 @@ import Settings from "../screens/Main/Settings";
 import AdvancedNotification from "../screens/Main/Settings/AdvancedNotification";
 import ChangePassword from "../screens/Main/Settings/ChangePassword";
 import AdvancedSettings from "../screens/Main/Settings/AdvancedSettings";
+import PreferredAddressing from "../screens/Main/Settings/PreferredAddressing";
+import PreferredUnits from "../screens/Main/Settings/PreferredUnits";
+import TemperatureScale from "../screens/Main/Settings/TemperatureScale";
+import FirstDayOfWeek from "../screens/Main/Settings/FirstDayOfWeek";
+import DateFormat from "../screens/Main/Settings/DateFormat";
 import Plans from "../screens/Main/Settings/Plans";
 import Preferences from "../screens/Main/Settings/Preferences";
 import TabStack from "./TabStack";
@@ -54,6 +59,14 @@ const MainStack = () => {
       <Stack.Screen name="SearchEvent" component={SearchEvent} />
       <Stack.Screen name="Plans" component={Plans} />
       <Stack.Screen name="AdvancedSettings" component={AdvancedSettings} />
+      <Stack.Screen
+        name="PreferredAddressing"
+        component={PreferredAddressing}
+      />
+      <Stack.Screen name="PreferredUnits" component={PreferredUnits} />
+      <Stack.Screen name="TemperatureScale" component={TemperatureScale} />
+      <Stack.Screen name="FirstDayOfWeek" component={FirstDayOfWeek} />
+      <Stack.Screen name="DateFormat" component={DateFormat} />
       <Stack.Screen name="Preferences" component={Preferences} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="PublishPost" component={PublishPost} />

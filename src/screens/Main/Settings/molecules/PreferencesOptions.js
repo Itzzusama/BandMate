@@ -55,8 +55,8 @@ const PreferencesOptions = () => {
   const handleToggle = (index) => {
     setData((prev) =>
       prev.map((item, i) =>
-        i === index ? { ...item, isEnable: !item.isEnable } : item
-      )
+        i === index ? { ...item, isEnable: !item.isEnable } : item,
+      ),
     );
   };
   return data.map((item, index) => (
@@ -83,8 +83,7 @@ const PreferencesOptions = () => {
               label={"Only with Platinum"}
               fontFamily={fonts.medium}
               fontSize={14}
-              lineHeight={14 * 1.4}
-              color={"#FFFFFF7A"}
+              color={COLORS.white3}
             />
           )}
         </View>

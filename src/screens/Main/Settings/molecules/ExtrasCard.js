@@ -1,10 +1,9 @@
-import React from "react";
-import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import fonts from "../../../../assets/fonts";
+import { PNGIcons } from "../../../../assets/images/icons";
 import CustomText from "../../../../components/CustomText";
 import { COLORS } from "../../../../utils/COLORS";
-import { PNGIcons } from "../../../../assets/images/icons";
-import fonts from "../../../../assets/fonts";
 
 const ExtrasCard = ({ onPress }) => {
   return (

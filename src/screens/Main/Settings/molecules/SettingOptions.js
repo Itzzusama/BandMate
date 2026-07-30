@@ -51,15 +51,13 @@ const SettingOptions = () => {
             label={item.title}
             fontFamily={fonts.medium}
             fontSize={16}
-            lineHeight={16 * 1.4}
           />
           {item.title == "Analytics" && (
             <CustomText
               label={"Only with Platinum"}
               fontFamily={fonts.medium}
               fontSize={14}
-              lineHeight={14 * 1.4}
-              color={"#FFFFFF7A"}
+              color={COLORS.white3}
             />
           )}
         </View>
@@ -67,7 +65,7 @@ const SettingOptions = () => {
       <Icons
         family={"Ionicons"}
         name={"chevron-forward-outline"}
-        color={"#FFFFFF7A"}
+        color={COLORS.white3}
         size={18}
       />
     </Pressable>
