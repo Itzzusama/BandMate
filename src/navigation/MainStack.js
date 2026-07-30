@@ -20,6 +20,10 @@ import PreferredUnits from "../screens/Main/Settings/PreferredUnits";
 import TemperatureScale from "../screens/Main/Settings/TemperatureScale";
 import FirstDayOfWeek from "../screens/Main/Settings/FirstDayOfWeek";
 import DateFormat from "../screens/Main/Settings/DateFormat";
+import PreferredCurrency from "../screens/Main/Settings/PreferredCurrency";
+import PreferredTimezone from "../screens/Main/Settings/PreferredTimezone";
+import ServiceProviderPreference from "../screens/Main/Settings/ServiceProviderPreference";
+import PreferredMap from "../screens/Main/Settings/PreferredMap";
 import Plans from "../screens/Main/Settings/Plans";
 import Preferences from "../screens/Main/Settings/Preferences";
 import TabStack from "./TabStack";
@@ -67,6 +71,13 @@ const MainStack = () => {
       <Stack.Screen name="TemperatureScale" component={TemperatureScale} />
       <Stack.Screen name="FirstDayOfWeek" component={FirstDayOfWeek} />
       <Stack.Screen name="DateFormat" component={DateFormat} />
+      <Stack.Screen name="PreferredCurrency" component={PreferredCurrency} />
+      <Stack.Screen name="PreferredTimezone" component={PreferredTimezone} />
+      <Stack.Screen
+        name="ServiceProviderPreference"
+        component={ServiceProviderPreference}
+      />
+      <Stack.Screen name="PreferredMap" component={PreferredMap} />
       <Stack.Screen name="Preferences" component={Preferences} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="PublishPost" component={PublishPost} />

@@ -16,7 +16,10 @@ const AdvanceSettingOptionCard = ({
     <Pressable
       style={[
         styles.container,
-        index === lastIndex && { borderBottomWidth: 0 },
+        index === lastIndex && {
+          borderBottomWidth: 0,
+          paddingVertical: des ? 14 : 22,
+        },
       ]}
       onPress={onPress}
     >
@@ -38,10 +41,7 @@ const AdvanceSettingOptionCard = ({
         ) : null}
       </View>
       <View
-        style={[
-          styles.radioOuter,
-          isSelected && styles.radioOuterSelected,
-        ]}
+        style={[styles.radioOuter, isSelected && styles.radioOuterSelected]}
       >
         {isSelected && <View style={styles.radioDot} />}
       </View>
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    paddingVertical: 14,
     borderBottomWidth: 1,
     borderColor: COLORS.inputBg,
   },

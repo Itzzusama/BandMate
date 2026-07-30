@@ -129,11 +129,11 @@ const AdvancedNotification = () => {
           ? {
               ...section,
               options: section.options.map((opt, j) =>
-                j === optionIndex ? { ...opt, isEnabled: !opt.isEnabled } : opt
+                j === optionIndex ? { ...opt, isEnabled: !opt.isEnabled } : opt,
               ),
             }
-          : section
-      )
+          : section,
+      ),
     );
   };
 
@@ -150,13 +150,12 @@ const AdvancedNotification = () => {
               color={COLORS.white}
               fontFamily={fonts.semiBold}
               fontSize={20}
-              lineHeight={20 * 1.4}
               marginTop={8}
             />
             <CustomText
               label={section.description}
-              color={COLORS.white2}
-              fontFamily={fonts.regular}
+              color={COLORS.white3}
+              fontFamily={fonts.medium}
               fontSize={14}
               marginBottom={18}
             />
@@ -180,8 +179,8 @@ const AdvancedNotification = () => {
                     />
                     <CustomText
                       label={option.des}
-                      color={COLORS.white2}
-                      fontFamily={fonts.regular}
+                      color={COLORS.white3}
+                      fontFamily={fonts.medium}
                       fontSize={14}
                     />
                   </View>
