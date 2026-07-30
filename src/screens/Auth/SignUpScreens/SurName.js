@@ -65,6 +65,7 @@ const SurName = forwardRef(
             value={lastName}
             onChangeText={(text) => {
               setLastName(text);
+              setState((prev) => ({ ...prev, sur_name: text }));
               if (error) {
                 const newError = errorCheck(text);
                 if (!newError) {

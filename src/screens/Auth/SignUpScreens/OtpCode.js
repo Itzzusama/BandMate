@@ -65,6 +65,7 @@ const OtpCode = forwardRef(
     const errorCheck = (value) => {
       let newErrors = "";
       setOtp(value);
+      setState((prev) => ({ ...prev, pin: value }));
       if (!value.trim()) {
         newErrors = "Valid verification code.";
       } else if (!otpRegex.test(value.trim())) {

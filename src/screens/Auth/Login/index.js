@@ -127,7 +127,14 @@ const Login = ({ navigation }) => {
       )}
       footerUnScrollable={() => (
         <View style={{ padding: 12 }}>
-          <AuthFooter onPress={handleContinue} />
+          <AuthFooter
+            onPress={handleContinue}
+            btnDisabled={
+              isType === "Phone Number"
+                ? !phone || phone.length < 7
+                : !email || !emailRegex.test(email.trim())
+            }
+          />
         </View>
       )}
     >

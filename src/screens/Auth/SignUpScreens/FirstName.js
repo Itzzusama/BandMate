@@ -65,6 +65,7 @@ const StepTwo = forwardRef(
             value={firstName}
             onChangeText={(text) => {
               setFirstName(text);
+              setState((prev) => ({ ...prev, first_name: text }));
               if (error) {
                 const newError = errorCheck(text);
                 if (!newError) {

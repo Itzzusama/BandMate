@@ -186,7 +186,11 @@ const ConfirmPinCode = ({ route }) => {
       headerUnScrollable={() => <Header title="PIN Code" />}
       footerUnScrollable={() => (
         <View style={{ padding: 12, marginBottom: 12 }}>
-          <AuthFooter onPress={onContinue} loading={loading} />
+          <AuthFooter
+            onPress={onContinue}
+            loading={loading}
+            btnDisabled={!otp || otp.length < 4}
+          />
         </View>
       )}
     >

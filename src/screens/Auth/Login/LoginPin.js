@@ -136,7 +136,11 @@ const LoginPin = () => {
       headerUnScrollable={() => <Header title="PIN Code" />}
       footerUnScrollable={() => (
         <View style={{ padding: 12 }}>
-          <AuthFooter onPress={onContinuePress} loading={loading} />
+          <AuthFooter
+            onPress={onContinuePress}
+            loading={loading}
+            btnDisabled={!otp || otp.length < 4}
+          />
         </View>
       )}
     >

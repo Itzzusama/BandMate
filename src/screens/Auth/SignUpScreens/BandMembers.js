@@ -73,6 +73,7 @@ const BandStep2 = forwardRef(
             value={bandMembers}
             onChangeText={(text) => {
               setBandMembers(text);
+              setState((prev) => ({ ...prev, bandMembers: text }));
               if (error) {
                 const newError = errorCheck(text);
                 if (!newError) {

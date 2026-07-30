@@ -68,7 +68,13 @@ const StepFive = forwardRef(
           <CustomDropdown
             data={genderOptions}
             value={gender}
-            setValue={setGender}
+            setValue={(val) => {
+              setGender(val);
+              setState((prev) => ({
+                ...prev,
+                gender: val ? val.trim().toUpperCase() : "",
+              }));
+            }}
             error={error}
             showError={true}
             placeholder="E.g. Male"

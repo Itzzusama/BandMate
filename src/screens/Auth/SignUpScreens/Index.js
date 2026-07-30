@@ -96,76 +96,72 @@ const SignUpScreens = () => {
 
   const totalSteps = steps.length;
 
-  // useEffect(() => {
-  //   const currentStep = steps[currentIndex - 1];
+  useEffect(() => {
+    const currentStep = steps[currentIndex - 1];
 
-  //   let disabled = true;
+    let disabled = true;
 
-  //   switch (currentStep) {
-  //     case "Date of Birth":
-  //       disabled = !state.dob;
-  //       break;
-  //     case "Choose your user type":
-  //       disabled = !state.role;
-  //       break;
-  //     case "Band's name":
-  //       disabled = !state.bandName;
-  //       break;
-  //     case "Band's members":
-  //       disabled = !state.bandMembers;
-  //       break;
-  //     case "Age range":
-  //       disabled = !state.membersAge;
-  //       break;
-  //     case "Email":
-  //       disabled = !state.email;
-  //       break;
-  //     case "Verifying your email":
-  //       disabled = !state.pin;
-  //       break;
-  //     case "Creating a strong password":
-  //       disabled = !state.password;
-  //       break;
-  //     case "Confirming password":
-  //       disabled = !state.confirmPassword;
-  //       break;
-  //     case "Instruments":
-  //       disabled = !state.Instruments || state.Instruments.length === 0;
-  //       break;
-  //     case "Level":
-  //       disabled =
-  //         !state.instrumentWithLevel || state.instrumentWithLevel.length === 0;
-  //       break;
-  //     case "Genres":
-  //       disabled = !state.Genres || state.Genres.length === 0;
-  //       break;
-  //     case "Artists":
-  //       disabled = !state.Artists || state.Artists.length === 0;
-  //       break;
-  //     case "Firstname":
-  //       disabled = !state.first_name;
-  //       break;
-  //     case "Surname":
-  //       disabled = !state.sur_name;
-  //       break;
-  //     case "Gender":
-  //       disabled = !state.gender;
-  //       break;
-  //     case "Addressing":
-  //       disabled = !state.nameDisplayPreference;
-  //       break;
-  //     case "Pictures":
-  //       disabled = !state.pictures || state.pictures.length === 0;
-  //       break;
-  //     case "About you":
-  //       disabled = !state.description;
-  //       break;
-  //     default:
-  //       disabled = false;
-  //   }
+    switch (currentStep) {
+      case "Date of Birth":
+        disabled = !state.dob;
+        break;
+      case "Choose your user type":
+        disabled = !state.role;
+        break;
+      case "Band's name":
+        disabled = !state.bandName || state.bandName.trim().length === 0;
+        break;
+      case "Band's members":
+        disabled =
+          !state.bandMembers ||
+          isNaN(parseInt(state.bandMembers, 10)) ||
+          parseInt(state.bandMembers, 10) < 2;
+        break;
+      case "Age range":
+        disabled = !state.membersAge;
+        break;
+      case "Email":
+        if (state.email) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          disabled = !emailRegex.test(state.email.trim());
+        } else if (state.phone) {
+          disabled = state.phone.trim().length < 7;
+        } else {
+          disabled = true;
+        }
+        break;
+      case "Verifying your email":
+        disabled = !state.pin || state.pin.trim().length < 6;
+        break;
+      case "Creating a strong password":
+        disabled =
+          !state.password ||
+          state.password.length < 8 ||
+          !/[A-Z]/.test(state.password) ||
+          !/\d/.test(state.password);
+        break;
+      case "Confirming password":
+        disabled =
+          !state.confirmPassword || state.confirmPassword !== state.password;
+        break;
+      case "Firstname":
+        disabled = !state.first_name || state.first_name.trim().length < 2;
+        break;
+      case "Surname":
+        disabled = !state.sur_name || state.sur_name.trim().length < 2;
+        break;
+      case "Gender":
+        disabled = !state.gender;
+        break;
+      case "Addressing":
+        disabled = !state.nameDisplayPreference;
+        break;
+      default:
+        disabled = false;
+    }
 
-  //   setIsDisabled(Boolean(disabled));
-  // }, [currentIndex, steps, state]);
+    setIsDisabled(Boolean(disabled));
+  }, [currentIndex, steps, state]);
 
   const renderStep = (stepName) => {
     const commonProps = {
@@ -220,7 +216,7 @@ const SignUpScreens = () => {
           onPress={() => stepRef.current?.submit?.()}
           onBackPress={() => stepRef.current?.back?.()}
           btnLoading={isLoading}
-          // btnDisabled={isDisabled}
+          btnDisabled={isDisabled}
         />
       )}
     >

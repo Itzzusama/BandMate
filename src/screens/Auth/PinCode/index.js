@@ -45,6 +45,7 @@ const PinCode = () => {
             title="continue"
             marginBottom={8}
             onPress={onContinue}
+            disabled={!otp || otp.length < 4}
           />
           <CustomButton
             title="Later"

@@ -20,6 +20,7 @@ const UserType = forwardRef(
 
     const handleRoleSelection = (role) => {
       setSelectedRole(role);
+      setState((prev) => ({ ...prev, role }));
 
       if (error) {
         setError(false);

@@ -146,7 +146,7 @@ const Instruments = ({ navigation }) => {
               marginBottom={24}
               onPress={handleNext}
               loading={isLoading}
-              disabled={isLoading}
+              disabled={isLoading || selectedInstruments.length === 0}
             />
           </View>
         ) : (
@@ -155,6 +155,7 @@ const Instruments = ({ navigation }) => {
             onPress={handleNext}
             onBackPress={handleBack}
             btnLoading={isLoading}
+            btnDisabled={selectedInstruments.length === 0}
           />
         )
       }

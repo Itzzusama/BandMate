@@ -126,7 +126,11 @@ const Level = () => {
               marginBottom={24}
               onPress={handleNext}
               loading={isLoading}
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                !instruments.every((inst) => selectedLevels[inst]) ||
+                instruments.length === 0
+              }
             />
           </View>
         ) : (
@@ -135,6 +139,10 @@ const Level = () => {
             onPress={handleNext}
             onBackPress={handleBack}
             btnLoading={isLoading}
+            btnDisabled={
+              !instruments.every((inst) => selectedLevels[inst]) ||
+              instruments.length === 0
+            }
           />
         )
       }

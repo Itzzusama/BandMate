@@ -313,6 +313,7 @@ const Artists = () => {
               marginBottom={24}
               onPress={handleNext}
               btnLoading={isLoading}
+              disabled={isLoading || selectedArtists.length < 3}
             />
           </View>
         ) : (
@@ -321,6 +322,7 @@ const Artists = () => {
             onPress={handleNext}
             onBackPress={handleBack}
             btnLoading={isLoading}
+            btnDisabled={selectedArtists.length < 3}
           />
         )
       }

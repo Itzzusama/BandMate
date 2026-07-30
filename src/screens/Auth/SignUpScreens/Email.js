@@ -241,6 +241,7 @@ const Email = forwardRef(
                 value={phone}
                 setValue={(text) => {
                   setPhone(text);
+                  setState((prev) => ({ ...prev, phone: text }));
                   if (phoneError) {
                     const newError = phoneValidationCheck(text);
                     if (!newError) {
@@ -399,12 +400,7 @@ const Email = forwardRef(
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
-                  // if (error) {
-                  //   const newError = errorCheck(text, true);
-                  //   if (!newError) {
-                  //     setError("");
-                  //   }
-                  // }
+                  setState((prev) => ({ ...prev, email: text }));
                 }}
                 withLabel={"EMAIL ADDRESS"}
                 error={error}

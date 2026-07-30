@@ -174,6 +174,7 @@ const Genres = () => {
               title={"Submit"}
               marginBottom={24}
               onPress={handleNext}
+              disabled={isLoading || selectedGenres.length < 3}
             />
           </View>
         ) : (
@@ -182,6 +183,7 @@ const Genres = () => {
             onPress={handleNext}
             onBackPress={handleBack}
             btnLoading={isLoading}
+            btnDisabled={selectedGenres.length < 3}
           />
         )
       }

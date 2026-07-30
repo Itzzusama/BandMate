@@ -27,6 +27,7 @@ const Password = forwardRef(
 
     const errorCheck = (pwd) => {
       setPass(pwd);
+      setState((prev) => ({ ...prev, password: pwd }));
       if (pwd.length >= 8) {
         setMinLength(true);
         setMinSuccess(true);
@@ -85,6 +86,7 @@ const Password = forwardRef(
         .join("");
 
       setPass(newPassword);
+      setState((prev) => ({ ...prev, password: newPassword }));
       setMinLength(false);
       setHasUppercase(false);
       setHasDigit(false);

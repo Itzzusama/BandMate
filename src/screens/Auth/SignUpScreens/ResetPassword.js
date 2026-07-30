@@ -105,6 +105,7 @@ const ResetPassword = forwardRef(
 
     const errorCheck = (pwd) => {
       setPassword(pwd);
+      setState((prev) => ({ ...prev, confirmPassword: pwd }));
       if (!pwd) {
         setError("Please enter your password");
         setShowSuccessColor(false);

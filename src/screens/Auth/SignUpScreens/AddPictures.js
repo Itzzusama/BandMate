@@ -143,6 +143,7 @@ const AddPictures = () => {
           onPress={handleNext}
           onBackPress={handleBack}
           btnLoading={isLoading}
+          btnDisabled={images.filter(Boolean).length === 0}
         />
       )}
     >

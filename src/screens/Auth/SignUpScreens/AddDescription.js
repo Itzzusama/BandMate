@@ -103,6 +103,7 @@ const AddDescription = () => {
               title={"Submit"}
               marginBottom={24}
               onPress={handleNext}
+              disabled={isLoading || !description.trim()}
             />
           </View>
         ) : (
@@ -111,6 +112,7 @@ const AddDescription = () => {
             onPress={handleNext}
             onBackPress={handleBack}
             btnLoading={isLoading}
+            btnDisabled={!description.trim()}
           />
         )
       }

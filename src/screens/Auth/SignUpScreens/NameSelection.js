@@ -16,6 +16,17 @@ const NameSelection = forwardRef(
       state?.nameDisplayPreference || "first",
     );
 
+    useEffect(() => {
+      if (!state?.nameDisplayPreference) {
+        setState((prev) => ({ ...prev, nameDisplayPreference: "first" }));
+      }
+    }, []);
+
+    const handleSelect = (val) => {
+      setSelected(val);
+      setState((prev) => ({ ...prev, nameDisplayPreference: val }));
+    };
+
     const submit = () => {
       setState({ ...state, nameDisplayPreference: selected });
       if (currentIndex < onboardingCount) {
@@ -47,7 +58,7 @@ const NameSelection = forwardRef(
             <TouchableOpacity
               style={styles.card}
               activeOpacity={0.8}
-              onPress={() => setSelected("first")}
+              onPress={() => handleSelect("first")}
             >
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>
@@ -78,7 +89,7 @@ const NameSelection = forwardRef(
             <TouchableOpacity
               style={styles.card}
               activeOpacity={0.8}
-              onPress={() => setSelected("sur")}
+              onPress={() => handleSelect("sur")}
             >
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>

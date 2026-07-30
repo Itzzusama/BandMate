@@ -16,6 +16,7 @@ const BandStep1 = forwardRef(
     const onboardingCount = useSelector(count);
     const errorCheck = (val) => {
       setBandName(val);
+      setState((prev) => ({ ...prev, bandName: val }));
       let newErrors = "";
 
       if (!val.trim()) {
@@ -67,6 +68,7 @@ const BandStep1 = forwardRef(
             value={bandName}
             onChangeText={(text) => {
               setBandName(text);
+              setState((prev) => ({ ...prev, bandName: text }));
 
               if (error) {
                 const newError = errorCheck(text);

@@ -217,7 +217,11 @@ const OTPScreen = () => {
       headerUnScrollable={() => <Header title={"OTP Code"} />}
       footerUnScrollable={() => (
         <View style={{ padding: 12, marginBottom: 20 }}>
-          <AuthFooter onPress={onContinuePress} loading={loading} />
+          <AuthFooter
+            onPress={onContinuePress}
+            loading={loading}
+            btnDisabled={!otp || !otpRegex.test(otp.trim())}
+          />
         </View>
       )}
     >

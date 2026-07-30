@@ -142,7 +142,11 @@ const LoginPass = () => {
       headerUnScrollable={() => <Header title="Enter Your Password" />}
       footerUnScrollable={() => (
         <View style={{ padding: 12 }}>
-          <AuthFooter onPress={onContinuePress} loading={loading} />
+          <AuthFooter
+            onPress={onContinuePress}
+            loading={loading}
+            btnDisabled={!password}
+          />
         </View>
       )}
     >

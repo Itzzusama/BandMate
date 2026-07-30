@@ -16,6 +16,12 @@ const AgeRange = forwardRef(
       end: state?.ageRange?.end || 50,
     });
 
+    useEffect(() => {
+      if (!state?.membersAge) {
+        setState((prev) => ({ ...prev, membersAge: ageRange }));
+      }
+    }, []);
+
     const [error, setError] = useState("");
 
     const errorCheck = () => {
