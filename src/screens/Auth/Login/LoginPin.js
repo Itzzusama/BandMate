@@ -203,7 +203,7 @@ const LoginPin = () => {
       ) : null}
 
       <TouchableOpacity
-        onPress={() => navigation.navigate("LoginPass")}
+        onPress={() => navigation.replace("LoginPass")}
         style={[styles.row, { marginTop: !biometricAvailable && 40 }]}
       >
         <ImageFast
@@ -224,7 +224,7 @@ const LoginPin = () => {
         alignSelf="center"
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("OTPScreen")}
+        onPress={() => navigation.replace("OTPScreen")}
         style={styles.row}
       >
         <Image

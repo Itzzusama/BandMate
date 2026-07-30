@@ -170,7 +170,7 @@ const LoginPass = () => {
 
       <TouchableOpacity
         activeOpacity={0.6}
-        onPress={() => navigation.navigate("LoginPin")}
+        onPress={() => navigation.replace("LoginPin")}
         style={[styles.row, { marginTop: 40 }]}
       >
         <ImageFast
@@ -239,7 +239,7 @@ const LoginPass = () => {
         alignSelf="center"
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("OTPScreen")}
+        onPress={() => navigation.replace("OTPScreen")}
         style={styles.row}
       >
         <Image

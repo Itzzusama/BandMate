@@ -303,7 +303,7 @@ const OTPScreen = () => {
 
       <TouchableOpacity
         activeOpacity={0.6}
-        onPress={() => navigation.navigate("LoginPin")}
+        onPress={() => navigation.replace("LoginPin")}
         style={[styles.row, { marginTop: 40 }]}
       >
         <ImageFast
@@ -364,7 +364,7 @@ const OTPScreen = () => {
         alignSelf={"center"}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("Password")}
+        onPress={() => navigation.replace("LoginPass")}
         style={styles.row}
       >
         <Image
