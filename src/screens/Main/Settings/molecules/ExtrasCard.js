@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import fonts from "../../../../assets/fonts";
 import { PNGIcons } from "../../../../assets/images/icons";
@@ -7,26 +7,28 @@ import { COLORS } from "../../../../utils/COLORS";
 
 const ExtrasCard = ({ onPress }) => {
   return (
-    <LinearGradient
-      colors={[COLORS.cardColor, "#948f8f14", "#FF4B4B", "#575093", "#007BFF"]}
-      locations={[0.3867, 0.583, 0.7301, 0.8283, 0.9264]}
-      angle={130}
-      useAngle={true}
-      style={styles.card}
-    >
-      <View style={styles.iconRow}>
-        <Image source={PNGIcons.rewind} style={styles.icon} />
-        <Image source={PNGIcons.star_blue} style={styles.icon} />
-        <Image source={PNGIcons.blot} style={styles.icon} />
-      </View>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+      <LinearGradient
+        colors={[COLORS.cardColor, "#948f8f14", "#FF4B4B", "#575093", "#007BFF"]}
+        locations={[0.3867, 0.583, 0.7301, 0.8283, 0.9264]}
+        angle={130}
+        useAngle={true}
+        style={styles.card}
+      >
+        <View style={styles.iconRow}>
+          <Image source={PNGIcons.rewind} style={styles.icon} />
+          <Image source={PNGIcons.star_blue} style={styles.icon} />
+          <Image source={PNGIcons.blot} style={styles.icon} />
+        </View>
 
-      <View style={styles.container}>
-        <CustomText textStyle={styles.title}>Get Extras</CustomText>
-        <CustomText textStyle={styles.subtitle}>
-          Super Likes, Boosts, Rewinds!
-        </CustomText>
-      </View>
-    </LinearGradient>
+        <View style={styles.container}>
+          <CustomText textStyle={styles.title}>Get Extras</CustomText>
+          <CustomText textStyle={styles.subtitle}>
+            Super Likes, Boosts, Rewinds!
+          </CustomText>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
   );
 };
 

@@ -252,7 +252,7 @@ const ChatFooter = ({
   };
 
   const handleChange = async (result) => {
-    const path = result.path;
+    const path = result.path || result.uri;
     const mime = result.mime || result.mimeType || "";
 
     const isVideo = mime.includes("video");

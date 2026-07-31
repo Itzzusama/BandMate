@@ -25,9 +25,9 @@ import PreferredTimezone from "../screens/Main/Settings/PreferredTimezone";
 import ServiceProviderPreference from "../screens/Main/Settings/ServiceProviderPreference";
 import PreferredMap from "../screens/Main/Settings/PreferredMap";
 import Plans from "../screens/Main/Settings/Plans";
+import Extras from "../screens/Main/Settings/Extras";
 import Preferences from "../screens/Main/Settings/Preferences";
 import TabStack from "./TabStack";
-
 import AppLanguage from "../screens/Main/Settings/AppLanguage";
 import PicLocation from "../screens/Auth/PicLocation";
 import SongsList from "../screens/Main/SongsList";
@@ -62,6 +62,7 @@ const MainStack = () => {
       <Stack.Screen name="Detail" component={Detail} />
       <Stack.Screen name="SearchEvent" component={SearchEvent} />
       <Stack.Screen name="Plans" component={Plans} />
+      <Stack.Screen name="Extras" component={Extras} />
       <Stack.Screen name="AdvancedSettings" component={AdvancedSettings} />
       <Stack.Screen
         name="PreferredAddressing"

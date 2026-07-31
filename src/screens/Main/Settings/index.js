@@ -49,7 +49,7 @@ const Settings = () => {
           subtitle="Earn Benefits & more!"
         />
       </View>
-      <ExtrasCard />
+      <ExtrasCard onPress={() => navigation.navigate("Extras")} />
       <CustomText
         label={"Settings"}
         fontSize={24}

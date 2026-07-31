@@ -5,10 +5,13 @@ import CustomText from "../../../../components/CustomText";
 import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
 import { SettingIcons } from "../../../../assets/images/settingIcons";
+import { PNGIcons } from "../../../../assets/images/icons";
 import Icons from "../../../../components/Icons";
 
 const PlansCard = ({ plan, onPress }) => {
-  const isFree = plan === "Free Tier";
+  const isFree = plan === "Free Tier" || plan === "Free";
+  const isExtra =
+    plan === "Super Likes" || plan === "Boosts" || plan === "Rewinds";
 
   const getImage = () => {
     if (isFree) return SettingIcons.free;
@@ -16,6 +19,9 @@ const PlansCard = ({ plan, onPress }) => {
     else if (plan === "Silver") return SettingIcons.silver;
     else if (plan === "Gold") return SettingIcons.gold;
     else if (plan === "Platinum") return SettingIcons.platinum;
+    else if (plan === "Super Likes") return PNGIcons.btn3;
+    else if (plan === "Boosts") return PNGIcons.btn5;
+    else if (plan === "Rewinds") return PNGIcons.btn1;
   };
 
   const color =
@@ -25,6 +31,12 @@ const PlansCard = ({ plan, onPress }) => {
       ? "#AA9757"
       : plan === "Pro"
       ? "#007BFF"
+      : plan === "Super Likes"
+      ? "#007AFE"
+      : plan === "Boosts"
+      ? "#8400E7"
+      : plan === "Rewinds"
+      ? "#FF4B4B"
       : "#7B64F4";
 
   const price =
@@ -36,12 +48,17 @@ const PlansCard = ({ plan, onPress }) => {
       ? "199.99"
       : "29.99";
 
-  const text =
-    plan === "Free Tier"
-      ? "Essentials"
-      : plan === "Silver"
-      ? "Perfect for teams and small businesses"
-      : "Perfect for Large Organizations";
+  const text = isFree
+    ? "Essentials"
+    : plan === "Super Likes"
+    ? "Stand out & get 3x more matches"
+    : plan === "Boosts"
+    ? "Be the top profile in your area"
+    : plan === "Rewinds"
+    ? "Undo your last swipe anytime"
+    : plan === "Silver"
+    ? "Perfect for teams and small businesses"
+    : "Perfect for Large Organizations";
 
   const renderContent = () => (
     <View style={styles.contentContainer}>
@@ -50,13 +67,22 @@ const PlansCard = ({ plan, onPress }) => {
           <Image source={getImage()} style={{ height: 24, width: 24 }} />
           <CustomText
             label={plan}
-            fontSize={34}
+            fontSize={24}
             fontFamily={fonts.medium}
-            lineHeight={36 * 1.4}
+            lineHeight={28 * 1.4}
             color={COLORS.white}
           />
         </View>
-        {plan === "Free Tier" ? (
+        {isExtra ? (
+          <View style={[styles.freePlanBadge, { backgroundColor: color }]}>
+            <CustomText
+              label={"Extra"}
+              fontSize={10}
+              fontFamily={fonts.medium}
+              color={COLORS.white}
+            />
+          </View>
+        ) : isFree ? (
           <View style={styles.freePlanBadge}>
             <Icons
               family={"Ionicons"}
@@ -126,21 +152,24 @@ const PlansCard = ({ plan, onPress }) => {
     </View>
   );
 
-  if (isFree) {
-    return (
-      <View style={[styles.container, { backgroundColor: COLORS.cardColor }]}>
-        {renderContent()}
-      </View>
-    );
-  }
+  const gradientColors = isFree
+    ? [COLORS.cardColor, COLORS.cardColor]
+    : [COLORS.black, color];
 
   return (
     <LinearGradient
-      colors={[COLORS.black, color]}
+      key={plan}
+      colors={gradientColors}
       locations={[0.79, 0.98]}
       angle={126}
       useAngle={true}
-      style={[styles.container, { borderWidth: 1 }]}
+      style={[
+        styles.container,
+        {
+          borderWidth: isFree ? 0 : 1,
+          backgroundColor: isFree ? COLORS.cardColor : undefined,
+        },
+      ]}
     >
       {renderContent()}
     </LinearGradient>

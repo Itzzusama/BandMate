@@ -1,25 +1,22 @@
-import {
-  Dimensions,
-  Platform,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 
-import { useIsFocused } from "@react-navigation/native";
+import { getPalette } from "@somesoap/react-native-image-palette";
 import { useEffect, useState } from "react";
 import LinearGradient from "react-native-linear-gradient";
 import fonts from "../../../assets/fonts";
+import HomeSkeleton from "../../../components/HomeSkeleton";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import TopTabWithBG from "../../../components/TopTabWithBG";
 import { get } from "../../../services/ApiRequest";
-import HomeSkeleton from "../../../components/HomeSkeleton";
 import HomeCard from "./molecules/HomeCard";
 import HomeHeader from "./molecules/HomeHeader";
-import { useSelector } from "react-redux";
-import { getPalette } from "@somesoap/react-native-image-palette";
+import { getProfile } from "../../../utils/constants";
+import { useIsFocused } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 
 const Home = ({ navigation }) => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+  const dispatch = useDispatch();
+  const isFocus = useIsFocused();
 
   const [primaryColor, setPrimaryColor] = useState("#131E1F");
   const [tab, setTab] = useState("For You");
@@ -44,6 +41,11 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     getUserProfile();
   }, [tab]);
+
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [isFocus]);
+
   useEffect(() => {
     const extractColor = async () => {
       try {

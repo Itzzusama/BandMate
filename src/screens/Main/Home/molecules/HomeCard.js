@@ -11,11 +11,6 @@ import {
   View,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import {
-  gyroscope,
-  SensorTypes,
-  setUpdateIntervalForType,
-} from "react-native-sensors";
 import fonts from "../../../../assets/fonts";
 import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
@@ -25,7 +20,8 @@ import { COLORS } from "../../../../utils/COLORS";
 import { get, post } from "../../../../services/ApiRequest";
 import { ToastMessage } from "../../../../utils/ToastMessage";
 import { getAgeFromDob } from "../../../../utils/constants";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../../../../store/reducer/usersSlice";
 import { getDistance } from "geolib";
 import { getPalette } from "@somesoap/react-native-image-palette/src";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -40,12 +36,14 @@ const HomeCard = ({
 }) => {
   const paletteCache = useRef({});
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.users);
   const [matching, setMatching] = useState(0);
   const [views, setViews] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [cards, setCards] = useState([...data]);
+  const cardsRef = useRef(cards);
   const sliderAnimation = useRef(new Animated.Value(0)).current;
 
   const translateX = useRef(new Animated.Value(0)).current;
@@ -65,6 +63,11 @@ const HomeCard = ({
       setCurrentImageIndex(0);
     }
   }, [data]);
+
+  // Keep cardsRef in sync with cards state for PanResponder closure
+  useEffect(() => {
+    cardsRef.current = cards;
+  }, [cards]);
   const [currentGradientColors, setCurrentGradientColors] = useState([
     "transparent",
     "transparent",
@@ -72,26 +75,31 @@ const HomeCard = ({
 
   const buttonActions = [
     {
+      reaction: "rewind",
       colors: ["#FF4B4B", "#FF4B4B00"],
       direction: "left",
       rotation: -15,
     },
     {
+      reaction: "dislike",
       colors: ["#F41857", "#F4185700"],
       direction: "left",
       rotation: -8,
     },
     {
+      reaction: "superlike",
       colors: ["#007AFE", "#007AFE00"],
       direction: "up",
       rotation: 0,
     },
     {
+      reaction: "like",
       colors: ["#1ED760", "#1ED76000"],
       direction: "right",
       rotation: 8,
     },
     {
+      reaction: "boost",
       colors: ["#8400E7", "#8400E700"],
       direction: "right",
       rotation: 15,
@@ -191,32 +199,65 @@ const HomeCard = ({
     }).start();
   };
 
-  const handleSwipe = (direction) => {
-    let index;
+  const checkQuotaAvailable = (reaction) => {
+    const keyMap = {
+      rewind: { key: "rewinds", name: "rewind" },
+      superlike: { key: "superLikes", name: "superlike" },
+      boost: { key: "boosts", name: "boost" },
+    };
+    const info = keyMap[reaction];
+    if (info) {
+      const count = userData?.[info.key] ?? 0;
+      if (count <= 0) {
+        ToastMessage(`No more ${info.name} available`, "error");
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleSwipe = (direction, swipedProfile) => {
+    let reaction;
     switch (direction) {
       case "left":
-        index = 1;
+        reaction = "dislike";
         break;
       case "right":
-        index = 3;
+        reaction = "like";
         break;
       case "up":
-        index = 2;
+        reaction = "superlike";
         break;
       default:
         return;
     }
-    handleButtonPress(index);
+    if (!checkQuotaAvailable(reaction)) {
+      return;
+    }
+    // Fire API in background, don't await
+    handleReaction(reaction, swipedProfile);
+    goToNextCard();
   };
 
-  const handleButtonPress = async (index) => {
+  const handleButtonPress = (index) => {
     const action = buttonActions[index];
+    const reaction = action.reaction;
+
+    if (!checkQuotaAvailable(reaction)) {
+      return;
+    }
+
+    // Capture the profile NOW before any state changes
+    const profileToReact = cards[0];
 
     // Set gradient colors
     setCurrentGradientColors(action.colors);
 
     // Reset gradient position to bottom before animation
     gradientTranslateY.setValue(200);
+
+    // Fire API in background immediately - don't await
+    handleReaction(reaction, profileToReact);
 
     // Animate next card coming forward
     Animated.parallel([
@@ -253,50 +294,47 @@ const HomeCard = ({
       }),
     ]).start();
 
-    // Animate card movement after a short delay
-    setTimeout(async () => {
+    // Animate card flying out immediately
+    setTimeout(() => {
       const animations = [];
 
       if (action.direction === "left") {
-        await handleReaction("dislike");
         animations.push(
           Animated.timing(translateX, {
             toValue: -screenWidth * 1.5,
             duration: 400,
             useNativeDriver: true,
-          })
+          }),
         );
         animations.push(
           Animated.timing(rotateCard, {
             toValue: action.rotation,
             duration: 400,
             useNativeDriver: true,
-          })
+          }),
         );
       } else if (action.direction === "right") {
-        await handleReaction("like");
         animations.push(
           Animated.timing(translateX, {
             toValue: screenWidth * 1.5,
             duration: 400,
             useNativeDriver: true,
-          })
+          }),
         );
         animations.push(
           Animated.timing(rotateCard, {
             toValue: action.rotation,
             duration: 400,
             useNativeDriver: true,
-          })
+          }),
         );
       } else if (action.direction === "up") {
-        await handleReaction("superlike");
         animations.push(
           Animated.timing(translateY, {
             toValue: -screenHeight * 1.5,
             duration: 400,
             useNativeDriver: true,
-          })
+          }),
         );
       }
 
@@ -308,27 +346,44 @@ const HomeCard = ({
     }, 400);
   };
 
-  const handleReaction = async (reaction) => {
+  const handleReaction = async (reaction, profile) => {
+    const targetProfile = profile || cards[0];
     const payLoad = {
-      toUser: currentProfile?._id,
+      toUser: targetProfile?._id,
       interactionType: reaction,
     };
+
+    // Decrement quantity in Redux userData in real-time
+    if (reaction === "rewind" || reaction === "superlike" || reaction === "boost") {
+      const keyMap = {
+        rewind: "rewinds",
+        superlike: "superLikes",
+        boost: "boosts",
+      };
+      const key = keyMap[reaction];
+      if (key && userData) {
+        const currentVal = userData[key] || 0;
+        const updatedVal = Math.max(0, currentVal - 1);
+        dispatch(setUserData({ ...userData, [key]: updatedVal }));
+      }
+    }
 
     try {
       const res = await post("matching/interactions", payLoad);
       setProfileData((prev = []) =>
-        prev.filter((p) => p?._id !== currentProfile?._id)
+        prev.filter((p) => p?._id !== targetProfile?._id),
       );
       ToastMessage(
-        reaction == "dislike"
+        reaction === "dislike"
           ? "Profile Removed from recommendations"
-          : "Profile liked successfully"
+          : reaction === "rewind"
+          ? "Profile rewound successfully"
+          : reaction === "superlike"
+          ? "Profile superliked successfully"
+          : reaction === "boost"
+          ? "Profile boosted successfully"
+          : "Profile liked successfully",
       );
-      // await getUserProfile?.();
-      // if (res?.data?.success) {
-      //   getUserProfile?.();
-      //   ToastMessage(res?.data?.message);
-      // }
     } catch (err) {
       console.log(err);
     }
@@ -401,6 +456,9 @@ const HomeCard = ({
         const swipeThreshold = 50;
         const velocityThreshold = 0.5;
 
+        // Capture the current profile BEFORE any animation or state changes
+        const swipedProfile = cardsRef.current[0];
+
         if (dx < -swipeThreshold || vx < -velocityThreshold) {
           setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
           gradientTranslateY.setValue(200);
@@ -437,7 +495,7 @@ const HomeCard = ({
               useNativeDriver: true,
             }),
           ]).start(() => {
-            handleSwipe("left");
+            handleSwipe("left", swipedProfile);
           });
         } else if (dx > swipeThreshold || vx > velocityThreshold) {
           setCurrentGradientColors(["#1ED760", "#1ED76000"]);
@@ -475,11 +533,31 @@ const HomeCard = ({
               useNativeDriver: true,
             }),
           ]).start(() => {
-            handleSwipe("right");
+            handleSwipe("right", swipedProfile);
           });
         }
-        // Check if it's an upward swipe - FIXED
+        // Check if it's an upward swipe
         else if (dy < -swipeThreshold || vy < -velocityThreshold) {
+          if (!checkQuotaAvailable("superlike")) {
+            gradientOpacity.setValue(0);
+            gradientTranslateY.setValue(200);
+            setCurrentGradientColors(["transparent", "transparent"]);
+            Animated.parallel([
+              Animated.spring(pan, {
+                toValue: { x: 0, y: 0 },
+                useNativeDriver: true,
+                friction: 5,
+                tension: 40,
+              }),
+              Animated.spring(rotate, {
+                toValue: 0,
+                useNativeDriver: true,
+                friction: 5,
+                tension: 40,
+              }),
+            ]).start();
+            return;
+          }
           setCurrentGradientColors(["#007AFE", "#007AFE00"]);
           gradientTranslateY.setValue(200);
           Animated.timing(pan, {
@@ -487,7 +565,7 @@ const HomeCard = ({
             duration: 300,
             useNativeDriver: true,
           }).start(() => {
-            handleSwipe("up");
+            handleSwipe("up", swipedProfile);
           });
         }
 
@@ -514,39 +592,7 @@ const HomeCard = ({
           ]).start();
         }
       },
-
-      onPanResponderMove: (_, gestureState) => {
-        const { dx, dy } = gestureState;
-
-        pan.setValue({ x: dx, y: dy });
-
-        const rotation = dx * 0.1;
-        rotate.setValue(rotation);
-
-        const swipeThreshold = 30;
-
-        if (Math.abs(dx) > swipeThreshold) {
-          if (dx < 0) {
-            setCurrentGradientColors(["#FF4B4B", "#FF4B4B00"]);
-          } else {
-            setCurrentGradientColors(["#1ED760", "#1ED76000"]);
-          }
-
-          const opacity = Math.min(Math.abs(dx) / 150, 1);
-          gradientOpacity.setValue(opacity);
-          gradientTranslateY.setValue(0);
-        } else if (Math.abs(dy) > swipeThreshold && dy < 0) {
-          setCurrentGradientColors(["#007AFE", "#007AFE00"]);
-
-          const opacity = Math.min(Math.abs(dy) / 150, 1);
-          gradientOpacity.setValue(opacity);
-          gradientTranslateY.setValue(0);
-        } else {
-          gradientOpacity.setValue(0);
-          gradientTranslateY.setValue(200);
-        }
-      },
-    })
+    }),
   ).current;
 
   const cardRotation = rotateCard.interpolate({
@@ -559,28 +605,6 @@ const HomeCard = ({
     outputRange: ["-30deg", "0deg", "30deg"],
     extrapolate: "clamp",
   });
-
-  const gyroX = useRef(new Animated.Value(0)).current;
-  const gyroY = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    setUpdateIntervalForType(SensorTypes.gyroscope, 60);
-
-    const subscription = gyroscope.subscribe(({ x, y }) => {
-      // Map gyro movement to small subtle translations
-      Animated.spring(gyroX, {
-        toValue: x * 25,
-        useNativeDriver: true,
-      }).start();
-
-      Animated.spring(gyroY, {
-        toValue: y * 25,
-        useNativeDriver: true,
-      }).start();
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const currentProfile = cards[0];
   const nextProfile = cards[1];
@@ -822,7 +846,7 @@ const HomeCard = ({
                         />
                       )}
                     </View>
-                  )
+                  ),
                 )}
               </View>
             </View>
@@ -884,16 +908,10 @@ const HomeCard = ({
                 : "#FFFFFF29",
               transform: [
                 {
-                  translateX: Animated.add(
-                    Animated.add(pan.x, translateX),
-                    gyroX
-                  ),
+                  translateX: Animated.add(pan.x, translateX),
                 },
                 {
-                  translateY: Animated.add(
-                    Animated.add(pan.y, translateY),
-                    gyroY
-                  ),
+                  translateY: Animated.add(pan.y, translateY),
                 },
                 { rotate: combinedRotate },
               ],
