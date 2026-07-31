@@ -64,6 +64,8 @@ const AddPictures = () => {
 
       const uploadedUrl = await uploadAndGetUrl(file);
 
+      console.log("uploadedUrl======", uploadedUrl);
+
       if (uploadedUrl) {
         setImages((prev) => {
           const updated = [...prev];
@@ -77,7 +79,10 @@ const AddPictures = () => {
     } catch (err) {
       console.log("Upload error:", err);
       setError("Error while uploading image.");
-      ToastMessage(err?.data?.message || err?.message || "Error while uploading image.", "error");
+      ToastMessage(
+        err?.data?.message || err?.message || "Error while uploading image.",
+        "error",
+      );
     } finally {
       setImgLoading(false);
       setUploading((prev) => {
@@ -126,7 +131,12 @@ const AddPictures = () => {
     } catch (err) {
       console.log("Submit error:", err);
       setError("Something went wrong while saving.");
-      ToastMessage(err?.data?.message || err?.message || "Something went wrong while saving.", "error");
+      ToastMessage(
+        err?.data?.message ||
+          err?.message ||
+          "Something went wrong while saving.",
+        "error",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -168,7 +178,6 @@ const AddPictures = () => {
           label={`Add pictures to stand out in the community (${images.length}/${MAX_IMAGES})`}
           color={COLORS.white2}
           fontSize={12}
-          lineHeight={12 * 1.4}
           marginBottom={12}
         />
 
@@ -203,7 +212,7 @@ const AddPictures = () => {
                       <Blur blurAmount={4} />
                       <Image
                         source={PNGIcons.trash}
-                        style={{ height: 40, width: 40 }}
+                        style={{ height: 36, width: 36 }}
                       />
                     </TouchableOpacity>
                   </>

@@ -1,9 +1,11 @@
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Linking,
+  PermissionsAndroid,
   Platform,
   StyleSheet,
   TouchableOpacity,
@@ -12,13 +14,13 @@ import {
 import Reanimated from "react-native-reanimated";
 import { openPicker } from "react-native-image-crop-picker";
 import { Camera, useCameraDevice } from "react-native-vision-camera";
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 
 import { Images } from "../assets/images";
 import { COLORS } from "../utils/COLORS";
 import { useIsForeground } from "../utils/UseIsForground";
 import CustomButton from "./CustomButton";
 import CustomModal from "./CustomModal";
-import ImageFast from "./ImageFast";
 import CustomText from "./CustomText";
 import { ToastMessage } from "../utils/ToastMessage";
 
@@ -43,10 +45,58 @@ const UploadImageCustom = ({
   const [selected, setSelected] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
   const [isPermissionChecked, setIsPermissionChecked] = useState(false);
+  const [galleryPhotos, setGalleryPhotos] = useState([]);
+  const [loadingGallery, setLoadingGallery] = useState(false);
 
   const device = useCameraDevice("back");
 
   const isActive = isFocused && isForeground;
+
+  const loadGalleryPhotos = useCallback(async () => {
+    try {
+      setLoadingGallery(true);
+      if (Platform.OS === "android") {
+        const permission =
+          Platform.Version >= 33
+            ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+            : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+        const hasPerm = await PermissionsAndroid.check(permission);
+        if (!hasPerm) {
+          const res = await PermissionsAndroid.request(permission);
+          if (res !== PermissionsAndroid.RESULTS.GRANTED) {
+            setLoadingGallery(false);
+            return;
+          }
+        }
+      }
+      const res = await CameraRoll.getPhotos({
+        first: 50,
+        assetType: "Photos",
+      });
+      if (res?.edges) {
+        const uris = res.edges.map((edge) => edge.node.image.uri);
+        setGalleryPhotos(uris);
+      }
+    } catch (error) {
+      console.log("Error fetching gallery photos:", error);
+    } finally {
+      setLoadingGallery(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (imageModal) {
+      loadGalleryPhotos();
+    }
+  }, [imageModal, loadGalleryPhotos]);
+
+  const handleSelectGalleryImage = (photoUri, index) => {
+    setSelected(index);
+    setImageModal(false);
+    if (handleChange) {
+      handleChange({ path: photoUri, uri: photoUri, mime: "image/jpeg" });
+    }
+  };
 
   const onPermissions = async () => {
     try {
@@ -122,19 +172,6 @@ const UploadImageCustom = ({
 
   let message = "";
 
-  // if (!isPermissionChecked) {
-  //   message = "Loading camera...";
-  //   return;
-  // }
-
-  // if (!hasPermission) {
-  //   message = "Please grant permission to use camera!";
-  //   return;
-  // } else if (device == null) {
-  //   message = "Please grant permission to use camera!";
-  //   return;
-  // }
-
   return (
     <View>
       <CustomModal
@@ -189,16 +226,17 @@ const UploadImageCustom = ({
               horizontal
               contentContainerStyle={{ paddingLeft: 13 }}
               showsHorizontalScrollIndicator={false}
-              data={images}
+              data={galleryPhotos.length > 0 ? galleryPhotos : images}
+              keyExtractor={(item, index) => index.toString()}
               renderItem={({ item, index }) => (
                 <TouchableOpacity
-                  onPress={() => setSelected(index)}
+                  onPress={() => handleSelectGalleryImage(item, index)}
                   style={[
                     { marginRight: 10 },
                     selected === index && styles.selected,
                   ]}
                 >
-                  <ImageFast source={{ uri: item }} style={styles.image} />
+                  <Image source={{ uri: item }} style={styles.image} resizeMode="cover" />
                 </TouchableOpacity>
               )}
             />

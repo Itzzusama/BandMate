@@ -44,7 +44,7 @@ export const updateUserProfile = (profilePatch) => async (dispatch) => {
 export const getToken = async () => {
   if (Platform.OS === "android") {
     const status = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
     );
     if (status !== PermissionsAndroid.RESULTS.GRANTED) {
       console.error("Permission not granted for notifications");
@@ -88,14 +88,14 @@ export const uploadAndGetUrl = async (file) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return res?.data?.image;
   } catch (err) {
     console.log("================err", err?.response?.data || err);
     ToastMessage(
       err?.response?.data?.message || "Something failed! Please try again",
-      "error"
+      "error",
     );
   }
 };
@@ -118,7 +118,7 @@ export const uploadFileGetUrl = async (file, filetype = "application/pdf") => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     console.log(res);
     return res?.data;
@@ -729,7 +729,7 @@ export const sortAlphabetically = (array, key = "name") => {
     (a[key] || "")
       .toString()
       .toLowerCase()
-      .localeCompare((b[key] || "").toString().toLowerCase())
+      .localeCompare((b[key] || "").toString().toLowerCase()),
   );
 };
 
