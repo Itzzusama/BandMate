@@ -20,6 +20,7 @@ import {
 
 import BrainBox from "./src/components/BrainBox";
 import { HomeSheetProvider } from "./src/context/HomeSheetContext";
+import { ToastContainer } from "./src/utils/ToastMessage";
 
 import { persistor, store } from "./src/store";
 import Navigation from "./src/navigation";
@@ -278,6 +279,7 @@ const App = () => {
               </BrainBox>
             </HomeSheetProvider>
           </NavigationContainer>
+          <ToastContainer />
         </GestureHandlerRootView>
       </PersistGate>
     </Provider>

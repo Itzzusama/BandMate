@@ -33,37 +33,49 @@ const handleApiError = (error, operation, url) => {
   console.log("================================================");
 
   if (error.response) {
+    const responseData = error.response.data;
+    const isHtmlError =
+      typeof responseData === "string" && /<html|<!doctype/i.test(responseData);
+    const safeResponseData = isHtmlError
+      ? "[HTML error response omitted]"
+      : responseData || error.response;
+    const responseMessage =
+      !isHtmlError && responseData?.message
+        ? responseData.message
+        : error.response.statusText || "Something went wrong";
+
     console.log(`${operation} Error Status:`, error.response.status);
-    console.log(
-      `${operation} Error Message:`,
-      error.response.data?.message || error.response.statusText
-    );
-    console.log(`${operation} Error:`, error.response.data || error.response);
-    const errorMessage = error.response.data?.message || "Something went wrong";
+    console.log(`${operation} Error Message:`, responseMessage);
+    console.log(`${operation} Error:`, safeResponseData);
+    const errorMessage = responseMessage;
     // ToastMessage(errorMessage, "error");
 
-    return {
+    const errorInfo = {
       status: error.response.status,
-      data: error.response.data,
+      data: isHtmlError ? null : responseData,
       message: errorMessage,
+      isHtmlError,
     };
+    throw errorInfo;
   } else if (error.request) {
     console.log(`${operation} Network Error:`, error.message);
     ToastMessage("Network error. Please check your connection.", "error");
 
-    return {
+    const errorInfo = {
       status: 0,
       message: "Network error",
       originalError: error.message,
     };
+    throw errorInfo;
   } else {
     console.log(`${operation} Unexpected Error:`, error.message);
     ToastMessage("An unexpected error occurred", "error");
 
-    return {
+    const errorInfo = {
       status: -1,
       message: error.message,
     };
+    throw errorInfo;
   }
 };
 
@@ -85,7 +97,7 @@ instance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 instance.interceptors.response.use(
@@ -133,7 +145,7 @@ instance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 const requestGet = async (url, params = {}) => {
@@ -141,8 +153,7 @@ const requestGet = async (url, params = {}) => {
     const response = await instance.get(url, { params });
     return response;
   } catch (error) {
-    const errorInfo = handleApiError(error, "GET", url);
-    return { error: errorInfo };
+    handleApiError(error, "GET", url);
   }
 };
 
@@ -151,8 +162,7 @@ const requestPost = async (url, data = {}) => {
     const response = await instance.post(url, data);
     return response;
   } catch (error) {
-    const errorInfo = handleApiError(error, "POST", url);
-    return { error: errorInfo };
+    handleApiError(error, "POST", url);
   }
 };
 
@@ -161,8 +171,7 @@ const requestPatch = async (url, data = {}) => {
     const response = await instance.patch(url, data);
     return response;
   } catch (error) {
-    const errorInfo = handleApiError(error, "PATCH", url);
-    return { error: errorInfo };
+    handleApiError(error, "PATCH", url);
   }
 };
 
@@ -171,8 +180,7 @@ const requestPut = async (url, data = {}) => {
     const response = await instance.put(url, data);
     return response;
   } catch (error) {
-    const errorInfo = handleApiError(error, "PUT", url);
-    return { error: errorInfo };
+    handleApiError(error, "PUT", url);
   }
 };
 
@@ -181,8 +189,7 @@ const requestDelete = async (url, data = {}) => {
     const response = await instance.delete(url, { data });
     return response;
   } catch (error) {
-    const errorInfo = handleApiError(error, "DELETE", url);
-    return { error: errorInfo };
+    handleApiError(error, "DELETE", url);
   }
 };
 
@@ -193,7 +200,7 @@ const renewAuthToken = async (refreshToken) => {
       { refreshToken },
       {
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
 
     const newTokens = response.data.tokens;
@@ -205,7 +212,7 @@ const renewAuthToken = async (refreshToken) => {
   } catch (error) {
     console.error(
       "Token renewal failed:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }

@@ -23,6 +23,7 @@ import fonts from "../../../assets/fonts";
 import { COLORS } from "../../../utils/COLORS";
 import { PNGIcons } from "../../../assets/images/icons";
 import { Image } from "react-native";
+import { ToastMessage } from "../../../utils/ToastMessage";
 
 const LoginPass = () => {
   const navigation = useNavigation();
@@ -118,6 +119,8 @@ const LoginPass = () => {
       }
       setLoading(false);
     } catch (error) {
+      console.log("here----->", error);
+      ToastMessage(error?.data?.message, "error");
       setLoading(false);
     }
   };
