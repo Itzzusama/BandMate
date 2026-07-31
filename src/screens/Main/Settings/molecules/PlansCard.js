@@ -1,12 +1,11 @@
-import React from "react";
-import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import CustomText from "../../../../components/CustomText";
-import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
-import { SettingIcons } from "../../../../assets/images/settingIcons";
 import { PNGIcons } from "../../../../assets/images/icons";
+import { SettingIcons } from "../../../../assets/images/settingIcons";
+import CustomText from "../../../../components/CustomText";
 import Icons from "../../../../components/Icons";
+import { COLORS } from "../../../../utils/COLORS";
 
 const PlansCard = ({ plan, onPress }) => {
   const isFree = plan === "Free Tier" || plan === "Free";

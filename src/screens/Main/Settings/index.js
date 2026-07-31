@@ -1,27 +1,27 @@
-import { StyleSheet, View } from "react-native";
-import ScreenWrapper from "../../../components/ScreenWrapper";
 import { useNavigation } from "@react-navigation/native";
+import { StyleSheet, View } from "react-native";
+import fonts from "../../../assets/fonts";
+import { PNGIcons } from "../../../assets/images/icons";
+import CopyrightFooter from "../../../components/CopyrightFooter";
 import CustomButton from "../../../components/CustomButton";
 import CustomText from "../../../components/CustomText";
-import { PNGIcons } from "../../../assets/images/icons";
 import Icons from "../../../components/Icons";
+import ScreenWrapper from "../../../components/ScreenWrapper";
 import { COLORS } from "../../../utils/COLORS";
-import fonts from "../../../assets/fonts";
-import CopyrightFooter from "../../../components/CopyrightFooter";
 
-import Header from "./molecules/Header";
-import UsersInfo from "./molecules/UsersInfo";
-import InfoCard from "./molecules/InfoCard";
-import ExtrasCard from "./molecules/ExtrasCard";
-import SettingOptions from "./molecules/SettingOptions";
-import PreferencesOptions from "./molecules/PreferencesOptions";
-import CommunityOptions from "./molecules/CommunityOptions";
-import RateApp from "./molecules/RateApp";
-import FeedbackSection from "./molecules/FeedbackSection";
-import { logout } from "../../../store/reducer/AuthConfig";
-import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../store/reducer/AuthConfig";
 import { clearSpotifyTokens } from "../../../store/reducer/spotifyAuthSlice";
+import CommunityOptions from "./molecules/CommunityOptions";
+import ExtrasCard from "./molecules/ExtrasCard";
+import FeedbackSection from "./molecules/FeedbackSection";
+import Header from "./molecules/Header";
+import InfoCard from "./molecules/InfoCard";
+import PreferencesOptions from "./molecules/PreferencesOptions";
+import RateApp from "./molecules/RateApp";
+import SettingOptions from "./molecules/SettingOptions";
+import UsersInfo from "./molecules/UsersInfo";
 
 const Settings = () => {
   const navigation = useNavigation();
