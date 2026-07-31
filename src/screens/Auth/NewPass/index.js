@@ -11,6 +11,7 @@ import Header from '../../../components/Header';
 
 import {passwordRegex} from '../../../utils/constants';
 import {post} from '../../../services/ApiRequest';
+import {ToastMessage} from '../../../utils/ToastMessage';
 import {Images} from '../../../assets/images';
 
 const NewPass = ({navigation, route}) => {
@@ -84,6 +85,7 @@ const NewPass = ({navigation, route}) => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      ToastMessage(error?.data?.message || error?.message, 'error');
     }
   };
 

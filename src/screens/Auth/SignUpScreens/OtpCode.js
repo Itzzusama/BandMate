@@ -14,6 +14,7 @@ import CustomText from "../../../components/CustomText";
 import Icons from "../../../components/Icons";
 
 import { post } from "../../../services/ApiRequest";
+import { ToastMessage } from "../../../utils/ToastMessage";
 import { Images } from "../../../assets/images";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
@@ -21,7 +22,7 @@ import { useSelector } from "react-redux";
 import { count } from "../../../store/reducer/appSlice";
 
 const OtpCode = forwardRef(
-  ({ state, currentIndex, setCurrentIndex, setIsLoading }, ref) => {
+  ({ state, setState, currentIndex, setCurrentIndex, setIsLoading }, ref) => {
     const onboardingCount = useSelector(count);
     const [otp, setOtp] = useState(state?.otp || "");
     const [error, setError] = useState("");
@@ -100,6 +101,7 @@ const OtpCode = forwardRef(
         }
       } catch (error) {
         console.log(error);
+        ToastMessage(error?.data?.message || error?.message, "error");
       } finally {
         setIsLoading(false);
       }
@@ -139,6 +141,7 @@ const OtpCode = forwardRef(
         setResendLoad(false);
         startTimer();
       } catch (error) {
+        ToastMessage(error?.data?.message || error?.message, "error");
         setResendLoad(false);
       }
     };

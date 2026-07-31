@@ -111,6 +111,7 @@ const Genres = () => {
       }
     } catch (err) {
       console.log(err);
+      ToastMessage(err?.data?.message || err?.message, "error");
     } finally {
       setIsLoading(false);
     }

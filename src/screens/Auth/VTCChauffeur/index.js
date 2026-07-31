@@ -122,6 +122,7 @@ const VTCChauffeur = () => {
       setIndependentFormData({ ...independentFormData, [field]: url });
     } catch (error) {
       Alert.alert("Error", "Failed to upload file");
+      ToastMessage(error?.data?.message || error?.message || "Failed to upload file", "error");
     }
     setFileLoading(null);
   };

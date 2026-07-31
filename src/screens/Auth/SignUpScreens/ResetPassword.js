@@ -10,13 +10,14 @@ import CustomText from "../../../components/CustomText";
 import { setUserData } from "../../../store/reducer/usersSlice";
 import { setRefreshToken, setToken } from "../../../store/reducer/AuthConfig";
 import { post } from "../../../services/ApiRequest";
+import { ToastMessage } from "../../../utils/ToastMessage";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { count } from "../../../store/reducer/appSlice";
 
 const ResetPassword = forwardRef(
-  ({ currentIndex, setCurrentIndex, state, setIsLoading }, ref) => {
+  ({ currentIndex, setCurrentIndex, state, setState, setIsLoading }, ref) => {
     const onboardingCount = useSelector(count);
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -87,8 +88,9 @@ const ResetPassword = forwardRef(
           setLoading(false);
         } catch (error) {
           setLoading(false);
-          setError(error?.response?.data?.message);
+          setError(error?.response?.data?.message || error?.data?.message);
           setIsError(true);
+          ToastMessage(error?.data?.message || error?.message, "error");
         } finally {
           setIsLoading(false);
         }

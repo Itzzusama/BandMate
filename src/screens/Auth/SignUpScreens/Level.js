@@ -106,6 +106,7 @@ const Level = () => {
       }
     } catch (err) {
       console.log("Error saving instruments:", err);
+      ToastMessage(err?.data?.message || err?.message, "error");
     } finally {
       setIsLoading(false);
     }

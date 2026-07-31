@@ -19,6 +19,7 @@ import Icons from "../../../components/Icons";
 import { setIsEmail, setLoginValue } from "../../../store/reducer/usersSlice";
 import { PNGIcons } from "../../../assets/images/icons";
 import { post } from "../../../services/ApiRequest";
+import { ToastMessage } from "../../../utils/ToastMessage";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import { count } from "../../../store/reducer/appSlice";
@@ -167,6 +168,7 @@ const Email = forwardRef(
         }
       } catch (error) {
         console.log(error?.response?.data, "error response");
+        ToastMessage(error?.data?.message || error?.message, "error");
       } finally {
         setIsLoading(false);
       }

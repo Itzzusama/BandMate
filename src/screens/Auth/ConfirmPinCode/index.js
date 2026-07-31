@@ -13,6 +13,7 @@ import OTPComponent from "../../../components/OTP";
 import Header from "../../../components/Header";
 
 import { post, put } from "../../../services/ApiRequest";
+import { ToastMessage } from "../../../utils/ToastMessage";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
 import CustomModalGooglePlaces from "../../../components/CustomModalGooglePlaces";
@@ -62,6 +63,7 @@ const ConfirmPinCode = ({ route }) => {
         // }
       } catch (error) {
         setLoading(false);
+        ToastMessage(error?.data?.message || error?.message, "error");
       }
     }
   };

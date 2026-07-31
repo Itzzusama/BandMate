@@ -8,6 +8,7 @@ import CustomText from "../../../components/CustomText";
 import ImageFast from "../../../components/ImageFast";
 
 import { put } from "../../../services/ApiRequest";
+import { ToastMessage } from "../../../utils/ToastMessage";
 import { Images } from "../../../assets/images";
 import { COLORS } from "../../../utils/COLORS";
 import fonts from "../../../assets/fonts";
@@ -33,6 +34,7 @@ const PersonalAds = ({ route }) => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      ToastMessage(error?.data?.message || error?.message, "error");
     }
   };
   return (

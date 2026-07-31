@@ -77,6 +77,7 @@ const AddPictures = () => {
     } catch (err) {
       console.log("Upload error:", err);
       setError("Error while uploading image.");
+      ToastMessage(err?.data?.message || err?.message || "Error while uploading image.", "error");
     } finally {
       setImgLoading(false);
       setUploading((prev) => {
@@ -125,6 +126,7 @@ const AddPictures = () => {
     } catch (err) {
       console.log("Submit error:", err);
       setError("Something went wrong while saving.");
+      ToastMessage(err?.data?.message || err?.message || "Something went wrong while saving.", "error");
     } finally {
       setIsLoading(false);
     }

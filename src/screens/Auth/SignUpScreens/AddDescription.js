@@ -72,6 +72,7 @@ const AddDescription = () => {
     } catch (err) {
       console.log("Error updating bio:", err);
       setError("Something went wrong while saving description.");
+      ToastMessage(err?.data?.message || err?.message || "Something went wrong while saving description.", "error");
     } finally {
       setIsLoading(false);
     }

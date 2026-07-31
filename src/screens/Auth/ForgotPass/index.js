@@ -40,6 +40,7 @@ const ForgotPass = ({navigation}) => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      ToastMessage(error?.data?.message || error?.message, 'error');
     }
   };
 

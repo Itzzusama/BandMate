@@ -96,6 +96,7 @@ const Signup = ({ navigation }) => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
+      ToastMessage(error?.data?.message || error?.message, "error");
     }
   };
 

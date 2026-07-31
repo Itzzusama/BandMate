@@ -308,7 +308,9 @@ const PicLocation = () => {
               routes: [{ name: "WelcomeScreen" }],
             });
           }
-        } catch (err) {}
+        } catch (err) {
+          ToastMessage(err?.data?.message || err?.message, "error");
+        }
       } else {
         navigation.goBack();
       }
