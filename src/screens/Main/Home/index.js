@@ -1,18 +1,18 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
+import { useIsFocused } from "@react-navigation/native";
 import { getPalette } from "@somesoap/react-native-image-palette";
 import { useEffect, useState } from "react";
 import LinearGradient from "react-native-linear-gradient";
+import { useDispatch } from "react-redux";
 import fonts from "../../../assets/fonts";
 import HomeSkeleton from "../../../components/HomeSkeleton";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import TopTabWithBG from "../../../components/TopTabWithBG";
 import { get } from "../../../services/ApiRequest";
+import { getProfile } from "../../../utils/constants";
 import HomeCard from "./molecules/HomeCard";
 import HomeHeader from "./molecules/HomeHeader";
-import { getProfile } from "../../../utils/constants";
-import { useIsFocused } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
 
 const Home = ({ navigation }) => {
   const dispatch = useDispatch();

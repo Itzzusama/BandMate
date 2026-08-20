@@ -8,6 +8,7 @@ import ImageFast from "../components/ImageFast";
 import { COLORS } from "../utils/COLORS";
 
 import Home from "../screens/Main/Home";
+import HomePremium from "../screens/Main/HomePremium";
 import Event from "../screens/Main/Event";
 import Icons from "../components/Icons";
 import SocialFeeds from "../screens/Main/SocialFeeds";
@@ -69,6 +70,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             const getIcon = () => {
               switch (route.name) {
                 case "Home":
+                case "HomePremium":
                   return Images.blurhome;
                 case "Chat":
                   return Images.blurInbox;
@@ -135,6 +137,7 @@ const TabStack = () => {
       }}
     >
       <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="HomePremium" component={HomePremium} />
       <Tab.Screen name="Feeds" component={SocialFeeds} />
       <Tab.Screen name="Events" component={Event} />
       <Tab.Screen name="Chat" component={Chat} />
