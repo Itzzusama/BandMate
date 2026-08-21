@@ -13,6 +13,7 @@ import PremiumHeader from "./molecules/PremiumHeader";
 import { getProfile } from "../../../utils/constants";
 import { useIsFocused } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
+import LinearGradient from "react-native-linear-gradient";
 
 const HomePremium = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,13 +28,18 @@ const HomePremium = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const getUserProfile = async (selectedTab = tab) => {
+  const getUserProfile = async (selectedTab = tab, loading) => {
     try {
-      let url = "matching/recommendations";
+      let url = "matching/matches";
       if (selectedTab === "Nearby") {
         url += "?distance=2";
       }
       const response = await get(url);
+      console.log(
+        "response.data?.recommendations----",
+        response.data?.recommendations?.length,
+      );
+
       setProfileData(response.data?.recommendations || []);
       setCurrentIndex(0);
       setCurrentImageIndex(0);
@@ -90,13 +96,34 @@ const HomePremium = ({ navigation }) => {
       paddingBottom={0}
       backgroundImage={currentImageUri ? { uri: currentImageUri } : undefined}
       removeLoading
-      headerUnScrollable={() => (
-        <PremiumHeader
-          onFilterPress={() => navigation.navigate("FilterScreen")}
-          onNotificationPress={() => navigation.navigate("Notification")}
-        />
-      )}
     >
+      <LinearGradient
+        colors={[
+          "rgba(0, 0, 0, 0.85)",
+          "rgba(0, 0, 0, 0.55)",
+          "rgba(0, 0, 0, 0.20)",
+          "transparent",
+        ]}
+        locations={[0, 0.35, 0.7, 1]}
+        style={styles.topGradient}
+        pointerEvents="none"
+      />
+      <LinearGradient
+        colors={[
+          "transparent",
+          "rgba(0, 0, 0, 0.25)",
+          "rgba(0, 0, 0, 0.70)",
+          "rgba(0, 0, 0, 0.95)",
+        ]}
+        locations={[0, 0.25, 0.65, 1]}
+        style={styles.bottomGradient}
+        pointerEvents="none"
+      />
+
+      <PremiumHeader
+        onFilterPress={() => navigation.navigate("FilterScreen")}
+        onNotificationPress={() => navigation.navigate("Notification")}
+      />
       {profileData?.length > 0 && !refreshing && (
         <TopTabWithBG
           alignSelf="center"
@@ -133,4 +160,23 @@ const HomePremium = ({ navigation }) => {
 
 export default HomePremium;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  topGradient: {
+    height: "38%",
+    width: "100%",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    // zIndex: 1,
+  },
+  bottomGradient: {
+    height: "55%",
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    // zIndex: 1,
+  },
+});

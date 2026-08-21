@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Dimensions,
   FlatList,
   Image,
   Platform,
@@ -31,6 +32,14 @@ const IMAGE_CAROUSEL_ITEM_SIZE = 60;
 // Tab bar in TabStack is position:absolute with height = 90 + insets.bottom
 const TAB_BAR_BASE_HEIGHT = 90;
 
+// ── Carousel geometry (centered, coverflow-style) ─────────────────────────
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const CAROUSEL_ITEM_MAX_SIZE = 74; // size of the active (middle) item
+const CAROUSEL_ITEM_SPACING = 58; // distance between item centers (creates overlap)
+const CAROUSEL_SIDE_PADDING = (SCREEN_WIDTH - CAROUSEL_ITEM_SPACING) / 2;
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
 const PremiumCard = ({
   data,
   getUserProfile,
@@ -56,6 +65,11 @@ const PremiumCard = ({
 
   // Slider animation (top progress bar — auto-advance timer)
   const sliderAnimation = useRef(new Animated.Value(0)).current;
+
+  // Carousel scroll tracking (for the centered, size-scaling swipe carousel)
+  const carouselRef = useRef(null);
+  const carouselScrollX = useRef(new Animated.Value(0)).current;
+  const isCarouselDragging = useRef(false);
 
   // ── Sync data prop ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -94,6 +108,16 @@ const PremiumCard = ({
     }, 3000);
     return () => clearInterval(interval);
   }, [currentImageIndex, currentIndex, cards]);
+
+  // ── Keep the centered carousel scroll position in sync with currentIndex
+  //     (covers taps, like/dislike removing a card, and initial data load) ─
+  useEffect(() => {
+    if (!carouselRef.current || isCarouselDragging.current) return;
+    carouselRef.current.scrollToOffset({
+      offset: currentIndex * CAROUSEL_ITEM_SPACING,
+      animated: true,
+    });
+  }, [currentIndex, cards.length]);
 
   // ── Helpers ─────────────────────────────────────────────────────────────
   const updatePrimaryColorFromImage = async (imageUri) => {
@@ -217,6 +241,28 @@ const PremiumCard = ({
     setCurrentImageIndex(0);
   };
 
+  // ── Carousel swipe handlers ──────────────────────────────────────────────
+  const handleCarouselScrollBeginDrag = () => {
+    isCarouselDragging.current = true;
+  };
+
+  const handleCarouselMomentumScrollEnd = (e) => {
+    isCarouselDragging.current = false;
+    const offsetX = e.nativeEvent.contentOffset.x;
+    let newIndex = Math.round(offsetX / CAROUSEL_ITEM_SPACING);
+    newIndex = Math.max(0, Math.min(newIndex, cards.length - 1));
+    if (newIndex !== currentIndex) {
+      setCurrentIndex(newIndex);
+      setCurrentImageIndex(0);
+    }
+  };
+
+  const getCarouselItemLayout = (_, index) => ({
+    length: CAROUSEL_ITEM_SPACING,
+    offset: CAROUSEL_ITEM_SPACING * index,
+    index,
+  });
+
   // ──────────────────────────────────────────────────────────────────────────
   const currentProfile = cards[currentIndex];
   if (!currentProfile) return null;
@@ -237,19 +283,6 @@ const PremiumCard = ({
   return (
     // Plain View — no gesture, no swipe
     <View style={styles.fullScreenOverlay}>
-      {/* Dark gradient for readability — heavy at the bottom */}
-      <LinearGradient
-        colors={[
-          "transparent",
-          "rgba(0,0,0,0.08)",
-          "rgba(0,0,0,0.60)",
-          "rgba(0,0,0,0.90)",
-        ]}
-        locations={[0, 0.25, 0.55, 1]}
-        style={StyleSheet.absoluteFillObject}
-        pointerEvents="none"
-      />
-
       {/* ── Top: image progress slider ──────────────────────────────────── */}
       <View style={styles.sliderContainer}>
         <View style={styles.sliderTrack}>
@@ -412,29 +445,62 @@ const PremiumCard = ({
           </View>
         </TouchableOpacity>
 
-        {/* ── User carousel — first photo of EACH user, tap to switch ── */}
+        {/* ── User carousel — centered, active user largest, swipeable ── */}
         <View style={styles.carouselContainer}>
-          <FlatList
+          <AnimatedFlatList
+            ref={carouselRef}
             data={cards}
             keyExtractor={(item, i) => item?._id || String(i)}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.carouselContent}
+            snapToInterval={CAROUSEL_ITEM_SPACING}
+            decelerationRate="fast"
+            bounces={true}
+            getItemLayout={getCarouselItemLayout}
+            initialScrollIndex={currentIndex}
+            onScrollBeginDrag={handleCarouselScrollBeginDrag}
+            onMomentumScrollEnd={handleCarouselMomentumScrollEnd}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: carouselScrollX } } }],
+              { useNativeDriver: true },
+            )}
+            scrollEventThrottle={16}
             renderItem={({ item, index }) => {
-              const isActive = index === currentIndex;
+              const inputRange = [
+                (index - 2) * CAROUSEL_ITEM_SPACING,
+                (index - 1) * CAROUSEL_ITEM_SPACING,
+                index * CAROUSEL_ITEM_SPACING,
+                (index + 1) * CAROUSEL_ITEM_SPACING,
+                (index + 2) * CAROUSEL_ITEM_SPACING,
+              ];
+              const scale = carouselScrollX.interpolate({
+                inputRange,
+                outputRange: [0.4, 0.62, 1, 0.62, 0.4],
+                extrapolate: "clamp",
+              });
+              const opacity = carouselScrollX.interpolate({
+                inputRange,
+                outputRange: [0.45, 0.7, 1, 0.7, 0.45],
+                extrapolate: "clamp",
+              });
               return (
                 <TouchableOpacity
                   onPress={() => switchToUser(index)}
                   activeOpacity={0.8}
-                  style={[
-                    styles.carouselItem,
-                    isActive && styles.carouselItemActive,
-                  ]}
+                  style={styles.carouselItem}
                 >
-                  <ImageFast
-                    source={{ uri: item?.pictures?.[0] }}
-                    style={styles.carouselImage}
-                  />
+                  <Animated.View
+                    style={[
+                      styles.carouselImageWrap,
+                      { transform: [{ scale }], opacity },
+                    ]}
+                  >
+                    <ImageFast
+                      source={{ uri: item?.pictures?.[0] }}
+                      style={styles.carouselImage}
+                    />
+                  </Animated.View>
                 </TouchableOpacity>
               );
             }}
@@ -573,30 +639,28 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF22",
   },
 
-  // ── User carousel (first photo of each user) ─────────────────────────────
+  // ── User carousel (centered, active item largest, swipe to change) ──────
   carouselContainer: {
     width: "100%",
+    height: CAROUSEL_ITEM_MAX_SIZE + 6,
     marginTop: 14,
     marginBottom: 2,
   },
   carouselContent: {
-    paddingHorizontal: 2,
-    gap: 8,
+    paddingHorizontal: CAROUSEL_SIDE_PADDING,
     alignItems: "center",
   },
   carouselItem: {
-    width: IMAGE_CAROUSEL_ITEM_SIZE,
-    height: IMAGE_CAROUSEL_ITEM_SIZE,
-    borderRadius: 12,
-    overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "transparent",
-    opacity: 0.6,
+    width: CAROUSEL_ITEM_SPACING,
+    height: CAROUSEL_ITEM_MAX_SIZE + 6,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  carouselItemActive: {
-    borderColor: COLORS.white,
-    opacity: 1,
-    transform: [{ scale: 1.1 }],
+  carouselImageWrap: {
+    width: CAROUSEL_ITEM_MAX_SIZE,
+    height: CAROUSEL_ITEM_MAX_SIZE,
+    borderRadius: 14,
+    overflow: "hidden",
   },
   carouselImage: {
     width: "100%",

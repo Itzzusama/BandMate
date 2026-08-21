@@ -27,6 +27,7 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import React from "react";
+import NoDataFound from "../../../components/NoDataFound";
 
 const tabs = ["", "1 on 1", "Groups", "Matches"];
 const PindedData = [
@@ -95,7 +96,7 @@ const Chat = () => {
     setLoading(true);
     try {
       const res = await get(
-        `conversations/${userId}?page=1&limit=20&minimal=false`
+        `conversations/${userId}?page=1&limit=20&minimal=false`,
       );
       if (res?.data?.success) {
         setChatData(res?.data?.data);
@@ -129,7 +130,7 @@ const Chat = () => {
       headerUnScrollable={() => <Header title="Inbox" />}
       scrollEnabled
     >
-      <View style={{}}>
+      <View>
         <TopTab
           rounded
           tab={tab}
@@ -251,6 +252,7 @@ const Chat = () => {
       <View style={{ paddingBottom: 90, flex: 1 }}>
         <FlatList
           data={chatData}
+          refreshing={refreshing}
           renderItem={({ item }) => (
             <ConversationBox item={item} isChat={true} />
           )}

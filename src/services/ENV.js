@@ -1,9 +1,9 @@
 export const endPoints = {
   // Production URLs
-  BASE_URL: "https://bandmate.sola-group.ch/api/",
-  SOCKET_BASE_URL: "https://bandmate.sola-group.ch",
-  // BASE_URL: "https://xjnhtpzb-9000.inc1.devtunnels.ms/api/",
+  // BASE_URL: "https://bandmate.sola-group.ch/api/",
   // SOCKET_BASE_URL: "https://bandmate.sola-group.ch",
+  BASE_URL: "https://xjnhtpzb-9000.inc1.devtunnels.ms/api/",
+  SOCKET_BASE_URL: "https://bandmate.sola-group.ch",
 
   // this app credes
   clientId: "db9f59d0366d4831baed0b0ddd719aa7",
