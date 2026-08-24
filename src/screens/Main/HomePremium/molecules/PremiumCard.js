@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../../../../store/reducer/usersSlice";
 import { getDistance } from "geolib";
 import { getPalette } from "@somesoap/react-native-image-palette/src";
+import Blur from "../../../../components/Blur";
 
 const IMAGE_CAROUSEL_ITEM_SIZE = 60;
 // Tab bar in TabStack is position:absolute with height = 90 + insets.bottom
@@ -36,9 +37,17 @@ const TAB_BAR_BASE_HEIGHT = 90;
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const CAROUSEL_ITEM_MAX_SIZE = 74; // size of the active (middle) item
 const CAROUSEL_ITEM_SPACING = 58; // distance between item centers (creates overlap)
-const CAROUSEL_SIDE_PADDING = (SCREEN_WIDTH - CAROUSEL_ITEM_SPACING) / 2;
+const CAROUSEL_SIDE_PADDING = (SCREEN_WIDTH - CAROUSEL_ITEM_SPACING) / 2.2;
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
+const ACTION_BUTTONS = [
+  { icon: PNGIcons.btn1, color: "#FF4B4B" },
+  { icon: PNGIcons.btn2, color: "#F41857" },
+  { icon: PNGIcons.btn3, color: "#007AFF" },
+  { icon: PNGIcons.btn4, color: "#1ED760" },
+  { icon: PNGIcons.btn5, color: "#8400E7" },
+];
 
 const PremiumCard = ({
   data,
@@ -433,11 +442,11 @@ const PremiumCard = ({
           <View style={styles.genreRow}>
             {currentProfile?.Genres?.map((item, i) => (
               <View style={styles.genrePill} key={i}>
+                <Blur />
                 <CustomText
                   label={item}
                   fontFamily={fonts.medium}
                   fontSize={13}
-                  lineHeight={13 * 1.4}
                   textAlign="center"
                 />
               </View>
@@ -509,26 +518,20 @@ const PremiumCard = ({
 
         {/* ── Action buttons — same as Home screen ───────────────────── */}
         <View style={styles.buttonsRow}>
-          {[
-            PNGIcons.btn1,
-            PNGIcons.btn2,
-            PNGIcons.btn3,
-            PNGIcons.btn4,
-            PNGIcons.btn5,
-          ].map((icon, index) => (
+          {ACTION_BUTTONS.map((item, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => handleButtonPress(index)}
               activeOpacity={0.8}
               style={{
-                borderWidth: 0.5,
-                borderColor: COLORS.white2,
+                borderWidth: 1,
+                borderColor: item.color,
                 borderRadius: 999,
                 padding: 4,
               }}
             >
               <ImageFast
-                source={icon}
+                source={item.icon}
                 removeLoading
                 style={[
                   styles.btnStyle,
@@ -632,11 +635,11 @@ const styles = StyleSheet.create({
   },
   genrePill: {
     borderRadius: 99,
-    backgroundColor: "#262626B0",
+    overflow: "hidden",
     paddingVertical: 5,
     paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: "#FFFFFF22",
+    borderColor: COLORS.white4,
   },
 
   // ── User carousel (centered, active item largest, swipe to change) ──────
@@ -659,7 +662,7 @@ const styles = StyleSheet.create({
   carouselImageWrap: {
     width: CAROUSEL_ITEM_MAX_SIZE,
     height: CAROUSEL_ITEM_MAX_SIZE,
-    borderRadius: 14,
+    borderRadius: 10,
     overflow: "hidden",
   },
   carouselImage: {

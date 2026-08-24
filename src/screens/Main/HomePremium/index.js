@@ -4,7 +4,7 @@ import { getPalette } from "@somesoap/react-native-image-palette";
 import { useEffect, useState } from "react";
 
 import fonts from "../../../assets/fonts";
-import HomeSkeleton from "../../../components/HomeSkeleton";
+import HomePremiumSkeleton from "../../../components/HomePremiumSkeleton";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import TopTabWithBG from "../../../components/TopTabWithBG";
 import { get } from "../../../services/ApiRequest";
@@ -139,7 +139,7 @@ const HomePremium = ({ navigation }) => {
       )}
 
       {refreshing ? (
-        <HomeSkeleton />
+        <HomePremiumSkeleton />
       ) : (
         <PremiumCard
           data={profileData}
