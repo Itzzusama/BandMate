@@ -157,13 +157,24 @@ const useDebounce = (value, delay) => {
   return debouncedValue;
 };
 
-const GooglePlaces = ({ debounceDelay = 300 }) => {
+const GooglePlaces = ({
+  isVisible,
+  onClose,
+  onLocationSelect: propOnLocationSelect,
+  initialValue: propInitialValue,
+  debounceDelay = 300,
+}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
 
-  const { onLocationSelect, initialValue, isEvent, fromSignup } =
-    route.params || {};
+  const isModal = isVisible !== undefined;
+  const onLocationSelect = isModal
+    ? propOnLocationSelect
+    : route?.params?.onLocationSelect;
+  const initialValue = isModal
+    ? propInitialValue || ""
+    : route?.params?.initialValue || "";
   const insets = useSafeAreaInsets();
   const { recentSearches, savedLocations } = useSelector(
     (state) => state.users
@@ -199,8 +210,12 @@ const GooglePlaces = ({ debounceDelay = 300 }) => {
     setPredictions([]);
     setPredictionsWithDistance([]);
     setNoData(false);
-    navigation.goBack();
-  }, [navigation]);
+    if (isModal) {
+      if (onClose) onClose();
+    } else {
+      navigation.goBack();
+    }
+  }, [isModal, onClose, navigation]);
 
   useEffect(() => {
     setSearchQuery(initValues ? initValues : initialValue);
@@ -982,6 +997,176 @@ const GooglePlaces = ({ debounceDelay = 300 }) => {
     }
   };
 
+  if (isModal) {
+    return (
+      <CustomModal isChange isVisible={isVisible} onDisable={closeScreen}>
+        <View style={styles.modalContainer}>
+          <View style={[styles.modalHeader, { marginTop: Math.max(10, insets.top - 10) }]}>
+            <CustomInput
+              search
+              width="86%"
+              height={44}
+              borderRadius={100}
+              marginBottom={0.1}
+              isClear={() => setSearchQuery("")}
+              onChangeText={handleInputChange}
+              value={searchQuery}
+              placeholder="Search location..."
+              autoFocus
+              backgroundColor={COLORS.cardColor}
+            />
+            <TouchableOpacity
+              style={styles.iconContainer}
+              activeOpacity={0.8}
+              onPress={closeScreen}
+            >
+              <Image
+                source={PNGIcons.white_cross}
+                style={{
+                  height: 20,
+                  width: 20,
+                  tintColor: COLORS.white2,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={[styles.selectMap, { borderTopWidth: 1 }]}
+            onPress={handleMapSelection}
+          >
+            <View style={styles.row}>
+              <Image
+                source={PNGIcons.map}
+                style={{ height: 24, width: 24, tintColor: COLORS.white }}
+              />
+              <CustomText
+                label={"Select On The Map"}
+                fontSize={16}
+                fontFamily={fonts.medium}
+                marginLeft={8}
+                marginBottom={-2}
+              />
+            </View>
+            <Icons
+              family={"Ionicons"}
+              name={"chevron-forward-outline"}
+              color={COLORS.white2}
+              size={18}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={[styles.selectMap, { borderBottomWidth: 0 }]}
+            onPress={handleCurrentLocationSelection}
+            disabled={isLoadingCurrentLocation}
+          >
+            <View style={styles.row}>
+              <Image
+                source={PNGIcons.pin}
+                tintColor={"#A19375"}
+                style={styles.map}
+              />
+              <View>
+                <CustomText
+                  label={
+                    currentUserLocation
+                      ? currentUserLocation.city || "Current Location"
+                      : "Get Current Location"
+                  }
+                  fontFamily={fonts.medium}
+                  fontSize={16}
+                  marginLeft={8}
+                  color={COLORS.white}
+                />
+                <CustomText
+                  label={
+                    currentUserLocation
+                      ? `${currentUserLocation.state || ""}, ${
+                          currentUserLocation.country || ""
+                        }`.replace(/^, |, $/, "") || "Unknown location"
+                      : "Tap to get your current location"
+                  }
+                  fontFamily={fonts.medium}
+                  marginLeft={8}
+                  color={COLORS.white2}
+                />
+              </View>
+            </View>
+            {isLoadingCurrentLocation ? (
+              <ActivityIndicator size="small" color={COLORS.subtitle} />
+            ) : (
+              <CustomText
+                label={currentUserLocation ? "Currently here" : "Get location"}
+                fontFamily={fonts.medium}
+                marginLeft={8}
+                color={COLORS.white2}
+              />
+            )}
+          </TouchableOpacity>
+
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {predictionsWithDistance.length && predictions.length ? null : (
+              <>
+                {loadingNearbyCities ? (
+                  <SkeletonLoader type="section" style={styles.skeletonSection} />
+                ) : (
+                  <FlatList
+                    data={nearbyCities}
+                    renderItem={({ item }) =>
+                      renderPredictionItem({ item }, false, true, true)
+                    }
+                    keyExtractor={(item, index) => `${item?.place_id}-${index}`}
+                    ListEmptyComponent={renderEmptyComponent}
+                    showsVerticalScrollIndicator={false}
+                  />
+                )}
+              </>
+            )}
+
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                {[...Array(3)].map((_, index) => (
+                  <SkeletonLoader
+                    key={index}
+                    type="prediction"
+                    style={styles.skeletonPrediction}
+                  />
+                ))}
+              </View>
+            ) : (
+              <>
+                {(predictionsWithDistance.length > 0 || predictions.length > 0) && (
+                  <FlatList
+                    data={
+                      predictionsWithDistance.length > 0
+                        ? predictionsWithDistance
+                        : predictions
+                    }
+                    renderItem={({ item }) =>
+                      renderPredictionItem({ item }, false, false, false, true)
+                    }
+                    keyExtractor={(item, index) => `${item?.place_id}-${index}`}
+                    ListEmptyComponent={renderEmptyComponent}
+                    showsVerticalScrollIndicator={false}
+                    style={styles.predictionsList}
+                    contentContainerStyle={
+                      predictionsWithDistance.length === 0 && predictions.length === 0
+                        ? styles.emptyListContent
+                        : undefined
+                    }
+                  />
+                )}
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </CustomModal>
+    );
+  }
+
   return (
     <ScreenWrapper
       headerUnScrollable={() => (
@@ -1009,7 +1194,6 @@ const GooglePlaces = ({ debounceDelay = 300 }) => {
               style={{
                 height: 20,
                 width: 20,
-
                 tintColor: COLORS.white2,
               }}
             />
@@ -1109,52 +1293,6 @@ const GooglePlaces = ({ debounceDelay = 300 }) => {
               showsVerticalScrollIndicator={false}
             />
           )}
-
-          {/* <View>
-                {recentSearches?.length ? (
-                  <View style={styles.divider}>
-                    <CustomText
-                      label="RECENT SEARCHES"
-                      fontFamily={fonts.medium}
-                      fontSize={12}
-                      color="#121212A3"
-                    />
-                  </View>
-                ) : null}
-
-                <FlatList
-                  data={recentSearches}
-                  renderItem={({ item }) =>
-                    renderPredictionItem({ item }, true, false)
-                  }
-                  keyExtractor={(item, index) => `${item?.place_id}-${index}`}
-                  ListEmptyComponent={renderEmptyComponent}
-                  showsVerticalScrollIndicator={false}
-                />
-              </View> */}
-
-          {/* <View>
-                {savedLocations?.length ? (
-                  <View style={styles.divider}>
-                    <CustomText
-                      label="SAVED LOCATIONS"
-                      fontFamily={fonts.medium}
-                      fontSize={12}
-                      color="#121212A3"
-                    />
-                  </View>
-                ) : null}
-
-                <FlatList
-                  data={savedLocations}
-                  renderItem={({ item }) =>
-                    renderPredictionItem({ item }, false, true)
-                  }
-                  keyExtractor={(item, index) => `${item?.place_id}-${index}`}
-                  ListEmptyComponent={renderEmptyComponent}
-                  showsVerticalScrollIndicator={false}
-                />
-              </View> */}
         </>
       )}
 
@@ -1200,7 +1338,14 @@ const GooglePlaces = ({ debounceDelay = 300 }) => {
 export default GooglePlaces;
 
 const styles = StyleSheet.create({
-  modalContainer: {},
+  modalContainer: {
+    backgroundColor: COLORS.black,
+    width: "100%",
+    height: "100%",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: "hidden",
+  },
   modalHeader: {
     flexDirection: "row",
     alignItems: "center",

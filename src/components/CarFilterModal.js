@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import fonts from "../assets/fonts";
 import { Images } from "../assets/images";
@@ -16,7 +16,6 @@ import CustomText from "./CustomText";
 import Icons from "./Icons";
 import Divider from "./Divider";
 import CustomButton from "./CustomButton";
-import { useEffect, useRef } from "react";
 
 // Fallback default topics (used when no data is passed)
 const DEFAULT_FILTERS = [
@@ -39,24 +38,24 @@ const FilterModal = ({
   subtitle,
   filters,
   data, // alias for filters to keep API flexible
-  multiSelect = false, // New prop for multi-select mode
+  multiSelect = false, // Prop for multi-select mode
   selectedItems = [], // Array of selected items for multi-select
   onConfirm, // Callback for multi-select confirmation
 }) => {
-  const insests = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [localSelectedItems, setLocalSelectedItems] = useState([]);
   const prevIsVisible = useRef(false);
-  
-  // Update local selection when modal opens (not closes)
+
+  // Update local selection when modal opens
   useEffect(() => {
     if (isVisible && !prevIsVisible.current) {
       setLocalSelectedItems(selectedItems || []);
     }
     prevIsVisible.current = isVisible;
   }, [isVisible, selectedItems]);
-  
+
   // Prefer externally passed data; fall back to defaults
   const items =
     filters && filters.length
@@ -65,13 +64,29 @@ const FilterModal = ({
       ? data
       : DEFAULT_FILTERS;
 
+  const getItemName = (item) => {
+    if (typeof item === "string") return item;
+    return item?.name ?? "";
+  };
+
+  const getItemSubtitle = (item) => {
+    if (typeof item === "string") return null;
+    return item?.subtitle ?? null;
+  };
+
+  const getItemImage = (item) => {
+    if (typeof item === "string") return null;
+    return item?.image ?? null;
+  };
+
   const handleItemToggle = (item) => {
+    const itemName = getItemName(item);
     if (multiSelect) {
-      const isSelected = localSelectedItems.includes(item.name);
+      const isSelected = localSelectedItems.includes(itemName);
       if (isSelected) {
-        setLocalSelectedItems(localSelectedItems.filter(i => i !== item.name));
+        setLocalSelectedItems(localSelectedItems.filter((i) => i !== itemName));
       } else {
-        setLocalSelectedItems([...localSelectedItems, item.name]);
+        setLocalSelectedItems([...localSelectedItems, itemName]);
       }
     } else {
       setSelectedIndex(items.indexOf(item));
@@ -93,18 +108,13 @@ const FilterModal = ({
           <View
             style={[
               styles.row,
-              { paddingTop: insests.top, paddingHorizontal: 12 },
+              { paddingTop: Math.max(12, insets.top - 8), paddingHorizontal: 16 },
             ]}
           >
             <TouchableOpacity
               onPress={onDisable}
               activeOpacity={0.6}
-              style={[
-                styles.backIcon,
-                {
-                  backgroundColor: "rgba(255, 255, 255, 0.04)",
-                },
-              ]}
+              style={styles.backIcon}
             >
               <Icons
                 name="keyboard-arrow-left"
@@ -114,59 +124,81 @@ const FilterModal = ({
               />
             </TouchableOpacity>
 
-            <CustomText
-              label={title}
-              color={COLORS.white}
-              fontFamily={fonts.semiBold}
-              textTransform="capitalize"
-              fontSize={20}
-            />
+            <View style={{ flex: 1 }}>
+              <CustomText
+                label={title}
+                color={COLORS.white}
+                fontFamily={fonts.semiBold}
+                textTransform="capitalize"
+                fontSize={20}
+              />
+              {subtitle ? (
+                <CustomText
+                  label={subtitle}
+                  color={COLORS.white2}
+                  fontFamily={fonts.regular}
+                  fontSize={13}
+                  marginTop={2}
+                />
+              ) : null}
+            </View>
           </View>
 
           <Divider
-            marginTop={8}
+            marginTop={12}
             marginBottom={0}
-            thickness={4}
-            color="rgba(255, 255, 255, 0.04)"
+            thickness={1}
+            color="rgba(255, 255, 255, 0.08)"
           />
 
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
             {items.map((f, idx) => {
-              const isSelected = multiSelect 
-                ? localSelectedItems.includes(f.name)
+              const itemName = getItemName(f);
+              const itemSubtitle = getItemSubtitle(f);
+              const itemImage = getItemImage(f);
+
+              const isSelected = multiSelect
+                ? localSelectedItems.includes(itemName)
                 : selectedIndex === idx;
+
               return (
                 <TouchableOpacity
-                  key={`${f.name}-${idx}`}
+                  key={`${itemName}-${idx}`}
                   activeOpacity={0.7}
-                  style={[styles.filterItem]}
+                  style={styles.filterItem}
                   onPress={() => handleItemToggle(f)}
                 >
                   <View style={styles.row}>
-                    {f?.image ? (
-                      <Image source={f.image} style={styles.filterImage} />
+                    {itemImage ? (
+                      <Image source={itemImage} style={styles.filterImage} />
                     ) : null}
                     <View>
                       <CustomText
-                        label={f.name}
+                        label={itemName}
                         color={COLORS.white}
                         fontFamily={fonts.medium}
                         fontSize={16}
-                        marginLeft={f?.image ? 12 : 0}
+                        marginLeft={itemImage ? 12 : 0}
                       />
-                      {f.subtitle && (
+                      {itemSubtitle && (
                         <CustomText
-                          label={f.subtitle}
-                          color={COLORS.subtitle}
-                          fontFamily={fonts.medium}
-                          fontSize={14}
-                          marginLeft={f?.image ? 12 : 0}
+                          label={itemSubtitle}
+                          color={COLORS.white2}
+                          fontFamily={fonts.regular}
+                          fontSize={13}
+                          marginLeft={itemImage ? 12 : 0}
+                          marginTop={2}
                         />
                       )}
                     </View>
                   </View>
                   {multiSelect ? (
-                    <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        isSelected && styles.checkboxSelected,
+                      ]}
+                    >
                       {isSelected && (
                         <Icons
                           name="check"
@@ -199,7 +231,7 @@ const FilterModal = ({
           {multiSelect && (
             <View style={styles.buttonContainer}>
               <CustomButton
-                title={`Confirm ${localSelectedItems.length > 0 ? `(${localSelectedItems.length})` : ''}`}
+                title={`Confirm ${localSelectedItems.length > 0 ? `(${localSelectedItems.length})` : ""}`}
                 onPress={handleConfirm}
               />
             </View>
@@ -217,10 +249,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundColor: COLORS.black,
-    borderRadius: 22,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: "hidden",
   },
   headerContainer: {
-    backgroundColor: COLORS.primaryColor,
+    backgroundColor: COLORS.black,
+    flex: 1,
   },
 
   backIcon: {
@@ -229,7 +264,8 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 16,
+    marginRight: 14,
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
   },
 
   row: {
@@ -241,34 +277,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "#FFFFFF0A",
-    padding: 16,
-    height: 64,
+    borderBottomColor: "rgba(255, 255, 255, 0.06)",
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    minHeight: 60,
   },
 
   filterImage: {
-    width: 16,
-    height: 16,
+    width: 24,
+    height: 24,
     borderRadius: 6,
     resizeMode: "cover",
   },
   circleIndicator: {
-    width: 20,
-    height: 20,
+    width: 22,
+    height: 22,
     borderRadius: 100,
     borderWidth: 2,
-    borderColor: "#FFFFFF7A",
+    borderColor: "rgba(255, 255, 255, 0.4)",
     backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
   },
 
   circleIndicatorUnselected: {
-    borderColor: "#A19375",
-    borderWidth: 1,
+    borderColor: COLORS.btnColor,
+    borderWidth: 2,
     borderRadius: 100,
-    width: 20,
-    height: 20,
+    width: 22,
+    height: 22,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -279,24 +316,25 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   innerCircleSelected: {
-    backgroundColor: "#A19375",
+    backgroundColor: COLORS.btnColor,
   },
   checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
+    width: 22,
+    height: 22,
+    borderRadius: 6,
     borderWidth: 2,
-    borderColor: "#FFFFFF7A",
+    borderColor: "rgba(255, 255, 255, 0.4)",
     backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
   },
   checkboxSelected: {
-    backgroundColor: "#A19375",
-    borderColor: "#A19375",
+    backgroundColor: COLORS.btnColor,
+    borderColor: COLORS.btnColor,
   },
   buttonContainer: {
     padding: 16,
     paddingBottom: 24,
+    backgroundColor: COLORS.black,
   },
 });

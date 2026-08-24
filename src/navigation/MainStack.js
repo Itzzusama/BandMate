@@ -84,6 +84,7 @@ const MainStack = () => {
       <Stack.Screen name="Preferences" component={Preferences} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="PublishPost" component={PublishPost} />
+      <Stack.Screen name="CreatePost" component={PublishPost} />
       <Stack.Screen name="SampleScreen" component={SampleScreen} />
       <Stack.Screen
         name="AdvancedNotification"

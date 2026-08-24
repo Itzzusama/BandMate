@@ -219,4 +219,12 @@ export const Images = {
   ticket_card: require("./ticket-card.png"),
   promo_code: require("./promo-code.png"),
   pinCode1: require("./pinCode1.png"),
+  thread: require("./thread.png"),
+  threadPlus: require("./threadPlus.png"),
+  delImage: require("./delImage.png"),
+  unfollowMinus: require("./unfollowMinus.png"),
+  plusGrayBg: require("./plusGrayBg.png"),
+  friendGray: require("./friendGray.png"),
+  person: require("./person.png"),
+  crossBg: require("./crossBg.png"),
 };

@@ -72,6 +72,14 @@ const PremiumCard = ({
   const [views, setViews] = useState(0);
   const [cards, setCards] = useState([...data]);
 
+  // Gradient animation for button press
+  const gradientOpacity = useRef(new Animated.Value(0)).current;
+  const gradientTranslateY = useRef(new Animated.Value(200)).current;
+  const [currentGradientColors, setCurrentGradientColors] = useState([
+    "transparent",
+    "transparent",
+  ]);
+
   // Slider animation (top progress bar — auto-advance timer)
   const sliderAnimation = useRef(new Animated.Value(0)).current;
 
@@ -187,6 +195,20 @@ const PremiumCard = ({
     return true;
   };
 
+  const getDisplayName = (profile) => {
+    if (!profile) return "";
+    const name =
+      profile?.role?.toLowerCase() === "band"
+        ? profile?.bandName || profile?.display_name || profile?.name
+        : profile?.display_name ||
+          profile?.bandName ||
+          profile?.name ||
+          profile?.username ||
+          "";
+    const age = getAgeFromDob(profile?.dob);
+    return age ? `${name}, ${age}` : name;
+  };
+
   const handleReaction = async (reaction, profile) => {
     const targetProfile = profile || cards[currentIndex];
     const payLoad = { toUser: targetProfile?._id, interactionType: reaction };
@@ -210,9 +232,6 @@ const PremiumCard = ({
 
     try {
       await post("matching/interactions", payLoad);
-      setProfileData((prev = []) =>
-        prev.filter((p) => p?._id !== targetProfile?._id),
-      );
       ToastMessage(
         reaction === "dislike"
           ? "Profile Removed from recommendations"
@@ -230,17 +249,67 @@ const PremiumCard = ({
   };
 
   const buttonActions = [
-    { reaction: "rewind" },
-    { reaction: "dislike" },
-    { reaction: "superlike" },
-    { reaction: "like" },
-    { reaction: "boost" },
+    {
+      reaction: "rewind",
+      colors: ["#FF4B4B", "#FF4B4B00"],
+    },
+    {
+      reaction: "dislike",
+      colors: ["#F41857", "#F4185700"],
+    },
+    {
+      reaction: "superlike",
+      colors: ["#007AFE", "#007AFE00"],
+    },
+    {
+      reaction: "like",
+      colors: ["#1ED760", "#1ED76000"],
+    },
+    {
+      reaction: "boost",
+      colors: ["#8400E7", "#8400E700"],
+    },
   ];
 
   const handleButtonPress = (index) => {
-    const { reaction } = buttonActions[index];
+    const action = buttonActions[index];
+    const reaction = action?.reaction;
     if (!checkQuotaAvailable(reaction)) return;
-    handleReaction(reaction, cards[currentIndex]);
+
+    const profileToReact = cards[currentIndex];
+
+    // Set gradient colors
+    setCurrentGradientColors(action.colors);
+
+    // Reset gradient position before animation
+    gradientTranslateY.setValue(200);
+
+    // Fire API in background
+    handleReaction(reaction, profileToReact);
+
+    // Animate gradient rising from bottom then fading out
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(gradientOpacity, {
+          toValue: 0.85,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(gradientTranslateY, {
+          toValue: 0,
+          duration: 450,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.timing(gradientOpacity, {
+        toValue: 0,
+        duration: 750,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      gradientOpacity.setValue(0);
+      gradientTranslateY.setValue(200);
+    });
   };
 
   // ── Switch to a different user via carousel tap ─────────────────────────
@@ -384,15 +453,9 @@ const PremiumCard = ({
         >
           {/* Name */}
           <CustomText
-            label={
-              currentProfile?.role === "solo"
-                ? currentProfile?.display_name
-                : `${currentProfile?.bandName}, ${getAgeFromDob(
-                    currentProfile?.dob,
-                  )}`
-            }
+            label={getDisplayName(currentProfile)}
             fontSize={44}
-            lineHeight={44 * 1.2}
+            lineHeight={44 * 1.3}
             fontFamily={fonts.abril}
             textAlign="center"
           />
@@ -546,6 +609,25 @@ const PremiumCard = ({
           ))}
         </View>
       </View>
+
+      {/* ── Animated Gradient Overlay on Button Press ───────────────────── */}
+      <Animated.View
+        style={[
+          styles.gradientOverlay,
+          {
+            opacity: gradientOpacity,
+            transform: [{ translateY: gradientTranslateY }],
+          },
+        ]}
+        pointerEvents="none"
+      >
+        <LinearGradient
+          colors={currentGradientColors}
+          start={{ x: 0.5, y: 1 }}
+          end={{ x: 0.5, y: 0 }}
+          style={styles.gradientFill}
+        />
+      </Animated.View>
     </View>
   );
 };
@@ -694,5 +776,17 @@ const styles = StyleSheet.create({
   largeBtn: {
     height: Platform.OS === "ios" ? 54 : 52,
     width: Platform.OS === "ios" ? 54 : 52,
+  },
+  gradientOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: "55%",
+    overflow: "hidden",
+    zIndex: 99,
+  },
+  gradientFill: {
+    flex: 1,
   },
 });
