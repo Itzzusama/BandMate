@@ -1,286 +1,1763 @@
+import { BlurView } from "@react-native-community/blur";
+import { useNavigation } from "@react-navigation/native";
 import { getPalette } from "@somesoap/react-native-image-palette";
-import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
+import moment from "moment";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Animated,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Video from "react-native-video";
+import { useDispatch, useSelector } from "react-redux";
 import fonts from "../../../../assets/fonts";
 import { Images } from "../../../../assets/images";
 import { PNGIcons } from "../../../../assets/images/icons";
+import { FullScreenSvg, Tags } from "../../../../assets/svgs";
+import Blur from "../../../../components/Blur";
 import CustomText from "../../../../components/CustomText";
 import Icons from "../../../../components/Icons";
 import ImageFast from "../../../../components/ImageFast";
+import ProgressiveBlur from "../../../../components/ProgressiveBlur";
+import { del, post } from "../../../../services/ApiRequest";
+import { setUserData } from "../../../../store/reducer/usersSlice";
 import { COLORS } from "../../../../utils/COLORS";
+import { ToastMessage } from "../../../../utils/ToastMessage";
+import CreatorSummary from "./CreatorSummary";
+import EditModal from "./EditModal";
+import RepostModal from "./RepostModal";
+import ShareModal from "./ShareModal";
+import SummaryMore from "./SummaryMore";
+import ViewerModal from "./ViewerModal";
+import VotingComponent from "./VotingComponent";
+
+const screenWidth = Dimensions.get("window").width;
+const SWIPE_LOCK_THRESHOLD = 4;
+
+const isVideoUrl = (url) => {
+  if (!url || typeof url !== "string") return false;
+  return !!url.match(/\.(mp4|mov|avi|mkv|webm|flv|wmv|m4v)(\?.*)?$/i);
+};
+
+const formatCount = (count) => {
+  if (!count || count === 0) return "0";
+  if (count < 1000) return count.toString();
+  if (count < 1000000) return `${(count / 1000).toFixed(1)}k`;
+  return `${(count / 1000000).toFixed(1)}M`;
+};
+
+const formatTime = (seconds) => {
+  if (!seconds || isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
 
 const PostCard = ({
-  displayName = "Display Name",
-  username = "username",
-  isVerified = true,
-  partnershipWith = "ClubHouse",
+  item,
+  displayName,
+  username,
+  isVerified,
+  partnershipWith,
   imageSource,
-  stats = { likes: "1.4k", comments: "1.5M", shares: "1.5M" },
-  reactedBy = "Webflow & 2 friends",
-  postTitle = "Automatically detects when trips require...",
+  images = [],
+  hashtags = [],
+  stats = {},
+  reactedBy,
+  postTitle,
+  description,
   commentUser = "User",
   commentText = "With the most liked comment",
-  commentsCount = 919,
-  timeAgo = "9 hours ago",
-  activeIndex = 0,
-  totalIndicators = 4,
+  commentsCount,
+  timeAgo,
+  upvotes = [],
+  downvotes = [],
+  savedCount,
   marginBottom,
+  shouldPlay = true,
+  showHeader = true,
+  isDetail = false,
+  setPagerScrollEnabled,
+  onSwipeLeft,
+  onSwipeRight,
+  onCommentPress,
+  onDeletePress,
+  onEditPress,
+  onHidePost,
+  onHideUserPosts,
+  onVoteUpdate,
 }) => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.users.userData);
+
+  // Author details
+  const author = item?.author || {};
+  const firstName = author.first_name || author.firstName || "";
+  const lastName =
+    author.sur_name ||
+    author.surname ||
+    author.last_name ||
+    author.lastName ||
+    "";
+  const authorFullName = `${firstName} ${lastName}`.trim();
+  const authorUsername = author?.username || author.userName || "";
+
+  const effectiveDisplayName =
+    displayName || authorFullName || authorUsername || "Display Name";
+  const effectiveUsername = authorUsername || username || "username";
+  const effectiveIsVerified =
+    isVerified !== undefined
+      ? isVerified
+      : author.role === "individual" ||
+        author.role === "company" ||
+        author.isVerified;
+  const authorAvatar = author.profile?.avatar || author.avatar;
+  const authorProfileColor =
+    author.profile?.profileColor || COLORS.inputBg;
+  const isOwner = author._id === userData?._id;
+
+  // Parent / Repost Author details
+  const parentAuthor = item?.parentPost?.author;
+  const parentFirstName =
+    parentAuthor?.first_name || parentAuthor?.firstName || "";
+  const parentLastName =
+    parentAuthor?.sur_name ||
+    parentAuthor?.surname ||
+    parentAuthor?.last_name ||
+    parentAuthor?.lastName ||
+    "";
+  const parentDisplayName =
+    `${parentFirstName} ${parentLastName}`.trim() ||
+    parentAuthor?.username ||
+    "User";
+  const parentAvatar = parentAuthor?.profile?.avatar || parentAuthor?.avatar;
+
+  // Media list calculation
+  const mediaList = useMemo(() => {
+    if (images && images.length > 0) return images;
+    if (item?.images && item.images.length > 0) return item.images;
+    if (imageSource) {
+      return typeof imageSource === "string" ? [imageSource] : [imageSource];
+    }
+    return [];
+  }, [images, item?.images, imageSource]);
+
+  // Only real hashtags (no topic mixed in)
+  const effectiveHashtags = useMemo(() => {
+    const list = hashtags?.length > 0 ? hashtags : item?.hashtags || [];
+    return list
+      .map((tag) => {
+        const tagStr = typeof tag === "string" ? tag : tag?.tag || "";
+        if (!tagStr) return "";
+        return tagStr.startsWith("#") ? tagStr : `#${tagStr}`;
+      })
+      .filter((t) => t.length > 1);
+  }, [hashtags, item?.hashtags]);
+
+  // Description / Captions
+  const descriptionArray = useMemo(() => {
+    const raw = description || item?.description || postTitle;
+    if (Array.isArray(raw)) {
+      return raw.filter((d) => typeof d === "string" && d.trim().length > 0);
+    }
+    if (typeof raw === "string" && raw.trim().length > 0) {
+      return [raw];
+    }
+    return [];
+  }, [description, item?.description, postTitle]);
+
+  // Time ago
+  const effectiveTimeAgo = useMemo(() => {
+    if (timeAgo) return timeAgo;
+    if (item?.createdAt) return moment(item.createdAt).fromNow();
+    return "Just now";
+  }, [timeAgo, item?.createdAt]);
+
+  // Counts & Stats
+  const effectiveCommentsCount =
+    commentsCount !== undefined ? commentsCount : item?.stats?.comments || 0;
+  const effectiveSharesCount = stats?.shares || item?.stats?.shares || 0;
+  const effectiveRepostsCount = stats?.reposts || item?.stats?.reposts || 0;
+  const initialSavedCount =
+    savedCount !== undefined ? savedCount : item?.stats?.saved || 0;
+
+  // State Management
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentDescIndex, setCurrentDescIndex] = useState(0);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [isTruncated, setIsTruncated] = useState(false);
   const [bgColor, setBgColor] = useState("");
 
+  const [showModal, setShowModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showRepostModal, setShowRepostModal] = useState(false);
+  const [showCreatorSummary, setShowCreatorSummary] = useState(false);
+  const [showSummaryMore, setShowSummaryMore] = useState(false);
+  const [showViewerModal, setShowViewerModal] = useState(false);
+
+  // Video State
+  const [mutedVideos, setMutedVideos] = useState({});
+  const [videoReady, setVideoReady] = useState({});
+  const [videoProgress, setVideoProgress] = useState({});
+  const videoRefs = useRef([]);
+
+  // Upvote / Downvote State
+  const [localUpvotes, setLocalUpvotes] = useState(
+    item?.upvotes || upvotes || []
+  );
+  const [localDownvotes, setLocalDownvotes] = useState(
+    item?.downvotes || downvotes || []
+  );
+  const [isVoting, setIsVoting] = useState(false);
+
+  // Save State
+  const [isSaved, setIsSaved] = useState(false);
+  const [localSaves, setLocalSaves] = useState(initialSavedCount);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Horizontal Swipe Animation State
+  const translateX = useRef(new Animated.Value(0)).current;
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const isHorizontalSwipe = useRef(false);
+  const swipeDecided = useRef(false);
+  const lastDx = useRef(0);
+  const mediaCarouselGestureActive = useRef(false);
+
   useEffect(() => {
-    const uri = imageSource;
-    if (!uri) return;
+    if (item?.saved && userData?._id) {
+      const saved = item.saved.some(
+        (savedItem) =>
+          savedItem === userData._id ||
+          savedItem?.userId === userData._id ||
+          savedItem?._id === userData._id
+      );
+      setIsSaved(saved);
+    }
+  }, [item?.saved, userData?._id]);
+
+  useEffect(() => {
+    setLocalSaves(initialSavedCount);
+  }, [initialSavedCount]);
+
+  useEffect(() => {
+    setLocalUpvotes(item?.upvotes || upvotes || []);
+    setLocalDownvotes(item?.downvotes || downvotes || []);
+  }, [item?.upvotes, upvotes, item?.downvotes, downvotes]);
+
+  // Follow State (derived from Redux)
+  const isFollowingUser = useMemo(() => {
+    const authorId = author._id;
+    if (!authorId) return false;
+    if (userData?.stats?.following) {
+      return userData.stats.following.includes(authorId);
+    }
+    return author?.stats?.followers?.includes(userData?._id) || false;
+  }, [
+    userData?.stats?.following,
+    author._id,
+    author?.stats?.followers,
+    userData?._id,
+  ]);
+
+  // Extract Dynamic Background Glow Palette
+  useEffect(() => {
+    const currentMedia = mediaList[currentImageIndex];
+    const uri =
+      typeof currentMedia === "string"
+        ? currentMedia
+        : item?.thumbnail || currentMedia?.uri;
+    if (!uri || isVideoUrl(uri)) return;
+
     getPalette(uri)
       .then((palette) => {
-        if (palette?.vibrant) setBgColor(palette.vibrant);
+        if (palette?.vibrant) {
+          setBgColor(palette.vibrant);
+        }
       })
       .catch(() => {});
-  }, [imageSource]);
+  }, [currentImageIndex, mediaList, item?.thumbnail]);
+
+  // Follow / Unfollow Handler
+  const handleFollowPress = async () => {
+    const userId = author._id;
+    if (!userId || isOwner) return;
+
+    const currentlyFollowing = isFollowingUser;
+    setShowSummaryMore(false);
+
+    try {
+      const updatedFollowing = currentlyFollowing
+        ? (userData?.stats?.following || []).filter((id) => id !== userId)
+        : [...(userData?.stats?.following || []), userId];
+
+      dispatch(
+        setUserData({
+          ...userData,
+          stats: {
+            ...userData.stats,
+            following: updatedFollowing,
+          },
+        })
+      );
+
+      const authorName = firstName || effectiveDisplayName || "User";
+      if (currentlyFollowing) {
+        await del(`relationships/unfollow/${userId}`);
+        ToastMessage(`Unfollowed ${authorName}`);
+      } else {
+        await post(`relationships/follow/${userId}`);
+        ToastMessage(`You are now following ${authorName}`, "success");
+      }
+    } catch (error) {
+      console.log("Error following/unfollowing:", error);
+      dispatch(setUserData(userData));
+    }
+  };
+
+  // Upvote / Downvote Helpers
+  const hasUpvoted = useCallback(() => {
+    return localUpvotes.some(
+      (vote) =>
+        vote?.userId === userData?._id ||
+        vote === userData?._id ||
+        vote?._id === userData?._id
+    );
+  }, [localUpvotes, userData?._id]);
+
+  const hasDownvoted = useCallback(() => {
+    return localDownvotes.some(
+      (vote) =>
+        vote?.userId === userData?._id ||
+        vote === userData?._id ||
+        vote?._id === userData?._id
+    );
+  }, [localDownvotes, userData?._id]);
+
+  // Upvote / Downvote Vote Handler
+  const handleVote = useCallback(
+    async (reactionType = "upvote") => {
+      if (isVoting || !item?._id) return;
+
+      setIsVoting(true);
+      const isUpvote = reactionType === "upvote";
+      const currentlyUpvoted = hasUpvoted();
+      const currentlyDownvoted = hasDownvoted();
+
+      // Optimistic UI updates
+      if (isUpvote) {
+        if (currentlyUpvoted) {
+          setLocalUpvotes((prev) =>
+            prev.filter(
+              (v) =>
+                v?.userId !== userData?._id &&
+                v !== userData?._id &&
+                v?._id !== userData?._id
+            )
+          );
+        } else {
+          setLocalUpvotes((prev) => [
+            ...prev,
+            { userId: userData?._id, reaction: "upvote" },
+          ]);
+          if (currentlyDownvoted) {
+            setLocalDownvotes((prev) =>
+              prev.filter(
+                (v) =>
+                  v?.userId !== userData?._id &&
+                  v !== userData?._id &&
+                  v?._id !== userData?._id
+              )
+            );
+          }
+        }
+      } else {
+        if (currentlyDownvoted) {
+          setLocalDownvotes((prev) =>
+            prev.filter(
+              (v) =>
+                v?.userId !== userData?._id &&
+                v !== userData?._id &&
+                v?._id !== userData?._id
+            )
+          );
+        } else {
+          setLocalDownvotes((prev) => [
+            ...prev,
+            { userId: userData?._id, reaction: "downvote" },
+          ]);
+          if (currentlyUpvoted) {
+            setLocalUpvotes((prev) =>
+              prev.filter(
+                (v) =>
+                  v?.userId !== userData?._id &&
+                  v !== userData?._id &&
+                  v?._id !== userData?._id
+              )
+            );
+          }
+        }
+      }
+
+      try {
+        const response = await post(`posts/${item._id}/reaction`, {
+          reaction: reactionType,
+        });
+
+        if (response?.data?.success) {
+          if (onVoteUpdate) onVoteUpdate();
+        } else {
+          setLocalUpvotes(item?.upvotes || upvotes || []);
+          setLocalDownvotes(item?.downvotes || downvotes || []);
+          ToastMessage("Failed to update vote", "error");
+        }
+      } catch (error) {
+        console.error("Error voting:", error);
+        setLocalUpvotes(item?.upvotes || upvotes || []);
+        setLocalDownvotes(item?.downvotes || downvotes || []);
+        ToastMessage("Failed to update vote", "error");
+      } finally {
+        setIsVoting(false);
+      }
+    },
+    [
+      isVoting,
+      item,
+      hasUpvoted,
+      hasDownvoted,
+      userData?._id,
+      onVoteUpdate,
+      upvotes,
+      downvotes,
+    ]
+  );
+
+  // Save / Bookmark Handler
+  const handleSaveToggle = async () => {
+    if (isSaving || !item?._id) return;
+
+    setIsSaving(true);
+    const newSavedState = !isSaved;
+    setIsSaved(newSavedState);
+    setLocalSaves((prev) =>
+      newSavedState ? prev + 1 : Math.max(0, prev - 1)
+    );
+
+    try {
+      if (newSavedState) {
+        await post("saved", { postId: item._id });
+        ToastMessage("Post saved to bookmarks", "success");
+      } else {
+        await del(`saved/${item._id}`);
+        ToastMessage("Removed from bookmarks");
+      }
+    } catch (error) {
+      setIsSaved(!newSavedState);
+      setLocalSaves(localSaves);
+      ToastMessage("Failed to update save status", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Video helpers
+  const handleVideoProgress = useCallback((index, data) => {
+    setVideoProgress((prev) => ({
+      ...prev,
+      [index]: {
+        currentTime: data.currentTime,
+        duration: data.seekableDuration || data.playableDuration,
+      },
+    }));
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    setMutedVideos((prev) => ({
+      ...prev,
+      [currentImageIndex]: !prev[currentImageIndex],
+    }));
+  }, [currentImageIndex]);
+
+  const isCurrentVideoMuted = () => {
+    return mutedVideos[currentImageIndex] || false;
+  };
+
+  // Image height calculation based on size aspect ratio
+  const getImageHeight = () => {
+    const sizeString = item?.size || "1:1 ratio";
+    const aspectRatio = sizeString.replace(" ratio", "").trim();
+
+    switch (aspectRatio) {
+      case "16:9":
+        return screenWidth * (9 / 16);
+      case "4:3":
+        return screenWidth * (3 / 4);
+      case "1:1":
+      default:
+        return screenWidth - 24;
+    }
+  };
+
+  // Dynamic border radius for carousel items
+  const getBorderRadiusStyle = (index) => {
+    const cardWidth = screenWidth - 24;
+    const scrollProg = scrollOffset / cardWidth;
+    const currIdx = Math.round(scrollProg);
+    const isScrolling = Math.abs(scrollProg - currIdx) > 0.01;
+
+    if (!isScrolling) {
+      return {
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 16,
+      };
+    }
+
+    if (index === Math.floor(scrollProg)) {
+      return {
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 0,
+        borderBottomLeftRadius: 16,
+        borderBottomRightRadius: 0,
+      };
+    } else if (index === Math.ceil(scrollProg)) {
+      return {
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 16,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 16,
+      };
+    }
+
+    return {
+      borderTopLeftRadius: 16,
+      borderTopRightRadius: 16,
+      borderBottomLeftRadius: 16,
+      borderBottomRightRadius: 16,
+    };
+  };
+
+  // Carousel Scroll Handler
+  const handleScroll = (event) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    setScrollOffset(contentOffsetX);
+    const cardWidth = screenWidth - 24;
+    const index = Math.round(contentOffsetX / cardWidth);
+    if (index >= 0 && index < mediaList.length && index !== currentImageIndex) {
+      setCurrentImageIndex(index);
+    }
+  };
+
+  // Description Scroll Handler
+  const handleDescScroll = (event) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const cardWidth = screenWidth - 28;
+    const index = Math.round(contentOffsetX / cardWidth);
+    if (index >= 0 && index < descriptionArray.length && index !== currentDescIndex) {
+      setCurrentDescIndex(index);
+    }
+  };
+
+  // Comment Handler
+  const handleCommentPress = useCallback(() => {
+    if (item?.privacy?.comment === false) {
+      ToastMessage("User has disabled comment on this post", "error");
+      return;
+    }
+    if (onCommentPress) {
+      onCommentPress(item);
+    } else {
+      navigation.navigate("CommentScreen", { item, postId: item?._id });
+    }
+  }, [item, onCommentPress, navigation]);
+
+  // Horizontal Swipe Gestures
+  const completeHorizontalSwipe = useCallback(
+    (dx) => {
+      const threshold = screenWidth * 0.35;
+
+      if (dx > threshold) {
+        Animated.spring(translateX, {
+          toValue: screenWidth,
+          useNativeDriver: true,
+          tension: 50,
+          friction: 7,
+        }).start(() => {
+          translateX.setValue(0);
+          if (onSwipeRight) {
+            onSwipeRight();
+          } else {
+            handleCommentPress();
+          }
+        });
+      } else if (dx < -threshold) {
+
+        Animated.spring(translateX, {
+          toValue: -screenWidth,
+          useNativeDriver: true,
+          tension: 50,
+          friction: 7,
+        }).start(() => {
+          translateX.setValue(0);
+          if (onSwipeLeft) {
+            onSwipeLeft();
+          } else {
+            setShowShareModal(true);
+          }
+        });
+      } else {
+        Animated.spring(translateX, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 50,
+          friction: 7,
+        }).start();
+      }
+    },
+    [screenWidth, translateX, onSwipeRight, onSwipeLeft, onCommentPress]
+  );
+
+  const resetSwipeFlags = useCallback(() => {
+    isHorizontalSwipe.current = false;
+    swipeDecided.current = false;
+    lastDx.current = 0;
+  }, []);
+
+  const onMediaCarouselTouchStart = useCallback(() => {
+    if (mediaList.length <= 1) return;
+    mediaCarouselGestureActive.current = true;
+    translateX.stopAnimation();
+    translateX.setValue(0);
+  }, [mediaList.length, translateX]);
+
+  const onCardTouchStart = useCallback(
+    (e) => {
+      if (isDetail || mediaCarouselGestureActive.current) return;
+      const { pageX, pageY } = e.nativeEvent;
+      touchStartX.current = pageX;
+      touchStartY.current = pageY;
+      isHorizontalSwipe.current = false;
+      swipeDecided.current = false;
+      lastDx.current = 0;
+      translateX.stopAnimation();
+      translateX.setValue(0);
+      setPagerScrollEnabled?.(false);
+    },
+    [isDetail, setPagerScrollEnabled, translateX]
+  );
+
+  const onCardTouchMove = useCallback(
+    (e) => {
+      if (isDetail || mediaCarouselGestureActive.current) return;
+      const { pageX, pageY } = e.nativeEvent;
+      const dx = pageX - touchStartX.current;
+      const dy = pageY - touchStartY.current;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+      lastDx.current = dx;
+
+      if (!swipeDecided.current) {
+        if (absDx > SWIPE_LOCK_THRESHOLD || absDy > SWIPE_LOCK_THRESHOLD) {
+          isHorizontalSwipe.current = absDx > absDy;
+          swipeDecided.current = true;
+          if (!isHorizontalSwipe.current) {
+            translateX.setValue(0);
+          }
+        } else if (absDx > absDy) {
+          translateX.setValue(dx);
+          return;
+        }
+      }
+
+      if (isHorizontalSwipe.current) {
+        translateX.setValue(dx);
+      }
+    },
+    [isDetail, translateX]
+  );
+
+  const onCardTouchEnd = useCallback(
+    (e) => {
+      if (isDetail) return;
+
+      if (mediaCarouselGestureActive.current) {
+        mediaCarouselGestureActive.current = false;
+        setPagerScrollEnabled?.(true);
+        resetSwipeFlags();
+        return;
+      }
+
+      setPagerScrollEnabled?.(true);
+
+      const { pageX, pageY } = e.nativeEvent;
+      const dx = pageX - touchStartX.current;
+      const dy = pageY - touchStartY.current;
+
+      if (isHorizontalSwipe.current) {
+        completeHorizontalSwipe(lastDx.current || dx);
+      }
+
+      resetSwipeFlags();
+    },
+    [
+      isDetail,
+      setPagerScrollEnabled,
+      completeHorizontalSwipe,
+      resetSwipeFlags,
+    ]
+  );
+
+  const onCardTouchCancel = useCallback(() => {
+    if (isDetail) return;
+
+    if (mediaCarouselGestureActive.current) {
+      mediaCarouselGestureActive.current = false;
+      setPagerScrollEnabled?.(true);
+      resetSwipeFlags();
+      return;
+    }
+
+    setPagerScrollEnabled?.(true);
+    if (isHorizontalSwipe.current) {
+      Animated.spring(translateX, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    }
+    resetSwipeFlags();
+  }, [isDetail, setPagerScrollEnabled, translateX, resetSwipeFlags]);
+
+  // Formatted Text Rendering (mentions & hashtags)
+  const renderFormattedDescription = (text) => {
+    if (!text) return null;
+    const stringText = typeof text === "string" ? text : String(text);
+    return stringText.split(/(\s+)/).map((part, idx) => {
+      if (part.startsWith("@")) {
+        return (
+          <Text
+            key={idx}
+            style={{ color: COLORS.btnColor, fontFamily: fonts.semiBold }}
+          >
+            {part.substring(1)}{" "}
+          </Text>
+        );
+      }
+      if (part.startsWith("#")) {
+        return (
+          <Text
+            key={idx}
+            style={{ color: COLORS.btnColor, fontFamily: fonts.semiBold }}
+          >
+            {part}{" "}
+          </Text>
+        );
+      }
+      return (
+        <Text key={idx} style={{ color: COLORS.white2 }}>
+          {part}{" "}
+        </Text>
+      );
+    });
+  };
+
+  const isCurrentMediaVideo =
+    mediaList[currentImageIndex] && isVideoUrl(mediaList[currentImageIndex]);
+
+  // Reacted by user data
+  const topFriendLike = item?.friendLikes?.[0];
+  const friendName =
+    topFriendLike?.first_name ||
+    topFriendLike?.firstName ||
+    topFriendLike?.username;
+  const friendAvatar =
+    topFriendLike?.profile?.avatar || topFriendLike?.avatar;
+
+  // Top Comment Data
+  const topCommentAuthor = item?.topComment?.author;
+  const topCommentUserName =
+    topCommentAuthor?.first_name ||
+    topCommentAuthor?.firstName ||
+    topCommentAuthor?.username ||
+    commentUser;
+  const topCommentContent =
+    item?.topComment?.content ||
+    item?.topComment?.text ||
+    commentText;
 
   return (
-    <View style={[styles.container, { marginBottom }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.userInfo}>
-          <Image
-            source={{ uri: "https://placehold.co/100x100" }}
-            style={styles.avatar}
-          />
-          <View>
-            <View style={styles.nameRow}>
-              <CustomText
-                label={displayName}
-                fontSize={15}
-                color={COLORS.white}
-                fontFamily={fonts.semiBold}
-              />
-              {isVerified && (
-                <Icons
-                  family="MaterialIcons"
-                  name="verified"
-                  size={16}
-                  color="#1DA1F2"
-                />
-              )}
-            </View>
-            <CustomText
-              label={username}
-              fontSize={13}
-              color={COLORS.white3}
-              fontFamily={fonts.regular}
-            />
-          </View>
-        </View>
-
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.followButton}>
-            <CustomText
-              label="Follow"
-              fontSize={13}
-              fontFamily={fonts.medium}
-              color={COLORS.white}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconContainer}>
-            <Icons
-              family="Entypo"
-              name="dots-three-vertical"
-              size={16}
-              color={COLORS.white}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Partnership Row */}
-      <View style={styles.partnerRow}>
-        <Image source={PNGIcons.turn} style={{ height: 20, width: 20 }} />
-        <CustomText
-          label="in Partnership with"
-          fontSize={12}
-          color={COLORS.white3}
-          marginLeft={4}
-          lineHeight={12 * 1.4}
-          marginRight={4}
-        />
-        <View style={styles.partnerBg} />
-        <CustomText
-          label={partnershipWith}
-          fontSize={12}
-          color={COLORS.white}
-          fontFamily={fonts.semiBold}
-          marginLeft={4}
-          lineHeight={12 * 1.4}
-        />
-      </View>
-
-      <View style={styles.wrapper}>
-        {[1, 2, 3].map((i, index) => (
-          <View style={styles.cardBg}>
-            <CustomText
-              label={`#${"Crypto"}`}
-              fontSize={12}
-              color={COLORS.gray2}
-              fontFamily={fonts.medium}
-            />
-          </View>
-        ))}
-      </View>
-
-      <View
+    <View style={{ marginBottom }}>
+      {/* 1. SWIPE LEFT INDICATOR (Share Your Thoughts) */}
+      <Animated.View
         style={[
-          styles.glowBg,
+          styles.swipeLeftIndicator,
           {
-            backgroundColor: bgColor,
-            shadowColor: bgColor,
+            opacity: translateX.interpolate({
+              inputRange: [0, screenWidth * 0.1],
+              outputRange: [0, 1],
+              extrapolate: "clamp",
+            }),
+            transform: [
+              {
+                scale: translateX.interpolate({
+                  inputRange: [0, screenWidth * 0.1],
+                  outputRange: [0.5, 1],
+                  extrapolate: "clamp",
+                }),
+              },
+              {
+                translateX: translateX.interpolate({
+                  inputRange: [0, screenWidth / 1],
+                  outputRange: [0, screenWidth / 2 - 100],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
           },
         ]}
-      />
-      <View style={styles.imageWrapper}>
-        <ImageFast source={imageSource} style={styles.image} resizeMode="cover">
-          <View style={styles.bottomOverlay}>
-            <LinearGradient
-              colors={[
-                "transparent",
-                "rgba(255,255,255,0.05)",
-                "rgba(255,255,255,0.2)",
-                "rgba(255,255,255,0.5)",
-              ]}
-              style={styles.bottomGradient}
-            />
-          </View>
-
-          {/* Action Buttons on Image */}
-          <TouchableOpacity style={styles.usersButton}>
-            <Image
-              source={PNGIcons.users}
-              style={{ height: 16, width: 16, resizeMode: "contain" }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.expandButton}>
-            <Icons
-              family="MaterialIcons"
-              name="repeat"
-              size={18}
-              color={COLORS.white}
-            />
-          </TouchableOpacity>
-        </ImageFast>
-      </View>
-
-      {/* ✅ Indicator Row (below image) */}
-      <View style={styles.indicatorContainer}>
-        {Array.from({ length: totalIndicators }).map((_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.indicatorDot,
-              i === activeIndex && styles.activeIndicator,
-            ]}
-          />
-        ))}
-      </View>
-      <View style={[styles.rowButtons, {}]}>
-        <View style={[styles.rowbtn]}>
-          <Image source={Images.heart} style={{ height: 20, width: 20 }} />
-          <CustomText label={"1.4k"} fontFamily={fonts.medium} fontSize={12} />
-        </View>
-
-        <TouchableOpacity
-          // onPress={onCommentPress}
-          style={styles.rowbtn}
-        >
-          <Image source={Images.chat} style={{ height: 16, width: 16 }} />
-          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
-        </TouchableOpacity>
-        <View style={styles.rowbtn}>
-          <Image
-            source={Images.arrowUpRight}
-            style={{ height: 16, width: 16 }}
-          />
-          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
-        </View>
-        <View style={styles.rowbtn}>
-          <Image source={Images.repost} style={{ height: 16, width: 16 }} />
-          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
-        </View>
-        <View style={styles.rowbtn}>
-          <Image source={Images.savePlus} style={{ height: 16, width: 16 }} />
-          <CustomText label={"1.5M"} fontFamily={fonts.medium} fontSize={12} />
-        </View>
-      </View>
-      {/* Post Details */}
-      <View style={styles.postDetails}>
-        <View style={[styles.partnerRow, { paddingHorizontal: 0 }]}>
-          <Image source={PNGIcons.webflow} style={{ height: 16, width: 16 }} />
+      >
+        <View style={styles.swipeIndicatorContent}>
+          <Image source={Images.thoughts} style={styles.swipeIcon} />
           <CustomText
-            label={`${reactedBy} `}
-            fontSize={14}
-            fontFamily={fonts.medium}
-            marginLeft={6}
-          />
-          <CustomText
-            label={`reacted to this post`}
+            label="Share Your Thoughts"
+            color={COLORS.white}
             fontSize={12}
-            color={COLORS.white3}
           />
         </View>
+      </Animated.View>
 
-        <CustomText marginTop={8} color={COLORS.white2} marginBottom={6}>
-          <Text style={{ color: COLORS.white }}>Google</Text>
-          <Text numberOfLines={1}>
-            {" "}
-            Fonts makes it easy to bring personality...
-          </Text>
-        </CustomText>
+      {/* 2. SWIPE RIGHT INDICATOR (Share It With Others) */}
+      <Animated.View
+        style={[
+          styles.swipeRightIndicator,
+          {
+            opacity: translateX.interpolate({
+              inputRange: [-screenWidth * 0.1, 0],
+              outputRange: [1, 0],
+              extrapolate: "clamp",
+            }),
+            transform: [
+              {
+                scale: translateX.interpolate({
+                  inputRange: [-screenWidth * 0.1, 0],
+                  outputRange: [1, 0.5],
+                  extrapolate: "clamp",
+                }),
+              },
+              {
+                translateX: translateX.interpolate({
+                  inputRange: [-screenWidth / 1, 0],
+                  outputRange: [-(screenWidth / 2 - 100), 0],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <View style={styles.swipeIndicatorContent}>
+          <Image
+            source={Images.globeShare || Images.thoughts}
+            style={styles.swipeIcon}
+          />
+          <CustomText
+            label="Share It With Others"
+            color={COLORS.white}
+            fontSize={12}
+          />
+        </View>
+      </Animated.View>
 
-        <View style={[styles.commentRow]}>
-          <View style={[styles.commentRow, { flex: 1 }]}>
-            <CustomText
-              label={`${commentUser} `}
-              fontSize={14}
-              color={COLORS.white}
-              fontFamily={fonts.medium}
-            />
+      {/* 3. MAIN CARD CONTAINER (Animated Translation) */}
+      <Animated.View
+        style={[
+          styles.mainContainer,
+          {
+            transform: [{ translateX }],
+          },
+        ]}
+        onTouchStart={!isDetail ? onCardTouchStart : undefined}
+        onTouchMove={!isDetail ? onCardTouchMove : undefined}
+        onTouchEnd={!isDetail ? onCardTouchEnd : undefined}
+        onTouchCancel={!isDetail ? onCardTouchCancel : undefined}
+      >
+        <View>
+          {/* HEADER */}
+          {showHeader && (
+            <View style={styles.header}>
+              <TouchableOpacity
+                style={styles.userInfo}
+                activeOpacity={0.8}
+                onPress={() => setShowCreatorSummary(true)}
+              >
+                <View
+                  style={{
+                    padding: 2,
+                    borderColor: authorProfileColor || COLORS.btnColor,
+                    borderWidth: 2,
+                    borderRadius: 99,
+                  }}
+                >
+                  {authorAvatar ? (
+                    <ImageFast
+                      source={{ uri: authorAvatar }}
+                      style={styles.avatar}
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        styles.avatar,
+                        { backgroundColor: authorProfileColor },
+                      ]}
+                    />
+                  )}
+                </View>
+                <View style={styles.nameBlock}>
+                  <View style={styles.nameRow}>
+                    <CustomText
+                      label={effectiveDisplayName}
+                      fontSize={15}
+                      color={COLORS.white}
+                      fontFamily={fonts.semiBold}
+                    />
+                    {effectiveIsVerified && (
+                      <Image
+                        source={Images.verified}
+                        style={{ width: 14, height: 14, marginLeft: 4 }}
+                      />
+                    )}
+                    {author?.role === "company" && (
+                      <Image
+                        source={Images.grayStar}
+                        style={{ width: 14, height: 14, marginLeft: 4 }}
+                      />
+                    )}
+                  </View>
+                  <CustomText
+                    label={`@${effectiveUsername}`}
+                    fontSize={13}
+                    color={COLORS.white3}
+                  />
+                </View>
+              </TouchableOpacity>
+
+              <View style={styles.headerRight}>
+                {!isOwner && (
+                  <TouchableOpacity
+                    style={[
+                      styles.followButton,
+                      isFollowingUser && { backgroundColor: COLORS.cardColor },
+                    ]}
+                    onPress={handleFollowPress}
+                    activeOpacity={0.8}
+                  >
+                    <CustomText
+                      label={isFollowingUser ? "Following" : "Follow"}
+                      fontSize={13}
+                      fontFamily={fonts.medium}
+                      color={COLORS.white}
+                    />
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => setShowModal(true)}
+                  activeOpacity={0.7}
+                >
+                  <Icons
+                    family="Entypo"
+                    name="dots-three-vertical"
+                    size={16}
+                    color={COLORS.white}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          {/* REPOSTED FROM ROW */}
+          {(item?.parentPostId || item?.parentPost) ? (
+            <View style={styles.partnerRow}>
+              <Image
+                source={Images.arrowNext || PNGIcons.turn}
+                style={{ height: 16, width: 16, tintColor: COLORS.white3 }}
+              />
+              <CustomText
+                label="Reposted from"
+                fontSize={12}
+                color={COLORS.white3}
+                marginLeft={4}
+                lineHeight={12 * 1.4}
+                marginRight={4}
+              />
+              {parentAvatar ? (
+                <ImageFast
+                  source={{ uri: parentAvatar }}
+                  style={styles.partnerBg}
+                />
+              ) : (
+                <View style={styles.partnerBg} />
+              )}
+              <CustomText
+                label={parentDisplayName}
+                fontSize={12}
+                color={COLORS.white}
+                fontFamily={fonts.semiBold}
+                marginLeft={4}
+                lineHeight={12 * 1.4}
+              />
+            </View>
+          ) : (partnershipWith || item?.sponsoredBy?.length > 0) ? (
+            <View style={styles.partnerRow}>
+              <Image source={PNGIcons.turn} style={{ height: 18, width: 18 }} />
+              <CustomText
+                label="in Partnership with"
+                fontSize={12}
+                color={COLORS.white3}
+                marginLeft={4}
+                lineHeight={12 * 1.4}
+                marginRight={4}
+              />
+              <View style={styles.partnerBg} />
+              <CustomText
+                label={partnershipWith || item?.sponsoredBy?.[0] || "BandMate"}
+                fontSize={12}
+                color={COLORS.white}
+                fontFamily={fonts.semiBold}
+                marginLeft={4}
+                lineHeight={12 * 1.4}
+              />
+            </View>
+          ) : null}
+
+          {/* HASHTAGS ROW (Pure hashtags with Tags SVG) */}
+          {effectiveHashtags.length > 0 && (
+            <View style={styles.wrapper}>
+              {effectiveHashtags.map((tag, index) => (
+                <View key={index} style={styles.tagBg}>
+                  <Tags width={12} height={12} color={COLORS.white3} />
+                  <CustomText
+                    label={`${tag}`}
+                    fontSize={12}
+                    color={COLORS.white3}
+                    fontFamily={fonts.medium}
+                    marginLeft={2}
+                  />
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* LOOKING FOR INVESTMENT BADGE */}
+          {(item?.lookingForInvestment || item?.isInvestment || item?.tag === "investment") && (
+            <View style={styles.investmentCard}>
+              <CustomText
+                label="LOOKING FOR INVESTMENT"
+                fontSize={10}
+                fontFamily={fonts.semiBold}
+                color="rgba(255, 255, 255, 0.64)"
+              />
+            </View>
+          )}
+
+          {/* DESCRIPTION SECTION (Multi-slide / Single) */}
+          {descriptionArray.length > 1 ? (
+            <View style={{ paddingHorizontal: 14, marginTop: 8, marginBottom: 4 }}>
+              <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onScroll={handleDescScroll}
+                scrollEventThrottle={16}
+                style={{ width: screenWidth - 28 }}
+              >
+                {descriptionArray.map((desc, idx) => (
+                  <View key={idx} style={{ width: screenWidth - 28 }}>
+                    <CustomText
+                      color={COLORS.white}
+                      fontSize={14}
+                      lineHeight={20}
+                      numberOfLines={!isDetail ? 2 : undefined}
+                    >
+                      {renderFormattedDescription(desc)}
+                    </CustomText>
+                  </View>
+                ))}
+              </ScrollView>
+
+              <View style={[styles.rowBetween, { marginTop: 4 }]}>
+                {isTruncated ? (
+                  <CustomText
+                    color={COLORS.btnColor}
+                    label="Read full post..."
+                    fontFamily={fonts.medium}
+                    fontSize={13}
+                  />
+                ) : (
+                  <View />
+                )}
+                <View
+                  style={{
+                    paddingHorizontal: 8,
+                    paddingVertical: 2,
+                    borderRadius: 75,
+                    backgroundColor: COLORS.inputBg,
+                  }}
+                >
+                  <CustomText
+                    label={`${currentDescIndex + 1}/${descriptionArray.length}`}
+                    fontFamily={fonts.medium}
+                    fontSize={10}
+                    color={COLORS.white3}
+                  />
+                </View>
+              </View>
+            </View>
+          ) : descriptionArray.length === 1 ? (
+            <View style={{ paddingHorizontal: 14, marginTop: 8, marginBottom: 4 }}>
+              <CustomText
+                color={COLORS.white}
+                fontSize={14}
+                lineHeight={20}
+                numberOfLines={!isDetail ? 3 : undefined}
+              >
+                {renderFormattedDescription(descriptionArray[0])}
+              </CustomText>
+            </View>
+          ) : null}
+
+          {/* PALETTE GLOW BACKGROUND */}
+          {bgColor ? (
             <View
-              style={{
-                height: 3,
-                width: 3,
-                backgroundColor: "#FFFFFF29",
-                borderRadius: 99,
-              }}
+              style={[
+                styles.glowBg,
+                {
+                  backgroundColor: bgColor,
+                  shadowColor: bgColor,
+                  top: "28%",
+                  height: "44%",
+                },
+              ]}
             />
-            <CustomText
-              label={`${commentText}`}
-              fontSize={14}
-              color={COLORS.white}
-              fontFamily={fonts.regular}
-            />
+          ) : null}
+
+          {/* IMAGE / VIDEO MEDIA CAROUSEL */}
+          <View
+            style={styles.imageWrapper}
+            onTouchStart={mediaList.length > 1 ? onMediaCarouselTouchStart : undefined}
+          >
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              decelerationRate="fast"
+              snapToInterval={screenWidth - 24}
+              snapToAlignment="center"
+              disableIntervalMomentum={true}
+              style={{ width: screenWidth - 24 }}
+            >
+              {mediaList.map((mediaUri, index) => {
+                const isVideo = isVideoUrl(mediaUri);
+                return (
+                  <View
+                    key={index}
+                    style={[
+                      {
+                        width: screenWidth - 24,
+                        height: getImageHeight(),
+                        overflow: "hidden",
+                      },
+                      getBorderRadiusStyle(index),
+                    ]}
+                  >
+                    {isVideo ? (
+                      <View style={{ flex: 1 }}>
+                        <Video
+                          ref={(ref) => (videoRefs.current[index] = ref)}
+                          source={{ uri: mediaUri }}
+                          style={[
+                            styles.image,
+                            { height: getImageHeight(), width: screenWidth - 24 },
+                            getBorderRadiusStyle(index),
+                          ]}
+                          resizeMode="cover"
+                          repeat
+                          paused={!shouldPlay || index !== currentImageIndex}
+                          muted={mutedVideos[index] || false}
+                          controls={false}
+                          ignoreSilentSwitch="obey"
+                          playInBackground={false}
+                          playWhenInactive={false}
+                          onProgress={(data) => handleVideoProgress(index, data)}
+                          poster={item?.thumbnail}
+                          posterResizeMode="cover"
+                          onReadyForDisplay={() =>
+                            setVideoReady((prev) => ({ ...prev, [index]: true }))
+                          }
+                        />
+                        {!videoReady[index] && (
+                          <View
+                            style={[
+                              StyleSheet.absoluteFill,
+                              getBorderRadiusStyle(index),
+                              { backgroundColor: COLORS.black },
+                            ]}
+                          >
+                            <View style={styles.videoOverlay}>
+                              <ActivityIndicator size="small" color={COLORS.white} />
+                            </View>
+                          </View>
+                        )}
+                        <View style={styles.videoOverlay}>
+                          <Image
+                            source={Images.playIcon || Images.playbutton}
+                            style={styles.playIcon}
+                          />
+                        </View>
+                      </View>
+                    ) : (
+                      <ImageFast
+                        source={
+                          typeof mediaUri === "string"
+                            ? { uri: mediaUri }
+                            : mediaUri
+                        }
+                        style={[
+                          styles.image,
+                          { height: getImageHeight(), width: screenWidth - 24 },
+                          getBorderRadiusStyle(index),
+                        ]}
+                        resizeMode="cover"
+                      />
+                    )}
+
+                    {/* Top Progressive Blur */}
+                    <View style={styles.topBlurContainer} pointerEvents="none">
+                      <ProgressiveBlur
+                        intensity={80}
+                        direction="top"
+                        tint="light"
+                        height={60}
+                        imageUri={mediaUri}
+                        style={{
+                          borderTopLeftRadius:
+                            getBorderRadiusStyle(index).borderTopLeftRadius,
+                          borderTopRightRadius:
+                            getBorderRadiusStyle(index).borderTopRightRadius,
+                          borderBottomLeftRadius: 0,
+                          borderBottomRightRadius: 0,
+                        }}
+                      />
+                    </View>
+
+                    {/* Bottom Progressive Blur */}
+                    <View style={styles.bottomBlurContainer} pointerEvents="none">
+                      <ProgressiveBlur
+                        intensity={80}
+                        direction="bottom"
+                        tint="light"
+                        height={60}
+                        imageUri={mediaUri}
+                        style={{
+                          borderBottomLeftRadius:
+                            getBorderRadiusStyle(index).borderBottomLeftRadius,
+                          borderBottomRightRadius:
+                            getBorderRadiusStyle(index).borderBottomRightRadius,
+                          borderTopLeftRadius: 0,
+                          borderTopRightRadius: 0,
+                        }}
+                      />
+                    </View>
+
+                    {/* Overlay Tag Chip on Video */}
+                    {isCurrentMediaVideo && effectiveHashtags.length > 0 && (
+                      <View style={styles.cardBg}>
+                        <Blur />
+                        <CustomText
+                          label={`${effectiveHashtags[0]}`}
+                          fontSize={12}
+                          color={COLORS.white}
+                          fontFamily={fonts.medium}
+                        />
+                      </View>
+                    )}
+
+                    {/* Bottom Overlay Controls */}
+                    <View style={styles.mediaOverlayControls}>
+                      {/* Left Overlay Control */}
+                      {isCurrentMediaVideo ? (
+                        <TouchableOpacity
+                          onPress={toggleMute}
+                          style={styles.mediaMuteBtn}
+                        >
+                          <Blur />
+                          <Icons
+                            name={isCurrentVideoMuted() ? "volume-up" : "volume-off"}
+                            family="MaterialIcons"
+                            size={16}
+                            color={COLORS.white}
+                          />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.repostButton}
+                          onPress={() => setShowViewerModal(true)}
+                        >
+                          <Blur />
+                          <Image
+                            source={Images.friend || PNGIcons.users}
+                            style={{ height: 16, width: 16 }}
+                          />
+                        </TouchableOpacity>
+                      )}
+
+                      {/* Right Overlay Control */}
+                      {isCurrentMediaVideo ? (
+                        <View style={{ alignItems: "flex-end", paddingRight: 4 }}>
+                          <View style={styles.videoTimerBadge}>
+                            <Blur />
+                            <CustomText
+                              label={
+                                videoProgress[currentImageIndex]
+                                  ? formatTime(videoProgress[currentImageIndex].currentTime)
+                                  : "0:00"
+                              }
+                              fontFamily={fonts.medium}
+                              fontSize={12}
+                            />
+                          </View>
+                        </View>
+                      ) : item?.parentPostId ? (
+                        <TouchableOpacity
+                          style={styles.repostButton}
+                          onPress={() => setShowRepostModal(true)}
+                        >
+                          <Blur />
+                          <Image
+                            source={Images.repostWhite || Images.repost}
+                            style={{ height: 14, width: 14, tintColor: COLORS.white }}
+                          />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.repostButton}
+                          onPress={() => setShowShareModal(true)}
+                        >
+                          <Blur />
+                          <FullScreenSvg />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </View>
+                );
+              })}
+            </ScrollView>
           </View>
 
-          <Image
-            source={Images.heart}
-            style={{ height: 16, width: 16, marginLeft: 6 }}
-          />
+          {/* DYNAMIC PAGINATION INDICATOR DOTS */}
+          {mediaList.length > 1 && (
+            <View style={styles.rowSwipper}>
+              {mediaList.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.indicator,
+                    index === currentImageIndex
+                      ? [styles.activeIndicator, { backgroundColor: bgColor || COLORS.btnColor }]
+                      : styles.inactiveIndicator,
+                    index === currentImageIndex && styles.activeWidth,
+                  ]}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* ACTION BUTTONS ROW (Upvote, Downvote, Comment, Share, Repost, Save) */}
+          <View style={styles.rowButtons}>
+            {/* UPVOTE BUTTON */}
+            <TouchableOpacity
+              onPress={() =>
+                item?.privacy?.upvote === false
+                  ? ToastMessage("User has disabled upvoting on this post", "error")
+                  : handleVote("upvote")
+              }
+              onStartShouldSetResponder={() => true}
+              disabled={isVoting}
+              style={[
+                styles.rowbtn,
+                hasUpvoted() && {
+                  backgroundColor: COLORS.white,
+                },
+              ]}
+            >
+              <Image
+                source={Images.arrowUp}
+                style={{
+                  height: 18,
+                  width: 18,
+                  tintColor: hasUpvoted() ? COLORS.black : COLORS.white,
+                }}
+              />
+              <CustomText
+                label={formatCount(localUpvotes.length)}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                marginRight={2}
+                color={hasUpvoted() ? COLORS.black : COLORS.white}
+              />
+            </TouchableOpacity>
+
+            {/* DOWNVOTE BUTTON */}
+            <TouchableOpacity
+              onPress={() =>
+                item?.privacy?.upvote === false
+                  ? ToastMessage("User has disabled downvoting on this post", "error")
+                  : handleVote("downvote")
+              }
+              onStartShouldSetResponder={() => true}
+              disabled={isVoting}
+              style={[
+                styles.rowbtn,
+                hasDownvoted() && {
+                  backgroundColor: COLORS.white,
+                },
+              ]}
+            >
+              <CustomText
+                label={formatCount(localDownvotes.length)}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                marginLeft={2}
+                color={hasDownvoted() ? COLORS.black : COLORS.white}
+              />
+              <Image
+                source={Images.arrowDown}
+                style={{
+                  height: 18,
+                  width: 18,
+                  tintColor: hasDownvoted() ? COLORS.black : COLORS.white,
+                }}
+              />
+            </TouchableOpacity>
+
+            {/* COMMENT BUTTON */}
+            <TouchableOpacity
+              onPress={handleCommentPress}
+              onStartShouldSetResponder={() => true}
+              style={styles.rowbtn}
+            >
+              <Image
+                source={Images.chat}
+                style={{ height: 16, width: 16, tintColor: COLORS.white }}
+              />
+              <CustomText
+                label={formatCount(effectiveCommentsCount)}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                color={COLORS.white}
+              />
+            </TouchableOpacity>
+
+            {/* SHARE BUTTON */}
+            <TouchableOpacity
+              onPress={() =>
+                item?.privacy?.share === false
+                  ? ToastMessage("User has disabled share on this post", "error")
+                  : setShowShareModal(true)
+              }
+              onStartShouldSetResponder={() => true}
+              style={styles.rowbtn}
+            >
+              <Image
+                source={Images.arrowUpRight}
+                style={{ height: 16, width: 16, tintColor: COLORS.white }}
+              />
+              <CustomText
+                label={formatCount(effectiveSharesCount)}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                color={COLORS.white}
+              />
+            </TouchableOpacity>
+
+            {/* REPOST BUTTON */}
+            <TouchableOpacity
+              style={styles.rowbtn}
+              onPress={() =>
+                item?.privacy?.repost === false
+                  ? ToastMessage("User has disabled repost on this post", "error")
+                  : setShowRepostModal(true)
+              }
+              onStartShouldSetResponder={() => true}
+            >
+              <Image
+                source={Images.repost}
+                style={{ height: 16, width: 16, tintColor: COLORS.white }}
+              />
+              <CustomText
+                label={formatCount(effectiveRepostsCount)}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                color={COLORS.white}
+              />
+            </TouchableOpacity>
+
+            {/* SAVE BUTTON */}
+            <TouchableOpacity
+              onPress={() =>
+                item?.privacy?.save === false
+                  ? ToastMessage("User has disabled save on this post", "error")
+                  : handleSaveToggle()
+              }
+              onStartShouldSetResponder={() => true}
+              disabled={isSaving}
+              style={[
+                styles.rowbtn,
+                isSaved && { backgroundColor: COLORS.btnSoftColor },
+              ]}
+            >
+              <Image
+                source={Images.savePlus}
+                style={[
+                  { height: 16, width: 16, tintColor: COLORS.white },
+                  isSaved && { tintColor: COLORS.btnColor },
+                ]}
+              />
+              <CustomText
+                label={formatCount(localSaves)}
+                fontFamily={fonts.medium}
+                fontSize={12}
+                color={isSaved ? COLORS.btnColor : COLORS.white}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* POST DETAILS (Reacted by, Most Liked Comment, View all comments, Time ago) */}
+          <View style={styles.postDetails}>
+            {/* Reacted by Row */}
+            {(friendName || reactedBy || (localUpvotes.length > 0 && item?.friendLikes?.length > 0)) && (
+              <View style={[styles.partnerRow, { paddingHorizontal: 0, marginTop: 2 }]}>
+                {friendAvatar ? (
+                  <ImageFast
+                    source={{ uri: friendAvatar }}
+                    style={{
+                      height: 16,
+                      width: 16,
+                      borderRadius: 99,
+                      marginRight: 4,
+                    }}
+                  />
+                ) : (
+                  <Image
+                    source={PNGIcons.webflow || Images.person}
+                    style={{ height: 16, width: 16, marginRight: 4 }}
+                  />
+                )}
+                <CustomText
+                  label={`${
+                    friendName ||
+                    reactedBy ||
+                    `${formatCount(localUpvotes.length)} people`
+                  } `}
+                  fontSize={14}
+                  fontFamily={fonts.medium}
+                  marginLeft={2}
+                />
+                <CustomText
+                  label="reacted to this post"
+                  fontSize={12}
+                  color={COLORS.white3}
+                />
+              </View>
+            )}
+
+            {/* Most Liked Comment Preview */}
+            {topCommentContent ? (
+              <TouchableOpacity
+                style={[styles.commentRow, { marginTop: 6 }]}
+                activeOpacity={0.7}
+                onPress={handleCommentPress}
+              >
+                <View style={[styles.commentRow, { flex: 1 }]}>
+                  <CustomText
+                    label={`${topCommentUserName} `}
+                    fontSize={14}
+                    color={COLORS.white}
+                    fontFamily={fonts.medium}
+                  />
+                  <View
+                    style={{
+                      height: 3,
+                      width: 3,
+                      backgroundColor: "#FFFFFF29",
+                      borderRadius: 99,
+                      marginHorizontal: 4,
+                    }}
+                  />
+                  <CustomText
+                    label={topCommentContent}
+                    fontSize={14}
+                    color={COLORS.white}
+                    fontFamily={fonts.regular}
+                  />
+                </View>
+
+                <Image
+                  source={Images.heart}
+                  style={{ height: 16, width: 16, marginLeft: 6 }}
+                />
+              </TouchableOpacity>
+            ) : null}
+
+            {/* View All Comments Link */}
+            {effectiveCommentsCount > 0 && (
+              <TouchableOpacity
+                style={{ marginTop: 4 }}
+                activeOpacity={0.8}
+                onPress={handleCommentPress}
+              >
+                <CustomText
+                  label={`View all ${formatCount(effectiveCommentsCount)} comments`}
+                  fontSize={14}
+                  color={COLORS.white3}
+                />
+              </TouchableOpacity>
+            )}
+
+
+            {/* Time Ago */}
+            <CustomText
+              label={effectiveTimeAgo}
+              fontSize={12}
+              color={COLORS.white3}
+              marginTop={2}
+            />
+          </View>
         </View>
+      </Animated.View>
 
-        <TouchableOpacity style={{ marginTop: 4 }}>
-          <CustomText
-            label={`View all ${commentsCount} comments`}
-            fontSize={14}
-            color={COLORS.white3}
-          />
-        </TouchableOpacity>
+      {/* MODALS */}
+      <EditModal
+        isVisible={showModal}
+        onClose={() => setShowModal(false)}
+        displayName={effectiveDisplayName}
+        username={effectiveUsername}
+        user={author}
+        isOwner={isOwner}
+        onEditPress={() => {
+          if (onEditPress) {
+            onEditPress(item);
+          } else {
+            navigation.navigate("PublishPost", {
+              editMode: true,
+              postData: item,
+            });
+          }
+        }}
+        onDeletePress={() => {
+          if (onDeletePress) {
+            onDeletePress(item?._id);
+          }
+        }}
+        onHidePost={() => {
+          if (onHidePost) {
+            onHidePost(item?._id);
+          }
+        }}
+        onHideUserPosts={() => {
+          if (onHideUserPosts) {
+            onHideUserPosts(author._id);
+          }
+        }}
+      />
 
-        <CustomText
-          label={timeAgo}
-          fontSize={12}
-          color={COLORS.white3}
-          marginTop={2}
-        />
-      </View>
+      <ShareModal
+        isVisible={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        postImage={mediaList[0] || item?.thumbnail || Images.person}
+        username={effectiveUsername}
+        date={effectiveTimeAgo}
+        postId={item?._id}
+        onShareToStory={async () => {
+          try {
+            const url = mediaList[0] || item?.thumbnail || "";
+            const mediaType = isVideoUrl(url) ? "video" : "image";
+            await Promise.all([
+              post(`posts/${item?._id}/repost`, { type: "share" }),
+              post("stories", {
+                media: { url, type: mediaType },
+                status: "active",
+                postId: item?._id,
+              }),
+            ]);
+            setShowShareModal(false);
+            ToastMessage("Post shared to story successfully", "success");
+          } catch (error) {
+            console.log("Error sharing to story:", error);
+            ToastMessage("Failed to share to story", "error");
+          }
+        }}
+      />
+
+      <RepostModal
+        isVisible={showRepostModal}
+        onClose={() => setShowRepostModal(false)}
+        postImage={mediaList[0] || item?.thumbnail || Images.person}
+        username={effectiveUsername}
+        date={effectiveTimeAgo}
+        item={item}
+      />
+
+      <CreatorSummary
+        isVisible={showCreatorSummary}
+        onClose={() => setShowCreatorSummary(false)}
+        user={author}
+        profileColor={authorProfileColor}
+        onMorePress={() => {
+          setShowCreatorSummary(false);
+          setTimeout(() => {
+            setShowSummaryMore(true);
+          }, 400);
+        }}
+      />
+
+      <SummaryMore
+        isVisible={showSummaryMore}
+        onClose={() => setShowSummaryMore(false)}
+        userId={author._id}
+        isFollowing={isFollowingUser}
+        onViewProfile={() => {
+          setShowSummaryMore(false);
+          try {
+            navigation.navigate("Detail", { userId: author._id });
+          } catch (e) {}
+        }}
+        onSendMessage={() => {
+          setShowSummaryMore(false);
+          try {
+            navigation.navigate("InboxScreen", { otherUser: author });
+          } catch (e) {}
+        }}
+        onRemoveFriend={handleFollowPress}
+      />
+
+      <ViewerModal
+        isVisible={showViewerModal}
+        onDisable={() => setShowViewerModal(false)}
+        viewersCount={item?.stats?.views || 0}
+        postId={item?._id}
+      />
     </View>
   );
 };
@@ -288,7 +1765,7 @@ const PostCard = ({
 export default PostCard;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     backgroundColor: COLORS.black,
     borderTopWidth: 3,
     borderTopColor: COLORS.inputBg,
@@ -313,12 +1790,15 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     backgroundColor: "#D9D9D9",
   },
+  nameBlock: {
+    marginLeft: 2,
+  },
   nameRow: { flexDirection: "row", alignItems: "center", gap: 4 },
   partnerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 2,
-    paddingHorizontal: 12,
+    marginTop: 4,
+    paddingHorizontal: 14,
   },
   headerRight: { flexDirection: "row", alignItems: "center", gap: 10 },
   followButton: {
@@ -337,19 +1817,17 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: "100%",
-    aspectRatio: 1,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: "hidden",
     paddingHorizontal: 12,
+    marginTop: 4,
   },
   glowBg: {
     position: "absolute",
-    top: "19%",
     left: 12,
     right: 12,
-    height: "54%",
-    borderRadius: 12,
-    opacity: 0.7,
+    borderRadius: 16,
+    opacity: 0.8,
     shadowOpacity: 0.9,
     shadowRadius: 24,
     shadowOffset: { width: 0, height: 0 },
@@ -357,121 +1835,203 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: "98%",
+    height: "100%",
     alignSelf: "center",
-    borderRadius: 12,
   },
-  bottomOverlay: {
+  topBlurContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    overflow: "hidden",
+    zIndex: 1,
+  },
+  bottomBlurContainer: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    height: "40%",
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
+    overflow: "hidden",
+    zIndex: 1,
+  },
+  mediaOverlayControls: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    zIndex: 2,
+  },
+  mediaMuteBtn: {
+    paddingHorizontal: 10,
+    height: 32,
+    width: 36,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
+    borderRadius: 99,
     overflow: "hidden",
   },
-  expandButton: {
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-    backgroundColor: "#f1efef37",
-    borderRadius: 20,
-    height: 32,
-    width: 32,
-    alignItems: "center",
-    justifyContent: "center",
+  videoTimerBadge: {
+    paddingHorizontal: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
+    borderRadius: 99,
+    paddingVertical: 6,
+    overflow: "hidden",
+    marginRight: 6,
   },
-  usersButton: {
+  videoOverlay: {
     position: "absolute",
-    bottom: 10,
-    left: 10,
-    backgroundColor: "#f1efef37",
-    borderRadius: 20,
-    height: 32,
-    width: 32,
-    alignItems: "center",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.1)",
+    borderRadius: 16,
   },
-  indicatorContainer: {
+  playIcon: {
+    width: 44,
+    height: 44,
+    tintColor: "rgba(255,255,255,0.8)",
+  },
+  rowSwipper: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
-    marginTop: 2,
-    marginBottom: 9,
-    borderBottomColor: "#FFFFFF0A",
-    marginHorizontal: 12,
+    gap: 4,
+    marginVertical: 8,
+    alignSelf: "center",
   },
-  indicatorDot: {
-    width: 6,
+  indicator: {
     height: 6,
-    borderRadius: 4,
-    backgroundColor: "#222",
-    marginHorizontal: 4,
+    borderRadius: 99,
+  },
+  activeWidth: {
+    width: 30,
   },
   activeIndicator: {
-    width: 32,
-    borderRadius: 6,
-    backgroundColor: "#B6A47E", // beige-gold active color
+    width: 30,
+  },
+  inactiveIndicator: {
+    width: 6,
+    backgroundColor: "#FFFFFF29",
   },
   postDetails: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingTop: 6,
     paddingBottom: 10,
   },
   commentRow: { flexDirection: "row", alignItems: "center" },
-  reactionIocns: {
-    height: 26,
-    width: 26,
-    resizeMode: "contain",
-    marginRight: 4,
-  },
-  bottomGradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: "45%",
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-  },
-  actionsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 12,
-  },
-  leftActions: { flexDirection: "row", alignItems: "center", gap: 12 },
-  actionButton: { flexDirection: "row", alignItems: "center" },
   wrapper: {
     gap: 4,
     flexWrap: "wrap",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
-    marginBottom: 20,
-    marginTop: 10,
+    paddingHorizontal: 14,
+    marginTop: 6,
+  },
+  tagBg: {
+    backgroundColor: COLORS.inputBg,
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 99,
+    paddingLeft: 8,
+    paddingRight: 10,
+    height: 24,
   },
   cardBg: {
-    backgroundColor: "#FFFFFF0A",
-    padding: 10,
-    paddingVertical: 4,
+    backgroundColor: "rgba(18, 18, 18, 0.44)",
+    paddingLeft: 6,
+    paddingRight: 7.5,
     borderRadius: 99,
+    position: "absolute",
+    overflow: "hidden",
+    top: 14,
+    height: 24,
+    left: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 2,
+  },
+  investmentCard: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 6,
+    justifyContent: "center",
+    borderRadius: 4,
+    backgroundColor: "rgba(55, 184, 116, 0.48)",
+    marginTop: 8,
+    height: 20,
+    marginHorizontal: 14,
+  },
+  repostButton: {
+    height: 32,
+    width: 32,
+    borderRadius: 99,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 6,
+    overflow: "hidden",
   },
   rowbtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 2,
+    justifyContent: "space-between",
     backgroundColor: "#FFFFFF0A",
-    paddingHorizontal: 6,
+    paddingRight: 6,
+    paddingLeft: 6,
     paddingVertical: 4,
     borderRadius: 4,
+    width: "15.5%",
+    height: 28,
   },
   rowButtons: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingVertical: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    justifyContent: "space-between",
+  },
+  rowBetween: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  swipeRightIndicator: {
+    position: "absolute",
+    right: 10,
+    top: "50%",
+    transform: [{ translateY: -25 }],
     paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: -10,
+  },
+  swipeLeftIndicator: {
+    position: "absolute",
+    left: 10,
+    top: "50%",
+    transform: [{ translateY: -25 }],
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: -10,
+  },
+  swipeIndicatorContent: {
+    alignItems: "center",
+  },
+  swipeIcon: {
+    height: 70,
+    width: 70,
+    tintColor: COLORS.white,
   },
 });

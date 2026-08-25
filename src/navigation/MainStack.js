@@ -44,6 +44,7 @@ import AddAccount from "../screens/Main/SocialsAccount/AddAccount";
 import SongsList from "../screens/Main/SongsList";
 import TabStack from "./TabStack";
 import HomePremium from "../screens/Main/HomePremium";
+import CommentScreen from "../screens/Main/CommentScreen";
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
@@ -56,7 +57,9 @@ const MainStack = () => {
     >
       <Stack.Screen name="TabStack" component={TabStack} />
       <Stack.Screen name="HomePremium" component={HomePremium} />
+      <Stack.Screen name="CommentScreen" component={CommentScreen} />
       <Stack.Screen name="TermsConditions" component={TermsConditions} />
+
       <Stack.Screen name="Notification" component={Notification} />
       <Stack.Screen name="InboxScreen" component={InboxScreen} />
       <Stack.Screen name="FilterScreen" component={FilterScreen} />

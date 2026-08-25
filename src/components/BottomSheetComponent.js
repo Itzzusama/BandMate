@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { forwardRef, useMemo } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { COLORS } from "../utils/COLORS";
 
 const BottomSheetComponent = forwardRef(
   (
@@ -11,9 +11,12 @@ const BottomSheetComponent = forwardRef(
       initialIndex = -1,
       onChange,
       enablePanDownToClose = false,
+      enableScrollView = true,
       contentContainerStyle,
-      handleVisible = true, // New prop to control handle visibility
+      handleVisible = true,
       handleStyle,
+      footer,
+      header,
       ...props
     },
     ref
@@ -21,29 +24,37 @@ const BottomSheetComponent = forwardRef(
     const memoizedSnapPoints = useMemo(() => snapPoints, [snapPoints]);
 
     return (
-      <GestureHandlerRootView style={styles.container}>
+      <View style={styles.container} pointerEvents="box-none">
         <BottomSheet
           ref={ref}
           index={initialIndex}
           snapPoints={memoizedSnapPoints}
           onChange={onChange}
           enablePanDownToClose={enablePanDownToClose}
-          handleStyle={handleStyle}
-          handleIndicatorStyle={
-            handleVisible ? styles.handleIndicator : styles.handleHidden
-          }
+          handleComponent={null}
+          backgroundStyle={{ backgroundColor: COLORS.black }}
+          style={styles.bottomSheet}
           {...props}
         >
-          <BottomSheetScrollView
-            contentContainerStyle={[
-              styles.contentContainer,
-              contentContainerStyle,
-            ]}
-          >
-            {children}
-          </BottomSheetScrollView>
+          {header?.()}
+          {enableScrollView ? (
+            <BottomSheetScrollView
+              style={{ backgroundColor: COLORS.black, borderRadius: 12 }}
+              contentContainerStyle={[
+                styles.contentContainer,
+                contentContainerStyle,
+              ]}
+            >
+              {children}
+            </BottomSheetScrollView>
+          ) : (
+            <View style={{ flex: 1, backgroundColor: COLORS.black }}>
+              {children}
+            </View>
+          )}
+          {footer?.()}
         </BottomSheet>
-      </GestureHandlerRootView>
+      </View>
     );
   }
 );
@@ -53,19 +64,14 @@ const styles = StyleSheet.create({
     flex: 1,
     pointerEvents: "box-none",
   },
+  bottomSheet: {
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+  },
   contentContainer: {
-    backgroundColor: "white",
-    paddingBottom: 20,
-  },
-  handleIndicator: {
-    backgroundColor: "#999",
-  },
-  handleHidden: {
-    width: 0,
-    height: 0,
-    backgroundColor: "transparent",
-    padding: 0,
-    margin: 0,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+    paddingBottom: 140,
   },
 });
 

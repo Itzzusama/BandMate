@@ -112,7 +112,7 @@ const CustomInputTextOnly = ({
               <ImageFast
                 source={Images.LocationPin}
                 resizeMode={"contain"}
-                style={{ width: 10, height: 13 }}
+                style={{ width: 14, height: 18 }}
               />
               <CustomText
                 label={value?.length ? value : placeholder || ""}
@@ -176,7 +176,9 @@ const CustomInputTextOnly = ({
           ) : (
             <CustomText
               label={value?.length ? value : placeholder || ""}
-              color={error?"#EE1045": value?.length ? displayColor : COLORS.white2}
+              color={
+                error ? "#EE1045" : value?.length ? displayColor : COLORS.white2
+              }
               fontFamily={fonts.regular}
               fontSize={16}
               marginLeft={search ? 8 : 0}

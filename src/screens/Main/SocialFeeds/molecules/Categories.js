@@ -5,9 +5,19 @@ import { COLORS } from "../../../../utils/COLORS";
 import fonts from "../../../../assets/fonts";
 import Icons from "../../../../components/Icons";
 
-const Categories = () => {
-  const categories = ["Books", "Business & Industrial", "Collectibles"];
-
+const Categories = ({
+  categories = [
+    "Technology",
+    "Music",
+    "Sports",
+    "Fashion",
+    "Entertainment",
+    "Gaming",
+    "Books",
+  ],
+  selectedCategory,
+  onSelectCategory,
+}) => {
   return (
     <ScrollView
       horizontal
@@ -16,8 +26,13 @@ const Categories = () => {
     >
       {/* Compass Card (Left Side Only) */}
       <TouchableOpacity
-        style={[styles.iconCard, { paddingHorizontal: 10 }]}
+        style={[
+          styles.iconCard,
+          { paddingHorizontal: 10 },
+          !selectedCategory && { backgroundColor: COLORS.btnColor },
+        ]}
         activeOpacity={0.8}
+        onPress={() => onSelectCategory && onSelectCategory(null)}
       >
         <Icons
           family="Ionicons"
@@ -27,20 +42,31 @@ const Categories = () => {
         />
       </TouchableOpacity>
 
-      {categories.map((item, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.categoryButton}
-          activeOpacity={0.8}
-        >
-          <CustomText
-            label={item}
-            color={COLORS.white}
-            fontSize={14}
-            fontFamily={fonts.medium}
-          />
-        </TouchableOpacity>
-      ))}
+      {categories.map((item, index) => {
+        const isSelected = selectedCategory === item;
+        return (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.categoryButton,
+              isSelected && { backgroundColor: COLORS.btnColor },
+            ]}
+            activeOpacity={0.8}
+            onPress={() => {
+              if (onSelectCategory) {
+                onSelectCategory(isSelected ? null : item);
+              }
+            }}
+          >
+            <CustomText
+              label={item}
+              color={isSelected ? COLORS.black : COLORS.white}
+              fontSize={14}
+              fontFamily={fonts.medium}
+            />
+          </TouchableOpacity>
+        );
+      })}
     </ScrollView>
   );
 };
