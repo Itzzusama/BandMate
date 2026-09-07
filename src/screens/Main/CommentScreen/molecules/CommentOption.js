@@ -11,41 +11,52 @@ const CommentOption = ({
   isVisible,
   onClose,
   displayName = "Display Name",
-  username = "@username",
+  username = "username",
   userImage = null,
-  commentText = "Sample comment text",
-  isOwner = false,
-  isPin = false,
-  isVerified = false,
-  profileColor = null,
-  onEditComment,
+  profileColor,
+  commentText = "Comments goes here.",
+  isVerified = true,
+  userData,
+  commentUserId,
   onPinComment,
-  onDeleteComment,
+  onReply,
+  onViewProfile,
+  onSendMessage,
   onHideComment,
   onHideUserComments,
   onRemoveFriend,
   onReportComment,
+  onEditComment,
+  onWhoCanInteract,
+  onDeleteComment,
+  isPinned,
 }) => {
-  // Owner Options
+  const styles = createStyles();
+  // Check if the logged-in user is the comment author
+  const isOwner =
+    String(userData?._id || userData?.id || "") === String(commentUserId || "");
+
+  // Menu options for comment owner
   const ownerOptions = [
-    {
-      id: "edit",
-      icon: Images.commentEdit,
-      label: "Edit comment",
-      onPress: onEditComment,
-      showArrow: true,
-    },
     {
       id: "pin",
       icon: Images.commentPin,
-      label: isPin ? "Unpin comment" : "Pin comment",
-      subtitle: isPin ? "Unpin from top" : "Pin to the top",
+      label: isPinned ? "Unpin comment" : "Pin comment",
+      subtitle: isPinned ? "Remove from top" : "Show at the top",
       onPress: onPinComment,
       showArrow: true,
     },
     {
+      id: "edit",
+      icon: Images.commentEdit,
+      label: "Edit comment",
+      subtitle: "Better your comment",
+      onPress: onEditComment,
+      showArrow: true,
+    },
+    {
       id: "delete",
-      icon: Images.reportBg,
+      icon: Images.hideBg || Images.reportBg,
       label: "Delete comment",
       subtitle: "Cannot recover after deletion",
       onPress: onDeleteComment,
@@ -54,8 +65,29 @@ const CommentOption = ({
     },
   ];
 
-  // Other User Options
+  // Menu options for other users
   const otherUserOptions = [
+    {
+      id: "reply",
+      icon: Images.commentReply,
+      label: "Reply",
+      onPress: onReply,
+      showArrow: true,
+    },
+    {
+      id: "viewProfile",
+      icon: Images.commentEye,
+      label: "View profile",
+      onPress: onViewProfile,
+      showArrow: true,
+    },
+    {
+      id: "sendMessage",
+      icon: Images.commentReply,
+      label: "Send a message",
+      onPress: onSendMessage,
+      showArrow: true,
+    },
     {
       id: "hideComment",
       icon: Images.hideBg,
@@ -81,6 +113,7 @@ const CommentOption = ({
     },
   ];
 
+  // Select options based on ownership
   const menuOptions = isOwner ? ownerOptions : otherUserOptions;
 
   return (
@@ -98,7 +131,7 @@ const CommentOption = ({
           padding: 4,
           borderWidth: 1,
           overflow: "hidden",
-          borderColor: "rgba(255, 255, 255, 0.16)",
+          borderColor: "rgba(255, 255, 255, 0.3)",
         }}
       >
         <BlurView
@@ -248,107 +281,108 @@ const CommentOption = ({
 
 export default CommentOption;
 
-const styles = StyleSheet.create({
-  modalContainer: {
-    backgroundColor: COLORS.black,
-    borderRadius: 28,
-    width: "100%",
-    alignSelf: "center",
-    padding: 16,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  userSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  avatar: {
-    height: 48,
-    width: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.inputBg,
-  },
-  userInfo: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  nameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  verifiedBadge: {
-    height: 18,
-    width: 18,
-    tintColor: "#007BFF",
-  },
-  closeButton: {
-    padding: 4,
-    backgroundColor: COLORS.inputBg,
-    borderRadius: 20,
-  },
-  closeIcon: {
-    height: 32,
-    width: 32,
-    tintColor: COLORS.white,
-  },
-  commentSection: {
-    marginTop: 8,
-  },
-  optionsSection: {
-    marginTop: 16,
-    gap: 4,
-  },
-  optionRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  optionLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  optionIcon: {
-    height: 40,
-    width: 40,
-    tintColor: COLORS.white,
-    marginRight: 12,
-  },
-  optionTextContainer: {
-    flex: 1,
-  },
-  forwardIcon: {
-    height: 20,
-    width: 20,
-    tintColor: COLORS.white3,
-  },
-  forwardIconRed: {
-    height: 20,
-    width: 20,
-    tintColor: "rgba(238, 16, 69, 1)",
-  },
-  reportRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    marginTop: 8,
-  },
-  reportLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  reportIcon: {
-    height: 40,
-    width: 40,
-    tintColor: "rgba(238, 16, 69, 1)",
-    marginRight: 12,
-  },
-});
+const createStyles = () =>
+  StyleSheet.create({
+    modalContainer: {
+      backgroundColor: COLORS.black,
+      borderRadius: 28,
+      width: "100%",
+      alignSelf: "center",
+      padding: 12,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+    },
+    userSection: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+    },
+    avatar: {
+      height: 48,
+      width: 48,
+      borderRadius: 24,
+      backgroundColor: COLORS.inputBg,
+    },
+    userInfo: {
+      marginLeft: 12,
+      flex: 1,
+    },
+    nameRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    verifiedBadge: {
+      height: 18,
+      width: 18,
+      tintColor: COLORS.blue || "#007BFF",
+    },
+    closeButton: {
+      padding: 4,
+      backgroundColor: COLORS.inputBg,
+      borderRadius: 20,
+    },
+    closeIcon: {
+      height: 32,
+      width: 32,
+      tintColor: COLORS.white,
+    },
+    commentSection: {
+      marginTop: 8,
+    },
+    optionsSection: {
+      marginTop: 16,
+      gap: 4,
+    },
+    optionRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 4,
+    },
+    optionLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+    },
+    optionIcon: {
+      height: 40,
+      width: 40,
+      tintColor: COLORS.white,
+      marginRight: 12,
+    },
+    optionTextContainer: {
+      flex: 1,
+    },
+    forwardIcon: {
+      height: 24,
+      width: 24,
+      tintColor: COLORS.white3,
+    },
+    forwardIconRed: {
+      height: 24,
+      width: 24,
+      tintColor: "rgba(238, 16, 69, 1)",
+    },
+    reportRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 12,
+      marginTop: 8,
+    },
+    reportLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+    },
+    reportIcon: {
+      height: 40,
+      width: 40,
+      tintColor: "rgba(238, 16, 69, 1)",
+      marginRight: 12,
+    },
+  });

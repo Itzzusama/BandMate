@@ -14,6 +14,7 @@ import fonts from "../assets/fonts";
 import { PNGIcons } from "../assets/images/icons";
 import { COLORS } from "../utils/COLORS";
 import CustomText from "./CustomText";
+import { Images } from "../assets/images";
 
 const SearchInput = ({
   placeholder,
@@ -33,10 +34,14 @@ const SearchInput = ({
   withLabel,
   isCross,
   CrossPress,
-  isChange, // 🔹 new prop
-  CameraPress, // 🔹 optional handler
-  borderRadius = 12,
+  CrossPressBack,
+  isChange,
+  CameraPress,
+  borderRadius = 99,
   isClear,
+  source,
+  height,
+  width,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const navigation = useNavigation();
@@ -51,8 +56,10 @@ const SearchInput = ({
     isBlur?.();
   };
 
+  const showInnerCross = isCross && value?.trim()?.length > 0;
+
   return (
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <View style={{ flexDirection: "row", alignItems: "center", width, gap: 8 }}>
       {withLabel && (
         <CustomText
           label={withLabel}
@@ -67,9 +74,10 @@ const SearchInput = ({
           {
             marginBottom,
             marginTop,
-            borderColor: isFocused ? COLORS.primaryColor : "#F2F2F2",
+            borderColor: isFocused ? COLORS.white : COLORS.inputBg,
             elevation,
             borderRadius,
+            height: height || 46,
           },
         ]}
       >
@@ -77,7 +85,7 @@ const SearchInput = ({
           <Icons
             family="Ionicons"
             name="arrow-back-outline"
-            color="#0F1621"
+            color={COLORS.white}
             size={25}
             style={{ marginRight: 10 }}
             onPress={() => navigation.goBack()}
@@ -87,24 +95,14 @@ const SearchInput = ({
         {/* Search Icon */}
         <TouchableOpacity
           disabled
-          style={[
-            styles.searchIcon,
-            isChange && {
-              backgroundColor: COLORS.darkPurple,
-              width: 36,
-              height: 36,
-              borderRadius: 99,
-              marginRight: 10,
-              marginLeft: -5,
-            },
-          ]}
+          style={styles.searchIcon}
           activeOpacity={0.6}
           onPress={onPress}
         >
           <Icons
-            family="Fontisto"
+            family="Ionicons"
             name="search"
-            color={isChange ? "#fff" : COLORS.white2}
+            color={COLORS.white3}
             size={20}
           />
         </TouchableOpacity>
@@ -121,6 +119,7 @@ const SearchInput = ({
           ]}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          cursorColor={COLORS.btnColor}
           value={value}
           onChangeText={onChangeText}
           maxLength={maxLength}
@@ -128,67 +127,53 @@ const SearchInput = ({
           autoFocus={autoFocus}
           editable={editable}
         />
-        <TouchableOpacity
-          disabled
-          style={[
-            styles.searchIcon,
-            isChange && {
-              backgroundColor: COLORS.darkPurple,
-              width: 36,
-              height: 36,
-              borderRadius: 99,
-              marginRight: 10,
-              marginLeft: -5,
-            },
-          ]}
-          activeOpacity={0.6}
-          onPress={() => onChangeText("")}
-        >
-          {isCross && value && (
-            <Pressable onPress={isClear}>
-              <Image
-                source={PNGIcons.crossBg}
-                style={{
-                  height: 24,
-                  width: 24,
-                  marginTop: 2,
-                  tintColor: COLORS.white,
-                }}
-              />
-            </Pressable>
-          )}
-        </TouchableOpacity>
-        {/* If isChange is true → show Cross + Camera inside */}
-        {isChange && (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {isCross && (
-              <TouchableOpacity onPress={CrossPress} activeOpacity={0.6}>
-                <Image
-                  source={PNGIcons.crossBg}
-                  style={{
-                    height: 22,
-                    width: 22,
-                    marginTop: 2,
-                    tintColor: COLORS.white,
-                  }}
-                />
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              onPress={CameraPress}
-              style={styles.inlineIcon}
-              activeOpacity={0.6}
-            >
-              <Icons
-                family="Feather"
-                name="camera"
-                size={22}
-                color={COLORS.gray1}
-              />
-            </TouchableOpacity>
-          </View>
+
+        {/* Inner Cross when text is present */}
+        {showInnerCross && (
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={CrossPress || (() => onChangeText?.(""))}
+          >
+            <Image
+              source={PNGIcons.crossBg || Images.crossGray}
+              style={{ height: 22, width: 22 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        )}
+
+        {/* Optional Camera button */}
+        {isChange && CameraPress && (
+          <TouchableOpacity
+            onPress={CameraPress}
+            style={styles.inlineIcon}
+            activeOpacity={0.6}
+          >
+            <Icons
+              family="Feather"
+              name="camera"
+              size={22}
+              color={COLORS.gray1}
+            />
+          </TouchableOpacity>
         )}
       </View>
+
+      {/* External Back / Cross button if CrossPressBack is supplied */}
+      {isCross && CrossPressBack && (
+        <TouchableOpacity
+          onPress={CrossPressBack}
+          style={{ overflow: "hidden", borderRadius: 99 }}
+        >
+          <Image
+            source={source || Images.crossBg}
+            style={{
+              height: 44,
+              width: 44,
+            }}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

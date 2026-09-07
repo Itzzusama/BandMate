@@ -1,88 +1,132 @@
-import { useNavigation } from "@react-navigation/native";
-import { useCallback, useEffect, useState } from "react";
-import {
-  DeviceEventEmitter,
-  Image,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
-import fonts from "../../../assets/fonts";
-import { EventImages } from "../../../assets/images/eventImages";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { DeviceEventEmitter, RefreshControl, StyleSheet } from "react-native";
 import { FeedsImages } from "../../../assets/images/FeedsImages";
-import { PNGIcons } from "../../../assets/images/icons";
-import CustomText from "../../../components/CustomText";
+import Divider from "../../../components/Divider";
 import ScreenWrapper from "../../../components/ScreenWrapper";
 import SocialFeedsSkeleton from "../../../components/SocialFeedsSkeleton";
+import { useSelector } from "react-redux";
+import { selectStoryUploadStatus } from "../../../store/reducer/appSlice";
 import { del, get, post } from "../../../services/ApiRequest";
 import { COLORS } from "../../../utils/COLORS";
 import { ToastMessage } from "../../../utils/ToastMessage";
-import Categories from "./molecules/Categories";
-import FeedCard from "./molecules/FeedCard";
 import Header from "./molecules/Header";
-import Moments from "./molecules/Moments";
+import MomentCard from "./molecules/MomentCard";
 import PostCard from "./molecules/PostCard";
 
 const SocialFeeds = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const storyUploadStatus = useSelector(selectStoryUploadStatus);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [storiesData, setStoriesData] = useState([]);
+  const [myStoriesData, setMyStoriesData] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const isFirstLoadRef = useRef(true);
+
+  // Fetch stories from API
+  const getStories = useCallback(async () => {
+    try {
+      const response = await get("stories");
+      setStoriesData(response.data?.data || response.data || []);
+    } catch (error) {
+      console.log("getStories error in SocialFeeds:", error);
+    }
+  }, []);
+
+  const getMyStories = useCallback(async () => {
+    try {
+      const response = await get("stories/me");
+      setMyStoriesData(response.data?.data || response.data || []);
+    } catch (error) {
+      console.log("getMyStories error in SocialFeeds:", error);
+    }
+  }, []);
 
   // Fetch posts from API
-  const fetchPosts = useCallback(async (isRefresh = false, category = selectedCategory) => {
+  const fetchPosts = useCallback(
+    async (isRefresh = false, category = selectedCategory) => {
+      try {
+        if (isRefresh) {
+          setRefreshing(true);
+        } else if (isFirstLoadRef.current && posts.length === 0) {
+          setLoading(true);
+        }
+
+        let endpoint = "posts?&type=post";
+        if (category) {
+          endpoint += `&topic=${encodeURIComponent(category)}`;
+        }
+
+        const response = await get(endpoint);
+        if (response?.data?.success && Array.isArray(response?.data?.data)) {
+          setPosts(response.data.data);
+        } else if (Array.isArray(response?.data)) {
+          setPosts(response.data);
+        }
+      } catch (error) {
+        console.log("Error fetching posts in SocialFeeds:", error);
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+        isFirstLoadRef.current = false;
+      }
+    },
+    [selectedCategory, posts.length],
+  );
+
+  // Fetch all metadata and stories
+  const fetchMetaData = useCallback(async () => {
     try {
-      if (isRefresh) {
-        setRefreshing(true);
-      }
-      let endpoint = "posts?&type=post";
-      if (category) {
-        endpoint += `&topic=${encodeURIComponent(category)}`;
-      }
-
-      const response = await get(endpoint);
-      if (response?.data?.success && Array.isArray(response?.data?.data)) {
-        setPosts(response.data.data);
-      } else if (Array.isArray(response?.data)) {
-        setPosts(response.data);
-      }
+      await Promise.all([getStories(), getMyStories()]);
     } catch (error) {
-      console.log("Error fetching posts in SocialFeeds:", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+      console.log("fetchMetaData error in SocialFeeds:", error);
     }
-  }, [selectedCategory]);
+  }, [getMyStories, getStories]);
 
+  // Run fetch on screen focus
   useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+    if (isFocused) {
+      fetchPosts(false);
+      fetchMetaData();
+    }
+  }, [isFocused, fetchPosts, fetchMetaData]);
 
-  // Listen to post upload or repost completion to auto-refresh
+  // Refetch stories when story upload status becomes success or idle
+  useEffect(() => {
+    if (storyUploadStatus === "success" || storyUploadStatus === "idle") {
+      fetchMetaData();
+    }
+  }, [storyUploadStatus, fetchMetaData]);
+
+  // Listen to upload / post events to auto-refresh
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener(
       "uploadCompleted",
       () => {
         fetchPosts(true);
-      }
+        fetchMetaData();
+      },
     );
     return () => {
       subscription.remove();
     };
-  }, [fetchPosts]);
+  }, [fetchPosts, fetchMetaData]);
 
   // Pull to refresh handler
   const onRefresh = useCallback(() => {
     fetchPosts(true);
-  }, [fetchPosts]);
+    fetchMetaData();
+  }, [fetchPosts, fetchMetaData]);
 
   // Category select handler
   const handleSelectCategory = (cat) => {
     setSelectedCategory(cat);
-    setLoading(true);
+    if (posts.length === 0) {
+      setLoading(true);
+    }
     fetchPosts(false, cat);
   };
 
@@ -110,7 +154,7 @@ const SocialFeeds = () => {
         postData: postItem,
       });
     },
-    [navigation]
+    [navigation],
   );
 
   // Hide post handler
@@ -120,6 +164,8 @@ const SocialFeeds = () => {
       if (response?.data?.success) {
         ToastMessage("Post hidden successfully", "success");
         setPosts((prev) => prev.filter((p) => p._id !== postId));
+      } else {
+        ToastMessage("Failed to hide post", "error");
       }
     } catch (error) {
       console.error("Error hiding post:", error);
@@ -133,18 +179,37 @@ const SocialFeeds = () => {
       if (response?.data?.success) {
         ToastMessage("User posts hidden successfully", "success");
         setPosts((prev) => prev.filter((p) => p?.author?._id !== userId));
+      } else {
+        ToastMessage("Failed to hide user posts", "error");
       }
     } catch (error) {
       console.error("Error hiding user posts:", error);
     }
   }, []);
 
+  const handleOpenComments = useCallback(
+    (postItem, postData) => {
+      navigation.navigate("DetailPage", {
+        item: postItem,
+        postId: postItem?._id || postItem?.id,
+        postData,
+      });
+    },
+    [navigation],
+  );
+
   return (
     <ScreenWrapper
       paddingHorizontal={0.1}
       paddingBottom={0.1}
       scrollEnabled
-      headerUnScrollable={() => <Header />}
+      translucent
+      headerUnScrollable={() => (
+        <Header
+          selectedCategory={selectedCategory}
+          onSelectCategory={handleSelectCategory}
+        />
+      )}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -154,85 +219,12 @@ const SocialFeeds = () => {
         />
       }
     >
-      {loading ? (
+      {loading && posts.length === 0 ? (
         <SocialFeedsSkeleton />
       ) : (
         <>
-          <Categories
-            selectedCategory={selectedCategory}
-            onSelectCategory={handleSelectCategory}
-          />
-          <Moments />
-
-          {/* Front Page Header */}
-          <View
-            style={[styles.row, { paddingHorizontal: 12, marginBottom: 12 }]}
-          >
-            <View style={{ flex: 1 }}>
-              <CustomText
-                label={"Front Page"}
-                fontSize={18}
-                fontFamily={fonts.medium}
-                lineHeight={18 * 1.4}
-              />
-            </View>
-            <View style={styles.row}>
-              <CustomText
-                label={"GLOBAL RANKING"}
-                fontSize={12}
-                fontFamily={fonts.semiBold}
-                color={COLORS.white3}
-              />
-              <Pressable style={styles.forwardIcon}>
-                <Image source={PNGIcons.forward} style={styles.icon} />
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Front Page Horizontal Feed */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.feedRow}
-          >
-            <FeedCard
-              username="username1"
-              displayName="Display Name 1"
-              isVerified={true}
-              imageSource={FeedsImages.feed_img}
-              promo={true}
-              sponsored={true}
-              weeksOnChart={2}
-              rank={1}
-              percentageGain={3240}
-              timeframe="2H"
-              stats={{
-                likes: "1.5M",
-                comments: "1.5M",
-                shares: "1.5M",
-                saves: "1.5M",
-              }}
-            />
-
-            <FeedCard
-              username="username2"
-              displayName="Display Name 2"
-              isVerified={false}
-              imageSource={EventImages.eventImg}
-              promo={true}
-              sponsored={true}
-              weeksOnChart={5}
-              rank={2}
-              percentageGain={1500}
-              timeframe="1D"
-              stats={{
-                likes: "2.1M",
-                comments: "1.2M",
-                shares: "900K",
-                saves: "600K",
-              }}
-            />
-          </ScrollView>
+          {/* Moments / Stories Section */}
+          <MomentCard storiesData={storiesData} myStoriesData={myStoriesData} />
 
           {/* Post Feed List */}
           {posts.length > 0 ? (
@@ -247,11 +239,11 @@ const SocialFeeds = () => {
                 upvotes={postItem.upvotes || []}
                 savedCount={postItem.stats?.saved || 0}
                 commentsCount={postItem.stats?.comments || 0}
+                onCommentPress={handleOpenComments}
                 onDeletePress={handleDeletePost}
                 onEditPress={handleEditPost}
                 onHidePost={handleHidePost}
                 onHideUserPosts={handleHideUserPosts}
-                onVoteUpdate={() => fetchPosts(false)}
                 marginBottom={index === posts.length - 1 ? 140 : 0}
               />
             ))

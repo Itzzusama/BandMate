@@ -34,11 +34,11 @@ import { setUserData } from "../../../store/reducer/usersSlice";
 import { COLORS } from "../../../utils/COLORS";
 import { uploadAndGetUrl } from "../../../utils/constants";
 import { ToastMessage } from "../../../utils/ToastMessage";
+import CommentModal from "../CommentScreen/molecules/CommentModal";
 import EditModal from "../SocialFeeds/molecules/EditModal";
 import PostCard from "../SocialFeeds/molecules/PostCard";
-import CommentModal from "./molecules/CommentModal";
 
-const CommentScreen = () => {
+const DetailPage = () => {
   const route = useRoute();
   const isFocused = useIsFocused();
   const navigation = useNavigation();
@@ -833,7 +833,7 @@ const CommentScreen = () => {
       statusBarColor={COLORS.black}
       scrollEnabled
       headerUnScrollable={() => (
-        <View style={[styles.rowBetween, { marginTop: insets.top }]}>
+        <View style={[styles.rowBetween, { paddingBottom: 10 }]}>
           {/* Left Section */}
           <View style={styles.row}>
             <TouchableOpacity
@@ -1290,7 +1290,7 @@ const CommentScreen = () => {
   );
 };
 
-export default CommentScreen;
+export default DetailPage;
 
 const styles = StyleSheet.create({
   container: {

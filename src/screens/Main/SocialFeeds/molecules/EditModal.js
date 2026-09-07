@@ -1,4 +1,3 @@
-import { BlurView } from "@react-native-community/blur";
 import { useState } from "react";
 import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import fonts from "../../../../assets/fonts";
@@ -30,11 +29,7 @@ const EditModal = ({
 
   const firstName = user?.first_name || user?.firstName || "";
   const lastName =
-    user?.sur_name ||
-    user?.surname ||
-    user?.last_name ||
-    user?.lastName ||
-    "";
+    user?.sur_name || user?.surname || user?.last_name || user?.lastName || "";
   const effectiveDisplayName =
     displayName ||
     `${firstName} ${lastName}`.trim() ||
@@ -78,21 +73,17 @@ const EditModal = ({
     >
       <View
         style={{
-          margin: 10,
-          borderRadius: 32,
-          padding: 4,
+          margin: 12,
+          borderRadius: 30,
+          padding: 5,
           borderWidth: 1,
           overflow: "hidden",
-          borderColor: "rgba(255, 255, 255, 0.16)",
+          backgroundColor: "rgba(255, 255, 255, 0.06)",
+          borderColor: "rgba(255, 255, 255, 0.22)",
         }}
       >
-        {/* Blur Layer */}
-        <BlurView
-          blurType="dark"
-          blurAmount={10}
-          reducedTransparencyFallbackColor="#FFFFFF29"
-          style={[StyleSheet.absoluteFillObject, { borderRadius: 26 }]}
-        />
+        {/* iOS Native Glass Blur Layer */}
+
         <View style={styles.modalContainer}>
           {/* Header Section */}
           <View style={styles.header}>
@@ -133,10 +124,7 @@ const EditModal = ({
               </View>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Image
-                source={Images.crossBg || Images.cross}
-                style={styles.closeIcon}
-              />
+              <Image source={Images.crossBg} style={styles.closeIcon} />
             </TouchableOpacity>
           </View>
 
@@ -354,7 +342,9 @@ export default EditModal;
 const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: COLORS.black,
-    borderRadius: 28,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
     width: "100%",
     alignSelf: "center",
     padding: 16,
@@ -383,13 +373,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   closeButton: {
-    padding: 4,
-    backgroundColor: COLORS.inputBg,
-    borderRadius: 20,
+    // padding: 4,
   },
   closeIcon: {
-    height: 32,
-    width: 32,
+    height: 36,
+    width: 36,
     tintColor: COLORS.white,
   },
   optionsSection: {

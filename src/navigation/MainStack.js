@@ -8,6 +8,8 @@ import TermsConditions from "../screens/Main/TermsConditions";
 
 import GooglePlaces from "../components/CustomModalGooglePlaces";
 import PicLocation from "../screens/Auth/PicLocation";
+import CameraScreen from "../screens/Main/CameraScreen";
+import CommentScreen from "../screens/Main/CommentScreen";
 import CreateEvent from "../screens/Main/CreateEvent";
 import AddItems from "../screens/Main/CreateEvent/AddItems";
 import AddSponsor from "../screens/Main/CreateEvent/AddSponsor";
@@ -17,9 +19,14 @@ import TicketDetail from "../screens/Main/CreateEvent/TicketDetail";
 import Detail from "../screens/Main/Detail";
 import SearchEvent from "../screens/Main/Event/SearchEvent";
 import EventDetail from "../screens/Main/EventDetails";
+import DetailPage from "../screens/Main/Home/DetailPage";
 import SampleScreen from "../screens/Main/Home/molecules/SampleScreen";
+import HomePremium from "../screens/Main/HomePremium";
+import StoryViewer from "../screens/Main/SocialFeeds/molecules/StoryViewer";
 import AddSocials from "../screens/Main/Notification/AddSocials";
 import PublishPost from "../screens/Main/PublishPost/Index";
+import SearchScreen from "../screens/Main/SearchScreen";
+import PostFilter from "../screens/Main/SearchScreen/PostFilter";
 import Settings from "../screens/Main/Settings";
 import AdvancedNotification from "../screens/Main/Settings/AdvancedNotification";
 import AdvancedSettings from "../screens/Main/Settings/AdvancedSettings";
@@ -43,8 +50,6 @@ import SocialsAccount from "../screens/Main/SocialsAccount";
 import AddAccount from "../screens/Main/SocialsAccount/AddAccount";
 import SongsList from "../screens/Main/SongsList";
 import TabStack from "./TabStack";
-import HomePremium from "../screens/Main/HomePremium";
-import CommentScreen from "../screens/Main/CommentScreen";
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
@@ -56,8 +61,13 @@ const MainStack = () => {
       }}
     >
       <Stack.Screen name="TabStack" component={TabStack} />
+      <Stack.Screen name="SearchScreen" component={SearchScreen} />
+      <Stack.Screen name="PostFilter" component={PostFilter} />
+      <Stack.Screen name="CameraScreen" component={CameraScreen} />
       <Stack.Screen name="HomePremium" component={HomePremium} />
       <Stack.Screen name="CommentScreen" component={CommentScreen} />
+      <Stack.Screen name="DetailPage" component={DetailPage} />
+      <Stack.Screen name="StoryViewer" component={StoryViewer} />
       <Stack.Screen name="TermsConditions" component={TermsConditions} />
 
       <Stack.Screen name="Notification" component={Notification} />

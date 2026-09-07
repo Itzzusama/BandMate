@@ -1,28 +1,42 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useRef } from "react";
+import {
+  Animated,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { COLORS } from "../utils/COLORS";
 
-const ShimmerBlock = ({ width, height, borderRadius, style }) => {
-  const opacity = useRef(new Animated.Value(0.3)).current;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+// ─── Shimmer Block Component ────────────────────────────────────────────────
+const ShimmerBlock = ({ width, height, borderRadius = 4, style }) => {
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const animation = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, {
+        Animated.timing(animatedValue, {
           toValue: 1,
-          duration: 800,
+          duration: 900,
           useNativeDriver: true,
         }),
-        Animated.timing(opacity, {
-          toValue: 0.3,
-          duration: 800,
+        Animated.timing(animatedValue, {
+          toValue: 0,
+          duration: 900,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     animation.start();
     return () => animation.stop();
-  }, [opacity]);
+  }, [animatedValue]);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.25, 0.65],
+  });
 
   return (
     <Animated.View
@@ -30,7 +44,7 @@ const ShimmerBlock = ({ width, height, borderRadius, style }) => {
         {
           width,
           height,
-          borderRadius: borderRadius || 4,
+          borderRadius,
           backgroundColor: COLORS.inputBg,
           opacity,
         },
@@ -40,258 +54,207 @@ const ShimmerBlock = ({ width, height, borderRadius, style }) => {
   );
 };
 
-// ─── Categories Skeleton ────────────────────────────────────────────────────
-const CategoriesSkeleton = () => {
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.categoriesContainer}
-    >
-      {/* Compass icon card */}
-      <ShimmerBlock width={38} height={30} borderRadius={10} style={{ marginRight: 4 }} />
-      {/* Category pills */}
-      <ShimmerBlock width={60} height={30} borderRadius={8} style={{ marginRight: 4 }} />
-      <ShimmerBlock width={120} height={30} borderRadius={8} style={{ marginRight: 4 }} />
-      <ShimmerBlock width={90} height={30} borderRadius={8} style={{ marginRight: 4 }} />
-    </ScrollView>
-  );
-};
-
 // ─── Moments Skeleton ───────────────────────────────────────────────────────
-const MomentsSkeleton = () => {
+export const MomentsSkeleton = () => {
   return (
     <View style={styles.momentsWrapper}>
-      {/* Header row: Social Feed dropdown + icon buttons */}
-      <View style={[styles.momentsHeader, { paddingVertical: 0.1, marginBottom: 8 }]}>
-        <ShimmerBlock width={130} height={32} borderRadius={99} />
-        <View style={styles.momentsIconRow}>
-          <ShimmerBlock width={32} height={32} borderRadius={99} />
-          <ShimmerBlock width={32} height={32} borderRadius={99} />
-        </View>
-      </View>
-
-      {/* Sub-header: MOMENTS + PLAY ALL */}
+      {/* Header row: MOMENTS + PLAY ALL */}
       <View style={styles.momentsHeader}>
-        <ShimmerBlock width={80} height={14} borderRadius={6} />
-        <ShimmerBlock width={90} height={14} borderRadius={6} />
+        <View style={styles.row}>
+          <ShimmerBlock width={75} height={14} borderRadius={4} />
+          <ShimmerBlock
+            width={18}
+            height={14}
+            borderRadius={4}
+            style={{ marginLeft: 6 }}
+          />
+        </View>
+        <ShimmerBlock width={75} height={14} borderRadius={4} />
       </View>
 
-      {/* Moment cards row */}
+      {/* Story circular bubbles row */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.momentsScroll}
+        contentContainerStyle={styles.momentsScrollContent}
       >
-        {/* Add moment button */}
-        <View style={styles.addMomentSkeleton}>
-          <ShimmerBlock width={28} height={28} borderRadius={14} />
+        {/* 1st: Add Story bubble */}
+        <View style={styles.storyBubbleItem}>
+          <View style={styles.addStoryOuterCircle}>
+            <ShimmerBlock
+              width={64}
+              height={64}
+              borderRadius={32}
+              style={{ backgroundColor: COLORS.cardColor }}
+            />
+          </View>
+          <ShimmerBlock
+            width={52}
+            height={10}
+            borderRadius={3}
+            style={{ marginTop: 6 }}
+          />
         </View>
-        {/* Moment cards */}
-        <ShimmerBlock
-          width={108}
-          height={184}
-          borderRadius={8}
-          style={{ marginRight: 12, backgroundColor: COLORS.cardColor }}
-        />
-        <ShimmerBlock
-          width={108}
-          height={184}
-          borderRadius={8}
-          style={{ marginRight: 12, backgroundColor: COLORS.cardColor }}
-        />
-        <ShimmerBlock
-          width={108}
-          height={184}
-          borderRadius={8}
-          style={{ marginRight: 12, backgroundColor: COLORS.cardColor }}
-        />
+
+        {/* Other Friend Story bubbles */}
+        {[1, 2, 3, 4, 5].map((key) => (
+          <View key={key} style={styles.storyBubbleItem}>
+            <View style={styles.storyOuterRing}>
+              <ShimmerBlock
+                width={62}
+                height={62}
+                borderRadius={31}
+                style={{ backgroundColor: COLORS.cardColor }}
+              />
+            </View>
+            <ShimmerBlock
+              width={54}
+              height={10}
+              borderRadius={3}
+              style={{ marginTop: 6 }}
+            />
+          </View>
+        ))}
       </ScrollView>
-    </View>
-  );
-};
-
-// ─── FeedCard Skeleton ──────────────────────────────────────────────────────
-const FeedCardSkeleton = () => {
-  return (
-    <View style={styles.feedCardContainer}>
-      {/* Header: avatar + name + follow btn */}
-      <View style={styles.feedCardHeader}>
-        <View style={styles.feedCardUserInfo}>
-          <ShimmerBlock width={32} height={32} borderRadius={16} />
-          <View>
-            <ShimmerBlock width={100} height={14} borderRadius={6} />
-            <ShimmerBlock width={70} height={12} borderRadius={6} style={{ marginTop: 4 }} />
-          </View>
-        </View>
-        <View style={styles.feedCardHeaderRight}>
-          <ShimmerBlock width={60} height={30} borderRadius={8} />
-          <ShimmerBlock width={32} height={32} borderRadius={99} />
-        </View>
-      </View>
-
-      {/* Main image area */}
-      <View style={styles.feedCardImageBox}>
-        <ShimmerBlock
-          width="100%"
-          height="100%"
-          borderRadius={0}
-          style={{ backgroundColor: COLORS.cardColor }}
-        />
-        {/* Tags overlay */}
-        <View style={styles.feedCardTagsRow}>
-          <ShimmerBlock width={70} height={24} borderRadius={6} />
-          <ShimmerBlock width={85} height={24} borderRadius={6} />
-        </View>
-
-        {/* Chart info overlay */}
-        <View style={styles.feedCardChartInfo}>
-          <ShimmerBlock width={180} height={22} borderRadius={8} />
-        </View>
-
-        {/* Rank + stats overlay */}
-        <View style={styles.feedCardStatsContainer}>
-          <View style={styles.feedCardRankRow}>
-            <ShimmerBlock width={30} height={20} borderRadius={4} />
-            <ShimmerBlock width={110} height={20} borderRadius={4} style={{ marginLeft: 4 }} />
-          </View>
-          <View style={styles.feedCardSocialStats}>
-            <ShimmerBlock width={50} height={14} borderRadius={4} />
-            <ShimmerBlock width={50} height={14} borderRadius={4} />
-            <ShimmerBlock width={50} height={14} borderRadius={4} />
-            <ShimmerBlock width={50} height={14} borderRadius={4} />
-          </View>
-        </View>
-
-        {/* Footer buttons overlay */}
-        <View style={styles.feedCardFooter}>
-          <ShimmerBlock width={36} height={36} borderRadius={99} />
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <ShimmerBlock width={36} height={36} borderRadius={99} />
-            <ShimmerBlock width={36} height={36} borderRadius={99} />
-          </View>
-        </View>
-      </View>
     </View>
   );
 };
 
 // ─── PostCard Skeleton ──────────────────────────────────────────────────────
-const PostCardSkeleton = ({ marginBottom }) => {
+export const PostCardSkeleton = ({ marginBottom = 0 }) => {
   return (
     <View style={[styles.postCardContainer, { marginBottom }]}>
-      {/* Header: avatar + name + follow + dots */}
+      {/* Header: Avatar ring + Name & Username + Follow button + More icon */}
       <View style={styles.postCardHeader}>
         <View style={styles.postCardUserInfo}>
-          <ShimmerBlock width={32} height={32} borderRadius={16} />
-          <View>
-            <ShimmerBlock width={110} height={14} borderRadius={6} />
-            <ShimmerBlock width={75} height={12} borderRadius={6} style={{ marginTop: 4 }} />
+          <View style={styles.postAvatarRing}>
+            <ShimmerBlock
+              width={34}
+              height={34}
+              borderRadius={17}
+              style={{ backgroundColor: COLORS.cardColor }}
+            />
+          </View>
+          <View style={styles.postCardNameBlock}>
+            <ShimmerBlock width={115} height={14} borderRadius={4} />
+            <ShimmerBlock
+              width={75}
+              height={11}
+              borderRadius={4}
+              style={{ marginTop: 4 }}
+            />
           </View>
         </View>
         <View style={styles.postCardHeaderRight}>
-          <ShimmerBlock width={60} height={30} borderRadius={8} />
-          <ShimmerBlock width={32} height={32} borderRadius={99} />
+          <ShimmerBlock width={64} height={30} borderRadius={8} />
+          <ShimmerBlock
+            width={26}
+            height={26}
+            borderRadius={13}
+            style={{ marginLeft: 8 }}
+          />
         </View>
       </View>
 
-      {/* Partnership row */}
-      <View style={styles.postCardPartnerRow}>
-        <ShimmerBlock width={20} height={20} borderRadius={4} />
-        <ShimmerBlock width={140} height={12} borderRadius={6} style={{ marginLeft: 4 }} />
-        <ShimmerBlock width={16} height={16} borderRadius={99} style={{ marginLeft: 4 }} />
-        <ShimmerBlock width={70} height={12} borderRadius={6} style={{ marginLeft: 4 }} />
-      </View>
-
-      {/* Tags row */}
+      {/* Hashtags / Topic row */}
       <View style={styles.postCardTagsRow}>
-        <ShimmerBlock width={65} height={24} borderRadius={99} />
-        <ShimmerBlock width={65} height={24} borderRadius={99} />
-        <ShimmerBlock width={65} height={24} borderRadius={99} />
+        <ShimmerBlock width={70} height={22} borderRadius={6} />
+        <ShimmerBlock width={85} height={22} borderRadius={6} />
+        <ShimmerBlock width={60} height={22} borderRadius={6} />
       </View>
 
-      {/* Main image */}
-      <View style={styles.postCardImageWrapper}>
+      {/* Description lines */}
+      <View style={styles.postCardDescription}>
+        <ShimmerBlock width="92%" height={13} borderRadius={4} />
         <ShimmerBlock
-          width="100%"
-          height="100%"
-          borderRadius={12}
+          width="65%"
+          height={13}
+          borderRadius={4}
+          style={{ marginTop: 5 }}
+        />
+      </View>
+
+      {/* Media Carousel Box */}
+      <View style={styles.postCardMediaContainer}>
+        <ShimmerBlock
+          width={SCREEN_WIDTH - 24}
+          height={SCREEN_WIDTH - 24}
+          borderRadius={16}
           style={{ backgroundColor: COLORS.cardColor }}
         />
       </View>
 
-      {/* Indicators */}
-      <View style={styles.postCardIndicatorRow}>
-        <ShimmerBlock width={6} height={6} borderRadius={4} />
-        <ShimmerBlock width={32} height={6} borderRadius={6} />
-        <ShimmerBlock width={6} height={6} borderRadius={4} />
-        <ShimmerBlock width={6} height={6} borderRadius={4} />
+      {/* Pagination dots */}
+      <View style={styles.postCardPagination}>
+        <ShimmerBlock width={22} height={4} borderRadius={2} />
+        <ShimmerBlock width={4} height={4} borderRadius={2} />
+        <ShimmerBlock width={4} height={4} borderRadius={2} />
       </View>
 
-      {/* Action buttons row */}
+      {/* Action buttons row (Upvote, Comment, Repost, Share, Save) */}
       <View style={styles.postCardActionsRow}>
-        <ShimmerBlock width={52} height={26} borderRadius={4} />
-        <ShimmerBlock width={52} height={26} borderRadius={4} />
-        <ShimmerBlock width={52} height={26} borderRadius={4} />
-        <ShimmerBlock width={52} height={26} borderRadius={4} />
-        <ShimmerBlock width={52} height={26} borderRadius={4} />
+        <ShimmerBlock width={58} height={28} borderRadius={6} />
+        <ShimmerBlock width={52} height={28} borderRadius={6} />
+        <ShimmerBlock width={52} height={28} borderRadius={6} />
+        <ShimmerBlock width={52} height={28} borderRadius={6} />
+        <ShimmerBlock width={52} height={28} borderRadius={6} />
       </View>
 
-      {/* Post details */}
+      {/* Post details: Reacted by, Comment preview, View all, Time ago */}
       <View style={styles.postCardDetails}>
-        {/* Reacted row */}
+        {/* Reacted by row */}
         <View style={styles.postCardReactedRow}>
-          <ShimmerBlock width={16} height={16} borderRadius={4} />
-          <ShimmerBlock width={180} height={14} borderRadius={6} style={{ marginLeft: 6 }} />
+          <ShimmerBlock width={16} height={16} borderRadius={8} />
+          <ShimmerBlock
+            width={140}
+            height={12}
+            borderRadius={4}
+            style={{ marginLeft: 6 }}
+          />
         </View>
 
-        {/* Post description */}
-        <ShimmerBlock width="95%" height={14} borderRadius={6} style={{ marginTop: 8 }} />
-        <ShimmerBlock width="70%" height={14} borderRadius={6} style={{ marginTop: 4 }} />
-
-        {/* Comment row */}
-        <View style={styles.postCardCommentRow}>
-          <ShimmerBlock width="85%" height={14} borderRadius={6} />
-          <ShimmerBlock width={16} height={16} borderRadius={4} style={{ marginLeft: 6 }} />
+        {/* Top comment preview */}
+        <View style={styles.postCardCommentPreview}>
+          <ShimmerBlock width="78%" height={13} borderRadius={4} />
+          <ShimmerBlock
+            width={14}
+            height={14}
+            borderRadius={3}
+            style={{ marginLeft: 8 }}
+          />
         </View>
 
         {/* View all comments */}
-        <ShimmerBlock width={160} height={14} borderRadius={6} style={{ marginTop: 4 }} />
+        <ShimmerBlock
+          width={130}
+          height={13}
+          borderRadius={4}
+          style={{ marginTop: 6 }}
+        />
 
         {/* Time ago */}
-        <ShimmerBlock width={80} height={12} borderRadius={6} style={{ marginTop: 4 }} />
+        <ShimmerBlock
+          width={65}
+          height={11}
+          borderRadius={4}
+          style={{ marginTop: 4 }}
+        />
       </View>
+
+      {/* Bottom subtle divider */}
+      <View style={styles.postCardDivider} />
     </View>
   );
 };
 
 // ─── Main SocialFeedsSkeleton ───────────────────────────────────────────────
-const SocialFeedsSkeleton = () => {
+const SocialFeedsSkeleton = ({ showMoments = true }) => {
   return (
-    <View style={styles.wrapper}>
-      <CategoriesSkeleton />
-      <MomentsSkeleton />
+    <View style={styles.container}>
+      {/* Moments / Stories Row */}
+      {showMoments && <MomentsSkeleton />}
 
-      {/* Front Page header row */}
-      <View style={styles.frontPageHeader}>
-        <ShimmerBlock width={100} height={18} borderRadius={6} />
-        <View style={styles.frontPageRight}>
-          <ShimmerBlock width={110} height={12} borderRadius={6} />
-          <ShimmerBlock width={16} height={16} borderRadius={99} />
-        </View>
-      </View>
-
-      {/* Horizontal FeedCards */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.feedCardsRow}
-      >
-        <FeedCardSkeleton />
-        <FeedCardSkeleton />
-      </ScrollView>
-
-      {/* PostCards */}
+      {/* Post Cards List */}
       <PostCardSkeleton />
       <PostCardSkeleton marginBottom={140} />
     </View>
@@ -301,212 +264,139 @@ const SocialFeedsSkeleton = () => {
 export default SocialFeedsSkeleton;
 
 const styles = StyleSheet.create({
-  wrapper: {
-    paddingBottom: 20,
+  container: {
+    flex: 1,
+    backgroundColor: "transparent",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 
-  // ── Categories ──
-  categoriesContainer: {
-    paddingHorizontal: 12,
-    marginTop: 4,
-  },
-
-  // ── Moments ──
+  // Moments Styles
   momentsWrapper: {
-    marginVertical: 14,
-    borderBottomWidth: 3,
-    borderBottomColor: COLORS.inputBg,
-    paddingBottom: 12,
+    paddingTop: 8,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.04)",
+    marginBottom: 8,
   },
   momentsHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  momentsScrollContent: {
     paddingHorizontal: 12,
-    marginBottom: 12,
-    marginTop: 3,
+    gap: 12,
   },
-  momentsIconRow: {
-    flexDirection: "row",
+  storyBubbleItem: {
     alignItems: "center",
-    gap: 8,
   },
-  momentsScroll: {
-    paddingHorizontal: 8,
-  },
-  addMomentSkeleton: {
-    width: 104,
-    height: 184,
-    backgroundColor: COLORS.black,
-    borderRadius: 8,
+  addStoryOuterCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
-    borderColor: COLORS.inputBg,
-    borderWidth: 1,
+    borderWidth: 1.5,
+    borderColor: "rgba(255, 255, 255, 0.12)",
+    borderStyle: "dashed",
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
+  },
+  storyOuterRing: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
   },
 
-  // ── FeedCard ──
-  feedCardContainer: {
-    backgroundColor: COLORS.black,
-    borderRadius: 12,
-    overflow: "hidden",
-    marginBottom: 12,
-    width: 320,
-    borderWidth: 1,
-    borderColor: COLORS.inputBg,
-    borderBottomWidth: 0,
-  },
-  feedCardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 12,
-  },
-  feedCardUserInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  feedCardHeaderRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  feedCardImageBox: {
-    width: 320,
-    height: 320,
-    position: "relative",
-  },
-  feedCardTagsRow: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    right: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  feedCardChartInfo: {
-    position: "absolute",
-    bottom: 103,
-    left: 12,
-  },
-  feedCardStatsContainer: {
-    position: "absolute",
-    bottom: 52,
-    left: 12,
-    right: 12,
-  },
-  feedCardRankRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  feedCardSocialStats: {
-    flexDirection: "row",
-    gap: 9,
-    marginTop: 4,
-  },
-  feedCardFooter: {
-    position: "absolute",
-    bottom: 10,
-    left: 12,
-    right: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  // ── PostCard ──
+  // PostCard Styles
   postCardContainer: {
-    backgroundColor: COLORS.black,
-    borderTopWidth: 3,
-    borderTopColor: COLORS.inputBg,
-    paddingTop: 10,
+    paddingVertical: 6,
   },
   postCardHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 14,
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    marginBottom: 8,
   },
   postCardUserInfo: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+  },
+  postAvatarRing: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  postCardNameBlock: {
+    marginLeft: 8,
   },
   postCardHeaderRight: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-  },
-  postCardPartnerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 2,
-    paddingHorizontal: 12,
   },
   postCardTagsRow: {
-    gap: 4,
-    flexWrap: "wrap",
     flexDirection: "row",
     alignItems: "center",
+    gap: 6,
     paddingHorizontal: 12,
-    marginBottom: 20,
-    marginTop: 10,
+    marginBottom: 8,
   },
-  postCardImageWrapper: {
-    width: "100%",
-    aspectRatio: 1,
-    borderRadius: 12,
-    overflow: "hidden",
+  postCardDescription: {
     paddingHorizontal: 12,
+    marginBottom: 8,
   },
-  postCardIndicatorRow: {
-    flexDirection: "row",
-    justifyContent: "center",
+  postCardMediaContainer: {
     alignItems: "center",
-    marginTop: 2,
-    marginBottom: 9,
     marginHorizontal: 12,
-    gap: 8,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  postCardPagination: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+    gap: 4,
+    marginVertical: 6,
   },
   postCardActionsRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingVertical: 4,
     paddingHorizontal: 12,
+    paddingVertical: 4,
   },
   postCardDetails: {
     paddingHorizontal: 12,
-    paddingTop: 6,
-    paddingBottom: 10,
+    marginTop: 6,
   },
   postCardReactedRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 4,
   },
-  postCardCommentRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-  },
-
-  // ── Front Page Header ──
-  frontPageHeader: {
+  postCardCommentPreview: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
-    marginBottom: 12,
+    marginTop: 4,
   },
-  frontPageRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  feedCardsRow: {
-    paddingHorizontal: 12,
-    gap: 10,
+  postCardDivider: {
+    height: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    marginTop: 14,
   },
 });

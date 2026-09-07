@@ -260,6 +260,22 @@ export const Images = {
   whiteHeart: require("./whiteHeart.png"),
   commentGif: require("./commentGif.png"),
   commentInteract: require("./commentInteract.png"),
+  CameraFlip: require("./CameraFlip.png"),
+  cameraLock: require("./cameraLock.png"),
+  grid: require("./grid.png"),
+  retake: require("./retake.png"),
+  back: require("./back.png"),
+  PostDemo: require("./PostDemo.png"),
+  verified: require("./verified.png"),
+  goldenStar: require("./goldenStar.png"),
+  friendGray: require("./friendGray.png"),
+  crossBg: require("./crossBg.png"),
+  plusGrayBg: require("./plusGrayBg.png"),
+  MyChat: require("./MyChat.png"),
+  unFollowButton: require("./unFollowButton.png"),
+  crossGray: require("./crossGray.png"),
+  dotBg: require("./dotBg.png"),
+  searchPlaceholder: require("./searchPlaceholder.png"),
 };
 
 

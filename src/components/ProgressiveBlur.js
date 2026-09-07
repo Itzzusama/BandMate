@@ -21,7 +21,9 @@ export default function ProgressiveBlur({
   pointerEvents,
 }) {
   const isVertical = direction === "top" || direction === "bottom";
-  const size = isVertical ? { height } : { width };
+  const size = isVertical
+    ? { height, ...(width !== undefined && { width }) }
+    : { width, ...(height !== undefined && { height }) };
 
   const { colors, locations } = getEasedGradient(direction);
 

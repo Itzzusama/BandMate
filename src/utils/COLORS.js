@@ -2,6 +2,7 @@ export const COLORS = {
   primaryColor: "#ffffff",
   authHeader: "#FFFFFF",
   btnColor: "#A19375",
+  buttonColor: "#A19375",
   btnSoftColor: "#A1937529",
   bg: "#0F1B35",
   dotColor: "#d0d1d1",

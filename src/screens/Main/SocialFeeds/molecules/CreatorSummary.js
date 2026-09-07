@@ -1,6 +1,5 @@
 import { BlurView } from "@react-native-community/blur";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import fonts from "../../../../assets/fonts";
 import { Images } from "../../../../assets/images";
@@ -13,19 +12,17 @@ const CreatorSummary = ({
   isVisible,
   onClose,
   user,
+  onMore,
   onMorePress,
   profileColor,
 }) => {
   const navigation = useNavigation();
+  const handleMore = onMore || onMorePress;
 
   const userAvatar = user?.profile?.avatar || user?.avatar;
   const firstName = user?.first_name || user?.firstName || "";
   const lastName =
-    user?.sur_name ||
-    user?.surname ||
-    user?.last_name ||
-    user?.lastName ||
-    "";
+    user?.sur_name || user?.surname || user?.last_name || user?.lastName || "";
   const displayName =
     `${firstName} ${lastName}`.trim() ||
     user?.displayName ||
@@ -60,21 +57,15 @@ const CreatorSummary = ({
     >
       <View
         style={{
-          margin: 10,
-          borderRadius: 32,
-          padding: 4,
+          margin: 12,
+          borderRadius: 30,
+          padding: 5,
           borderWidth: 1,
           overflow: "hidden",
-          borderColor: "rgba(255, 255, 255, 0.16)",
+          backgroundColor: "rgba(255, 255, 255, 0.06)",
+          borderColor: "rgba(255, 255, 255, 0.22)",
         }}
       >
-        {/* Blur Layer */}
-        <BlurView
-          blurType="dark"
-          blurAmount={10}
-          reducedTransparencyFallbackColor="#FFFFFF29"
-          style={[StyleSheet.absoluteFillObject, { borderRadius: 26 }]}
-        />
         <View style={styles.modalContainer}>
           {/* Header Section */}
           <View style={styles.header}>
@@ -134,10 +125,7 @@ const CreatorSummary = ({
             </View>
 
             <View style={styles.headerActions}>
-              <TouchableOpacity
-                onPress={onMorePress}
-                style={styles.iconButton}
-              >
+              <TouchableOpacity onPress={handleMore} style={styles.iconButton}>
                 <Image
                   source={Images.moreIcon}
                   style={[styles.actionIcon, { tintColor: COLORS.white }]}
@@ -261,7 +249,9 @@ const CreatorSummary = ({
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <CustomText
-                label={formatCount(user?.stats?.upvotes || user?.upvotesCount || 0)}
+                label={formatCount(
+                  user?.stats?.upvotes || user?.upvotesCount || 0,
+                )}
                 fontFamily={fonts.semiBold}
                 fontSize={17}
                 color={COLORS.white}
@@ -279,21 +269,33 @@ const CreatorSummary = ({
             </View>
             <View style={styles.statItem}>
               <CustomText
-                label={formatCount(user?.followersCount || user?.stats?.followers?.length || 0)}
+                label={formatCount(
+                  user?.followersCount || user?.stats?.followers?.length || 0,
+                )}
                 fontFamily={fonts.semiBold}
                 fontSize={17}
                 color={COLORS.white}
               />
-              <CustomText label="Followers" color={COLORS.white3} fontSize={12} />
+              <CustomText
+                label="Followers"
+                color={COLORS.white3}
+                fontSize={12}
+              />
             </View>
             <View style={styles.statItem}>
               <CustomText
-                label={formatCount(user?.subsCount || user?.stats?.following?.length || 0)}
+                label={formatCount(
+                  user?.subsCount || user?.stats?.following?.length || 0,
+                )}
                 fontFamily={fonts.semiBold}
                 fontSize={17}
                 color={COLORS.white}
               />
-              <CustomText label="Following" color={COLORS.white3} fontSize={12} />
+              <CustomText
+                label="Following"
+                color={COLORS.white3}
+                fontSize={12}
+              />
             </View>
           </View>
 
@@ -316,7 +318,9 @@ export default CreatorSummary;
 const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: COLORS.black,
-    borderRadius: 28,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
     width: "100%",
     alignSelf: "center",
     padding: 16,

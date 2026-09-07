@@ -1,6 +1,6 @@
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { SafeAreaView, Dimensions, StatusBar, View } from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { Dimensions, SafeAreaView, StatusBar, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ImageFast from "./ImageFast";
@@ -78,7 +78,8 @@ const ScreenWrapper = ({
           <KeyboardAwareScrollView
             nestedScrollEnabled={nestedScrollEnabled}
             refreshControl={refreshControl}
-            contentInsetAdjustmentBehavior="automatic"
+            contentInsetAdjustmentBehavior="never"
+            enableResetScrollToCoords={false}
             enableOnAndroid={true}
             style={{
               flex: 1,
@@ -89,7 +90,6 @@ const ScreenWrapper = ({
             }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
-            // extraScrollHeight={150}
           >
             {children}
           </KeyboardAwareScrollView>

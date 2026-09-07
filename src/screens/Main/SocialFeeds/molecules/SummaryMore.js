@@ -13,6 +13,7 @@ const SummaryMore = ({
   onViewProfile,
   onSendMessage,
   onRemoveFriend,
+  onReportPost,
   userId,
   isFollowing,
 }) => {
@@ -71,20 +72,15 @@ const SummaryMore = ({
     >
       <View
         style={{
-          margin: 10,
-          borderRadius: 32,
-          padding: 4,
-          overflow: "hidden",
+          margin: 12,
+          borderRadius: 30,
+          padding: 5,
           borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.16)",
+          overflow: "hidden",
+          backgroundColor: "rgba(255, 255, 255, 0.06)",
+          borderColor: "rgba(255, 255, 255, 0.22)",
         }}
       >
-        <BlurView
-          blurType="dark"
-          blurAmount={10}
-          reducedTransparencyFallbackColor="#FFFFFF29"
-          style={[StyleSheet.absoluteFillObject, { borderRadius: 26 }]}
-        />
         <View style={styles.modalContainer}>
           {/* Menu Options */}
           <View style={styles.optionsSection}>
@@ -120,6 +116,42 @@ const SummaryMore = ({
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* Report Section */}
+          {userData?._id !== userId && (
+            <TouchableOpacity
+              style={styles.reportRow}
+              onPress={() => {
+                onClose();
+                if (onReportPost) onReportPost();
+              }}
+            >
+              <View style={styles.reportLeft}>
+                <Image source={Images.reportBg} style={styles.reportIcon} />
+                <View>
+                  <CustomText
+                    label="Report this post"
+                    fontFamily={fonts.medium}
+                    fontSize={15}
+                    color="rgba(238, 16, 69, 1)"
+                  />
+                  <CustomText
+                    label="Reports are anonymous"
+                    color={COLORS.white3}
+                    fontSize={14}
+                    marginTop={2}
+                  />
+                </View>
+              </View>
+              <Image
+                source={Images.forwardIcon}
+                style={[
+                  styles.forwardIcon,
+                  { tintColor: "rgba(238, 16, 69, 1)" },
+                ]}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </CustomModal>
@@ -131,7 +163,9 @@ export default SummaryMore;
 const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: COLORS.black,
-    borderRadius: 28,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
     width: "100%",
     alignSelf: "center",
     padding: 16,
@@ -163,5 +197,23 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
     tintColor: COLORS.white3,
+  },
+  reportRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    marginTop: 8,
+  },
+  reportLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  reportIcon: {
+    height: 36,
+    width: 36,
+    tintColor: "rgba(238, 16, 69, 1)",
+    marginRight: 12,
   },
 });

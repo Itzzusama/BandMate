@@ -42,7 +42,7 @@ const SocialFeedNew = () => {
     },
     {
       component: (
-        <PostCard onCommentPress={() => navigation.navigate("CommentScreen")} />
+        <PostCard onCommentPress={() => navigation.navigate("DetailPage")} />
       ),
     },
     { divider: true, props: { marginBottom: 12, marginTop: 8, thickness: 4 } },

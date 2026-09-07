@@ -188,7 +188,7 @@ const Home = () => {
           timeAgo={timeAgo}
           formatCount={formatCount}
           isChange={item.isChange}
-          onCommentPress={() => navigation.navigate("CommentScreen")}
+          onCommentPress={() => navigation.navigate("DetailPage")}
         />
         <Divider marginBottom={12} marginTop={8} thickness={index === 0 ? 4 : 1} />
       </>

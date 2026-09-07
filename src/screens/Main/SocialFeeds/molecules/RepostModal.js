@@ -130,21 +130,15 @@ const RepostModal = ({
     >
       <View
         style={{
-          margin: 10,
-          borderRadius: 32,
-          padding: 4,
-          overflow: "hidden",
+          margin: 12,
+          borderRadius: 30,
+          padding: 5,
           borderWidth: 1,
-          borderColor: "rgba(255, 255, 255, 0.16)",
+          overflow: "hidden",
+          backgroundColor: "rgba(255, 255, 255, 0.06)",
+          borderColor: "rgba(255, 255, 255, 0.22)",
         }}
       >
-        {/* Blur Layer */}
-        <BlurView
-          blurType="dark"
-          blurAmount={10}
-          reducedTransparencyFallbackColor="#FFFFFF29"
-          style={[StyleSheet.absoluteFillObject, { borderRadius: 26 }]}
-        />
         <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
@@ -249,7 +243,9 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     backgroundColor: COLORS.black,
-    borderRadius: 28,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
     width: "100%",
     alignSelf: "center",
     padding: 16,

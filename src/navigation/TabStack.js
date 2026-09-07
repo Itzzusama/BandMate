@@ -18,6 +18,7 @@ import Blur from "../components/Blur";
 import CustomText from "../components/CustomText";
 import Icons from "../components/Icons";
 import ImageFast from "../components/ImageFast";
+import ProgressiveBlur from "../components/ProgressiveBlur";
 import { COLORS } from "../utils/COLORS";
 
 import Home from "../screens/Main/Home";
@@ -285,7 +286,22 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       )}
 
       {/* Bottom Tab Bar */}
-      <View style={[styles.tabMainContainer, { height: 90 + insets.bottom }]}>
+      <View
+        pointerEvents="box-none"
+        style={[styles.tabMainContainer, { height: 90 + insets.bottom }]}
+      >
+        {/* iOS-style Progressive Blur from TabStack down to bottom end */}
+        <View style={styles.bottomBlurContainer} pointerEvents="none">
+          <ProgressiveBlur
+            intensity={10}
+            direction="bottom"
+            tint="dark"
+            height={100 + insets.bottom}
+            borderRadius={0}
+            style={{ width: "100%" }}
+          />
+        </View>
+
         <View style={styles.tabContentContainer}>
           <BlurView
             style={StyleSheet.absoluteFillObject}
@@ -453,6 +469,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 999,
     bottom: 0,
+  },
+  bottomBlurContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    overflow: "hidden",
+    zIndex: -1,
   },
   plusButton: {
     position: "absolute",

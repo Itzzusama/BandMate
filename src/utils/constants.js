@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PermissionsAndroid, Platform } from "react-native";
 import messaging from "@react-native-firebase/messaging";
+import RNFS from "react-native-fs";
 import { ToastMessage } from "./ToastMessage";
 import { endPoints } from "../services/ENV";
 import axios from "axios";
@@ -30,8 +31,6 @@ export const updateUserProfile = (profilePatch) => async (dispatch) => {
   try {
     const res = await put("user/profile", { profile: profilePatch });
     if (res?.data?.data) {
-      console.log("res-----", res.data);
-
       dispatch(setUserData(res.data.data));
       ToastMessage("Preferences updated", "success");
       return res.data.data;
@@ -81,8 +80,7 @@ export const uploadAndGetUrl = async (file) => {
       name: file?.name || "photo.jpg",
     });
     const res = await axios.post(
-      // `${endPoints.BASE_URL}upload-image`,
-      `https://move.sola-group.ch/api/upload-image`,
+      `${endPoints.BASE_URL}upload-image`,
       formData,
       {
         headers: {
@@ -90,6 +88,7 @@ export const uploadAndGetUrl = async (file) => {
         },
       },
     );
+    console.log("================res", res?.data?.image);
     return res?.data?.image;
   } catch (err) {
     console.log("================err", err?.response?.data || err);
@@ -101,26 +100,30 @@ export const uploadAndGetUrl = async (file) => {
 };
 
 export const uploadFileGetUrl = async (file, filetype = "application/pdf") => {
-  console.log(file);
   try {
-    const formData = new FormData();
+    let resolvedUri = file?.localUri || file?.uri || "";
 
+    if (Platform.OS === "ios" && resolvedUri.startsWith("ph://")) {
+      const fileName = file?.name || `upload_${Date.now()}.mp4`;
+      const destPath = `${RNFS.CachesDirectoryPath}/${fileName}`;
+      await RNFS.copyAssetsVideoIOS(resolvedUri, destPath);
+      resolvedUri = `file://${destPath}`;
+      console.log("resolved ph:// -> file://", resolvedUri);
+    }
+
+    const formData = new FormData();
     formData.append("file", {
-      uri: file.localUri,
+      uri: resolvedUri,
       type: filetype,
-      name: file.name || "file",
+      name: file?.name || "file",
     });
 
-    const res = await axios.post(
-      `https://move.sola-group.ch/api/upload-file`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    const res = await axios.post(`${endPoints.BASE_URL}upload-file`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
-    console.log(res);
+    });
+    console.log("res-----", res);
     return res?.data;
   } catch (err) {
     console.log("Error:", err.response?.data || err.message);
